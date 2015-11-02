@@ -5,5 +5,5 @@ A Google App Engine-hosted version of the very excellent
 
 # Licence
 
-I am using dnstwist as an unmodified submodule, with all its licencing in
+I am using dnstwist as an unmodified Git submodule, with all its licensing in
 there. I hope that is appropriate. If not, please let me know.
