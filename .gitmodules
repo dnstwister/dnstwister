@@ -1,0 +1,4 @@
+[submodule "dnstwister/dnstwist"]
+	path = dnstwister/dnstwist
+	url = https://github.com/elceef/dnstwist.git
+	branch = master
