@@ -109,6 +109,10 @@ else:
     ST_RST = ''
 
 
+class InvalidDomain(Exception):
+    pass
+
+
 def p_out(data):
     global args
     if not args.csv:
@@ -195,7 +199,7 @@ class fuzz_domain():
 
     def __init__(self, domain):
         if not self.__validate_domain(domain):
-            raise Exception('Invalid domain name')
+            raise InvalidDomain(domain)
         self.domain, self.tld = self.__domain_tld(domain)
         self.domains = []
 
