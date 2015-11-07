@@ -84,7 +84,8 @@ REQUEST_TIMEOUT_HTTP = 5
 REQUEST_TIMEOUT_SMTP = 5
 THREAD_COUNT_DEFAULT = 10
 
-if sys.platform != 'win32' and sys.stdout.isatty():
+if (sys.platform != 'win32' and hasattr(sys.stdout, 'isatty') and
+    sys.stdout.isatty()):
     FG_RND = '\x1b[3%dm' % randint(1, 8)
     FG_RED = '\x1b[31m'
     FG_YEL = '\x1b[33m'
