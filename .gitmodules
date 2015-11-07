@@ -1,4 +1,0 @@
-[submodule "dnstwister/dnstwistfork"]
-	path = dnstwister/dnstwistfork
-	url = https://github.com/thisismyrobot/dnstwist.git
-	branch = master
