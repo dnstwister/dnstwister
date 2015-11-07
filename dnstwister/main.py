@@ -62,7 +62,7 @@ class MainHandler(webapp2.RequestHandler):
             return self.get()
 
         template = JINJA_ENVIRONMENT.get_template('report.html')
-        self.response.out.write(template.render(reports))
+        self.response.out.write(template.render(reports=reports))
 
     def get(self):
         """ Main page.

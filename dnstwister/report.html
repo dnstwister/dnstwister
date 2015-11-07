@@ -5,10 +5,20 @@
     </head>
     <body>
         <section>
-            <h1>Report</h1>
-            ...
+            <a href="/">New Report</a>
+            <h1>DNS Twister Report</h1>
+            {% for domain, data in reports.items() %}
+            <section>
+                <h2>{{ domain }}</h2>
+                <h3>Alteratives</h3>
+                <pre>{% for entry in data.fuzzy_domains %}{{ entry.domain }} ({{ entry.fuzzer }})
+{% endfor %}</pre>
+            </section>
+            {% endfor %}
+            </ul>
         </section>
         <footer>
+            <hr />
             <p>
                 DNS Twister wraps the excellent <a href="https://github.com/elceef/dnstwist">dnstwist</a> libary.
             </p>
