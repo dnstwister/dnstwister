@@ -62,16 +62,13 @@ class IpResolveHandler(webapp2.RequestHandler):
                 raise Exception('Invalid domain')
         except KeyError:
             self.response.out.write('Invalid/missing domain')
+            return
 
-        # Try to get from memcache
-        mc_key = 'ip:{}'.format(domain)
-        ip = google.appengine.api.memcache.get(mc_key)
-        if ip is None:
-            ip = json.loads(google.appengine.api.urlfetch.fetch(
-                'https://dnsresolve.appspot.com/?domain={}'.format(domain)
-            ).content)['ip']
-
-
+        resp = json.loads(google.appengine.api.urlfetch.fetch(
+            'https://dnsresolve.appspot.com/?domain={}'.format(domain),
+            follow_redirects=False,
+        ).content)
+        self.response.out.write(json.dumps({'ip': resp['ip']}))
 
 
 class MainHandler(webapp2.RequestHandler):
