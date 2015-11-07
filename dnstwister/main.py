@@ -1,7 +1,10 @@
 """ DNS Twister web app.
 """
 import dnstwist
+import google.appengine.api.memcache
+import google.appengine.api.urlfetch
 import jinja2
+import json
 import operator
 import os
 import webapp2
@@ -40,7 +43,35 @@ def analyse(domain):
         data['fuzzy_domains'] = fuzzer.domains
     except dnstwist.InvalidDomain:
         return
+
     return (domain, data)
+
+
+class IpResolveHandler(webapp2.RequestHandler):
+    """ Resolves Domains to IPs.
+
+        We double-handle off another appspot app as gethostbyname() isn't
+        implemented in GAE for Python?!?!?!
+    """
+    def get(self):
+        """ Get the IP for a domain.
+        """
+        try:
+            domain = self.request.GET['domain']
+            if not dnstwist.validate_domain(domain):
+                raise Exception('Invalid domain')
+        except KeyError:
+            self.response.out.write('Invalid/missing domain')
+
+        # Try to get from memcache
+        mc_key = 'ip:{}'.format(domain)
+        ip = google.appengine.api.memcache.get(mc_key)
+        if ip is None:
+            ip = json.loads(google.appengine.api.urlfetch.fetch(
+                'https://dnsresolve.appspot.com/?domain={}'.format(domain)
+            ).content)['ip']
+
+
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -73,5 +104,6 @@ class MainHandler(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/ip', IpResolveHandler),
 ], debug=True)

@@ -1,11 +1,20 @@
-## DNS Twister
+# DNS Twister
 
 A Google App Engine-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
 Hosted at ...?
 
-# DNSTWIST module
+## DNS Resolve
+
+Because you cannot (yet) do [socket.gethostbyname()](https://docs.python.org/2/library/socket.html#socket.gethostbyname)
+in Python on GAE, I have had to write a second application to do this, in
+*PHP*.
+
+This application simply returns the IP address of a domain passed to it by
+URL.
+
+## DNSTWIST module
 
 This project uses a modified (by me) snapshot of dnstwist, in
 dnstwister/dnstwist. The snapshot of dnstwist was added to my project in

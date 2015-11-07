@@ -195,6 +195,17 @@ class parse_url():
         return self.scheme + '://' + self.domain + self.path + self.query
 
 
+def validate_domain(domain):
+    if len(domain) > 255:
+        return False
+    if domain[-1] == '.':
+        domain = domain[:-1]
+    allowed = re.compile(
+        '\A([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\Z', re.IGNORECASE
+    )
+    return allowed.match(domain)
+
+
 class fuzz_domain():
 
     def __init__(self, domain):
@@ -229,12 +240,7 @@ class fuzz_domain():
         return domain[0] + '.' + domain[1], domain[2]
 
     def __validate_domain(self, domain):
-        if len(domain) > 255:
-            return False
-        if domain[-1] == '.':
-            domain = domain[:-1]
-        allowed = re.compile('\A([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\Z', re.IGNORECASE)
-        return allowed.match(domain)
+        return validate_domain(domain)
 
     def __filter_domains(self):
         seen = set()
@@ -366,6 +372,9 @@ class fuzz_domain():
                 result.append(self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:])
 
         return result
+
+    def validate_domain(self, domain):
+        return self.__validate_domain(domain)
 
     def fuzz(self):
         self.domains.append({ 'fuzzer': 'Original*', 'domain': self.domain + '.' + self.tld })

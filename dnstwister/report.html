@@ -11,8 +11,18 @@
             <section>
                 <h2>{{ domain }}</h2>
                 <h3>Alteratives</h3>
-                <pre>{% for entry in data.fuzzy_domains %}{{ entry.domain }} ({{ entry.fuzzer }})
-{% endfor %}</pre>
+                <table>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Change</th>
+                    </tr>
+                    {% for entry in data.fuzzy_domains %}
+                        <tr>
+                            <td>{{ entry.domain }}</td>
+                            <td>{{ entry.fuzzer }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </section>
             {% endfor %}
             </ul>
