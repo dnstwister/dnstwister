@@ -1,6 +1,6 @@
 """ DNS Twister web app.
 """
-import dnstwistfork.dnstwist
+import dnstwist
 import webapp2
 
 class MainHandler(webapp2.RequestHandler):
@@ -10,7 +10,7 @@ class MainHandler(webapp2.RequestHandler):
         """ Main page.
         """
         domain = 'www.example.com'
-        fuzzer = dnstwistfork.dnstwist.fuzz_domain(domain)
+        fuzzer = dnstwist.DomainFuzzer(domain)
         fuzzer.fuzz()
         domains = fuzzer.domains
         self.response.write(str(domains))
