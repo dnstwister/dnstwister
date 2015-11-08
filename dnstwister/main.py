@@ -65,7 +65,7 @@ class IpResolveHandler(webapp2.RequestHandler):
             return
 
         resp = json.loads(google.appengine.api.urlfetch.fetch(
-            'https://dnsresolve.appspot.com/?domain={}'.format(domain),
+            'https://dnsresolve.appspot.com/?d={}'.format(domain),
             follow_redirects=False,
         ).content)
         self.response.out.write(json.dumps({'ip': resp['ip']}))
