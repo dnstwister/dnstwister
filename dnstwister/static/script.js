@@ -19,7 +19,7 @@ $(document).ready(function() {
         if (count === 0) {
             clearInterval(timer);
             if (found === 0) {
-                $('.progress td').text('No IP Addresses resolved');
+                $('.progress td').text('No domains resolved');
             }
             else {
                 $('.progress').hide();
