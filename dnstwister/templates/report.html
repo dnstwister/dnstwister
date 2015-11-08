@@ -2,6 +2,8 @@
 <html>
     <head>
         <title>DNS Twister</title>
+        <script type="text/javascript" src="/static/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="/static/script.js"></script>
     </head>
     <body>
         <section>
@@ -10,16 +12,17 @@
             {% for domain, data in reports.items() %}
             <section>
                 <h2>{{ domain }}</h2>
-                <h3>Alteratives</h3>
                 <table>
                     <tr>
                         <th>Domain</th>
                         <th>Change</th>
+                        <th>Resolvable IP?</th>
                     </tr>
                     {% for entry in data.fuzzy_domains %}
                         <tr>
                             <td>{{ entry.domain }}</td>
                             <td>{{ entry.fuzzer }}</td>
+                            <td class="resolvable" data-domain="{{ entry.domain }}">Checking...</td>
                         </tr>
                     {% endfor %}
                 </table>
