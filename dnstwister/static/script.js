@@ -1,6 +1,9 @@
 $(document).ready(function() {
-    var count = $('.resolvable').length;
+    var to_resolve = $('.resolvable').length;
+    var resolvable = to_resolve;
     var found = 0;
+
+    $('.resolved_total').text(resolvable);
     $('.resolvable').each(function() {
         var elem = $(this)
         var domain = elem.data('domain');
@@ -8,18 +11,20 @@ $(document).ready(function() {
             if (result.ip !== null) {
                 elem.text(result.ip);
                 elem.parent().show();
+                $('.report').show();
                 found += 1;
             }
-            count -= 1;
+            to_resolve -= 1;
+            $('.resolved_count').text(resolvable - to_resolve);
         });
     });
 
     var timer = null;
     timer = setInterval(function() {
-        if (count === 0) {
+        if (to_resolve === 0) {
             clearInterval(timer);
             if (found === 0) {
-                $('.progress td').text('No domains resolved');
+                $('.progress p').text('No domains resolved');
             }
             else {
                 $('.progress').hide();

@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>DNS Twister</title>
-    </head>
-    <body>
-        <header>
+{% extends "layout.html" %}
+{% block title %}A domain name permutation engine{% endblock %}
+{% block header %}
             <h1>DNS Twister</h1>
             <h2>A domain name permutation engine</h2>
-        </head>
+{% endblock %}
+{% block body %}
         <section>
             <form action="/" method="post">
                 <textarea cols="80" rows="10" name="domains" placeholder="Enter one domain per line - eg: www.example.com"></textarea>
@@ -21,18 +18,4 @@
                 redirect to this page.
             </p>
         </section>
-        <footer>
-            <hr />
-            <p>
-                DNS Twister takes advantage of the excellent
-                <a href="https://github.com/elceef/dnstwist">dnstwist</a>
-                libary.
-            </p>
-                You can
-                <a href="https://github.com/thisismyrobot/dnstwister/issues">report bugs</a>
-                if you're keen and the Apache 2.0 licensed source code
-                <a href="https://github.com/thisismyrobot/dnstwister">is available on GitHub</a>.
-            </p>
-        </footer>
-    </body>
-</html>
+{% endblock %}
