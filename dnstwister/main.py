@@ -61,14 +61,46 @@ class IpResolveHandler(webapp2.RequestHandler):
             if not dnstwist.validate_domain(domain):
                 raise Exception('Invalid domain')
         except KeyError:
-            self.response.out.write('Invalid/missing domain')
+            self.response.out.write(json.dumps({'ip': None}))
             return
 
-        resp = json.loads(google.appengine.api.urlfetch.fetch(
-            'https://dnsresolve.appspot.com/?d={}'.format(domain),
-            follow_redirects=False,
-        ).content)
-        self.response.out.write(json.dumps({'ip': resp['ip']}))
+        # Attempt to get from memcache
+        ip = None
+        mc_key = 'ip:{}'.format(domain)
+        cached_ip = google.appengine.api.memcache.get(mc_key)
+
+        # If not in cache, get via microservice
+        if cached_ip is None:
+
+            try:
+                resolved_ip = json.loads(google.appengine.api.urlfetch.fetch(
+                    'https://dnsresolve.appspot.com/?d={}'.format(domain),
+                    follow_redirects=False,
+                ).content)['ip']
+
+                if resolved_ip is None:
+                    # We set 'False' for a non-resolvable IP, though we return
+                    # None in the JSON in this circumstance. This is because
+                    # memcache hits return None when nothing is found. Expire
+                    # cache entry after 24 hours.
+                    google.appengine.api.memcache.set(mc_key, False, time=86400)
+                else:
+                    ip = resolved_ip
+                    google.appengine.api.memcache.set(mc_key, ip, time=86400)
+
+            except Exception as _:
+                # Any failure to resolve an IP doesn't update memcache. TODO:
+                # return error/distinguish between memcache set() error and
+                # failure to resolve ip...
+                pass
+
+        # False indicates was not resolved last time, we return None in that
+        # instance (so no-op needed there). If the ip is not None or False, we
+        # return it.
+        elif cached_ip != False:
+            ip = cached_ip
+
+        self.response.out.write(json.dumps({'ip': ip}))
 
 
 class MainHandler(webapp2.RequestHandler):
