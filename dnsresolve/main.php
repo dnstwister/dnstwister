@@ -17,7 +17,7 @@
                 $ip_str = substr(gethostbyname($_GET['domain']), 0, 15);
 
                 // Check we got an actual valid IP address
-                if (filter_var($ip_str, FILTER_VALIDATE_IP, FILTER_VALID_IPV4) !== false) {
+                if (filter_var($ip_str, FILTER_VALIDATE_IP) !== false) {
                     $ip = $ip_str;
                 }
             }
