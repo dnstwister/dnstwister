@@ -30,7 +30,7 @@
             //no-op
         }
 
-        echo json_encode(array('ip'=>$ip))
+        echo json_encode(array('ip'=>$ip));
 
     }
 ?>
