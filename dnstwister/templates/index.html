@@ -4,21 +4,34 @@
         <title>DNS Twister</title>
     </head>
     <body>
-        <section>
+        <header>
             <h1>DNS Twister</h1>
+            <h2>A domain name permutation engine</h2>
+        </head>
+        <section>
             <form action="/" method="post">
-                <textarea cols="80" rows="10" name="domains" placeholder="Enter one domain per line"></textarea>
+                <textarea cols="80" rows="10" name="domains" placeholder="Enter one domain per line - eg: www.example.com"></textarea>
                 <br />
-                <input type="submit" />
+                <input type="submit" value="Submit" />
             </form>
+        </section>
+        <section>
+            <p>
+                DNS Twister is obviously not complete yet. Most errors cause a
+                redirect to this page.
+            </p>
         </section>
         <footer>
             <hr />
             <p>
-                DNS Twister wraps the excellent <a href="https://github.com/elceef/dnstwist">dnstwist</a> libary.
+                DNS Twister takes advantage of the excellent
+                <a href="https://github.com/elceef/dnstwist">dnstwist</a>
+                libary.
             </p>
-            <p>
-                <a href="https://github.com/thisismyrobot/dnstwister">Source code</a>
+                You can
+                <a href="https://github.com/thisismyrobot/dnstwister/issues">report bugs</a>
+                if you're keen and the Apache 2.0 licensed source code
+                <a href="https://github.com/thisismyrobot/dnstwister">is available on GitHub</a>.
             </p>
         </footer>
     </body>
