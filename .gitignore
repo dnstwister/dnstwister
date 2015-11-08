@@ -1,3 +1,4 @@
 *.pyc
 dnstwister/dnstwist/docs/examples/*
 dnstwister/dnstwist/docs/screens/*
+dnstwister/dnstwist/docs/dictionaries/*
