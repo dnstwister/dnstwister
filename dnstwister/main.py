@@ -1,5 +1,6 @@
 """ DNS Twister web app.
 """
+import base64
 import dnstwist
 import google.appengine.api.memcache
 import google.appengine.api.urlfetch
@@ -43,7 +44,14 @@ def analyse(domain):
     try:
         fuzzer = dnstwist.DomainFuzzer(domain)
         fuzzer.fuzz()
-        data['fuzzy_domains'] = fuzzer.domains
+        results = list(fuzzer.domains)
+
+        # Add a base64 encoded version of the domain for the later IP
+        # resolution. We do this because the same people who may use this app
+        # already have blocking on things like www.exampl0e.com in URLs...
+        for r in results:
+            r['b64'] = base64.b64encode(r['domain'])
+        data['fuzzy_domains'] = results
     except dnstwist.InvalidDomain:
         return
 
@@ -60,10 +68,11 @@ class IpResolveHandler(webapp2.RequestHandler):
         """ Get the IP for a domain.
         """
         try:
-            domain = self.request.GET['domain']
+            domain = base64.b64decode(self.request.GET['b64'])
             if not dnstwist.validate_domain(domain):
                 raise Exception('Invalid domain')
-        except KeyError:
+            # TODO: log...
+        except:
             self.response.out.write(json.dumps({'ip': None}))
             return
 
@@ -122,6 +131,7 @@ class MainHandler(webapp2.RequestHandler):
 
         # Handle no valid domains
         if len(reports) == 0:
+            # TODO: Log / help text...
             return self.get()
 
         template = JINJA_ENVIRONMENT.get_template('report.html')

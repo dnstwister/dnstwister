@@ -6,8 +6,8 @@ $(document).ready(function() {
     $('.resolved_total').text(resolvable);
     $('.resolvable').each(function() {
         var elem = $(this)
-        var domain = elem.data('domain');
-        $.getJSON('/ip', {'domain': domain}, function(result) {
+        var domainb64 = elem.data('b64');
+        $.getJSON('/ip', {'b64': domainb64}, function(result) {
             if (result.ip !== null) {
                 elem.text(result.ip);
                 elem.parent().show();
