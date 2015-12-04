@@ -14,6 +14,17 @@ in Python on GAE, I have had to write a second application to do this, in
 This application simply returns the IP address of a domain passed to it by
 URL.
 
+Each resolve consumes a 'socket' in the quota (of a max 864,000 per day) so we
+are deploying multiple copies of this app to distribute the quota usage. You
+will need to run 'python build.py [n]' in the 'resolvers' directory, where [n]
+is the number of resolver apps to build. You then need to upload these
+resolvers one by one. The number built is also recorded in the dnstwister app.
+If you run 'python build.py' without a number it will read that number and
+just regenerate the same set of instances (useful if you update the dnsresolve
+code). Each instance has a number postfixed in its name/id - eg 'dnsresolve0'.
+
+You need pyyaml for this ('pip install pyyaml').
+
 ## DNSTWIST module
 
 This project uses a modified (by me) snapshot of dnstwist, in
