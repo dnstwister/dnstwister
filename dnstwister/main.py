@@ -8,6 +8,8 @@ import jinja2
 import json
 import operator
 import os
+import random
+import resolvers
 import webapp2
 
 
@@ -84,9 +86,14 @@ class IpResolveHandler(webapp2.RequestHandler):
         # If not in cache, get via microservice
         if cached_ip is None:
 
+            # Pick a resolver app at "random".
+            appid = 'dnsresolve{}'.format(
+                random.randint(0, resolvers.COUNT - 1)
+            )
+
             try:
                 resolved_ip = json.loads(google.appengine.api.urlfetch.fetch(
-                    'https://dnsresolve.appspot.com/?d={}'.format(domain),
+                    'https://{}.appspot.com/?d={}'.format(appid, domain),
                     follow_redirects=False,
                 ).content)['ip']
 
