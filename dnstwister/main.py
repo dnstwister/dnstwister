@@ -79,7 +79,7 @@ class IpResolveHandler(webapp2.RequestHandler):
             return
 
         # Attempt to get from memcache
-        response_ip = None
+        ip = None
         mc_key = 'ip:{}'.format(domain)
         cached_ip = google.appengine.api.memcache.get(mc_key)
 
@@ -88,7 +88,7 @@ class IpResolveHandler(webapp2.RequestHandler):
 
             # We represent a cache hit for an unresolved IP as False but we
             # return None in the JSON.
-            response_ip = None if cached_ip == False else cached_ip
+            ip = None if cached_ip == False else cached_ip
 
         # If not in cache, get via microservice
         else:
@@ -108,7 +108,7 @@ class IpResolveHandler(webapp2.RequestHandler):
                 if payload['error'] == True:
                     raise Exception('error...')
 
-                response_ip = payload['ip']
+                ip = payload['ip']
 
             except:
 
@@ -126,7 +126,7 @@ class IpResolveHandler(webapp2.RequestHandler):
             # time.
             try:
 
-                if resolved_ip is not None:
+                if ip is not None:
                     google.appengine.api.memcache.set(mc_key, ip, time=86400)
                 else:
                     # We set 'False' for a non-resolvable IP, though we return
@@ -141,7 +141,7 @@ class IpResolveHandler(webapp2.RequestHandler):
 
         # Response IP is now an IP address, or None.
         self.response.out.write(json.dumps(
-            {'ip': response_ip, 'error': False})
+            {'ip': ip, 'error': False})
         )
 
 
