@@ -6,6 +6,7 @@ import google.appengine.api.memcache
 import google.appengine.api.urlfetch
 import jinja2
 import json
+import logging
 import operator
 import os
 import random
@@ -73,8 +74,12 @@ class IpResolveHandler(webapp2.RequestHandler):
             domain = base64.b64decode(self.request.GET['b64'])
             if not dnstwist.validate_domain(domain):
                 raise Exception('Invalid domain')
-            # TODO: log...
-        except:
+        except Exception as ex:
+            logging.error(
+                'Unable to decode valid domain from b64 GET param ({})'.format(
+                    ex.message
+                )
+            )
             self.response.out.write(
                 json.dumps({'ip': None, 'error': True})
             )
@@ -112,9 +117,13 @@ class IpResolveHandler(webapp2.RequestHandler):
 
                 ip = payload['ip']
 
-            except:
+            except Exception as ex:
 
-                # TODO: log...
+                logging.error(
+                    'Unable to req IP for domain: {} via {} ({})'.format(
+                        domain, appid, ex.message,
+                    )
+                )
 
                 # Any issue in resolving (503 for instance, for quota
                 # exhaustion, or JSON malformed) needs the error flag set.
@@ -139,6 +148,12 @@ class IpResolveHandler(webapp2.RequestHandler):
 
             except:
                 # TODO: handle memcache error...
+                logging.error(
+                    'Unable to store {}:{} in memcache'.format(
+                        mc_key, ip
+                    )
+                )
+
                 pass
 
         # Response IP is now an IP address, or None.
@@ -181,3 +196,16 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/ip', IpResolveHandler),
 ], debug=True)
+
+
+def main():
+    # Set the logging level in the main function See the section on <a
+    # href="/appengine/docs/python/#Python_App_caching">Requests and App
+    # Caching</a> for information on how App Engine reuses your request
+    # handlers when you specify a main function
+    logging.getLogger().setLevel(logging.DEBUG)
+    webapp2.util.run_wsgi_app(app)
+
+
+if __name__ == '__main__':
+    main()
