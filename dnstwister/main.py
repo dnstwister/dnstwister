@@ -75,7 +75,9 @@ class IpResolveHandler(webapp2.RequestHandler):
                 raise Exception('Invalid domain')
             # TODO: log...
         except:
-            self.response.out.write(json.dumps({'ip': None}))
+            self.response.out.write(
+                json.dumps({'ip': None, 'error': True})
+            )
             return
 
         # Attempt to get from memcache
