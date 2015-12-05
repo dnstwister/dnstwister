@@ -5,6 +5,7 @@
     else {
 
         $ip = null;
+        $error = FALSE;
 
         try {
             // Grab the domain
@@ -20,14 +21,21 @@
                 if (filter_var($ip_str, FILTER_VALIDATE_IP) !== false) {
                     $ip = $ip_str;
                 }
+                else {
+                    // This is not an error, just the indication that the IP
+                    // isn't DNS resolvable.
+                }
+            }
+            else {
+                $error = TRUE;
             }
         }
         catch (Exception $e)
         {
-            //no-op
+            $error = TRUE;
         }
 
-        echo json_encode(array('ip'=>$ip));
+        echo json_encode(array('ip'=>$ip, 'error'=>$error));
 
     }
 ?>
