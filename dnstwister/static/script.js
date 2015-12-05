@@ -14,6 +14,12 @@ $(document).ready(function() {
                 $('.report').show();
                 found += 1;
             }
+            else if (result.error !== false) {
+                elem.text('?');
+                elem.attr('title', 'There was an error resolving this IP');
+                elem.parent().show();
+                $('.report').show();
+            }
             to_resolve -= 1;
             $('.resolved_count').text(resolvable - to_resolve);
         });
