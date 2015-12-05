@@ -105,11 +105,11 @@ class IpResolveHandler(webapp2.RequestHandler):
                 random.randint(0, resolvers.COUNT - 1)
             )
 
+            resolver_url = 'https://{}.appspot.com/?d={}'.format(appid, domain)
             try:
 
                 payload = json.loads(google.appengine.api.urlfetch.fetch(
-                    'https://{}.appspot.com/?d={}'.format(appid, domain),
-                    follow_redirects=False,
+                    resolver_url, follow_redirects=False,
                 ).content)
 
                 if payload['error'] == True:
@@ -121,7 +121,7 @@ class IpResolveHandler(webapp2.RequestHandler):
 
                 logging.error(
                     'Unable to req IP for domain: {} via {} ({})'.format(
-                        domain, appid, ex.message,
+                        domain, resolver_url, ex.message,
                     )
                 )
 
