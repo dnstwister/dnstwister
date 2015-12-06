@@ -108,7 +108,7 @@ class IpResolveHandler(webapp2.RequestHandler):
             resolver_url = 'https://{}.appspot.com/?d={}'.format(appid, domain)
             try:
 
-                google.appengine.api.urlfetch.set_default_fetch_deadline(30)
+                google.appengine.api.urlfetch.set_default_fetch_deadline(60)
                 payload = json.loads(google.appengine.api.urlfetch.fetch(
                     resolver_url, follow_redirects=False,
                 ).content)
