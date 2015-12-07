@@ -1,0 +1,10 @@
+.report,
+.report tr.domain-row {
+    display: none;
+}
+
+.report tr.resolved,
+.report tr.error,
+.report tr.displayed {
+    display: table-row;
+}
