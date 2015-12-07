@@ -8,3 +8,9 @@
 .report tr.displayed {
     display: table-row;
 }
+
+@media (max-width:680px) {
+	.report {
+		width: 100%;
+	}
+}
