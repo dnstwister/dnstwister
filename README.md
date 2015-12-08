@@ -41,3 +41,7 @@ how any other license would interact.
 If you come across this repository and disagree with my usage, please contact
 me via robert @ this is my robot . com and I will rectify it as quickly as
 possible.
+
+## Tests
+
+WIP, but run using 'py.test'.

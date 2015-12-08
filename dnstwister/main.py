@@ -7,10 +7,10 @@ import google.appengine.api.urlfetch
 import jinja2
 import json
 import logging
-import operator
 import os
 import random
 import resolvers
+import tools
 import webapp2
 
 
@@ -21,23 +21,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     ))),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
-
-
-def query_domains(data_dict):
-    """ Return the queried domains from a request data dict, or None.
-
-        Domains are newline separated in a textarea.
-    """
-    try:
-        domains = data_dict['domains']
-    except KeyError:
-        return
-
-    domains = filter(
-        None, map(operator.methodcaller('strip'), domains.split('\n'))
-    )
-
-    return list(set(domains)) if len(domains) > 0 else None
 
 
 def analyse(domain):
@@ -155,8 +138,6 @@ class IpResolveHandler(webapp2.RequestHandler):
                     )
                 )
 
-                pass
-
         # Response IP is now an IP address, or None.
         self.response.out.write(json.dumps(
             {'ip': ip, 'error': False})
@@ -169,7 +150,7 @@ class MainHandler(webapp2.RequestHandler):
     def post(self):
         """ Handle form submit.
         """
-        qry_domains = query_domains(self.request.POST)
+        qry_domains = tools.query_domains(self.request.POST)
 
         # Handle malformed domains data by redirecting to GET page.
         if qry_domains is None:
