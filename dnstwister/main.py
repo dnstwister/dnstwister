@@ -177,7 +177,8 @@ class MainHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/ip', IpResolveHandler),
-], debug=True)
+    ('/test', TestResolver),
+])
 
 
 def main():
