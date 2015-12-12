@@ -10,6 +10,7 @@ import logging
 import os
 import random
 import resolvers
+import socket
 import tools
 import webapp2
 
@@ -53,94 +54,70 @@ class IpResolveHandler(webapp2.RequestHandler):
     def get(self):
         """ Get the IP for a domain.
         """
+        # We assume we don't resolve the IP but that we had no error in the
+        # attempt.
+        ip = None
+        error = False
+
+        # Firstly, try and parse a valid domain (base64-encoded) from the
+        # 'b64' GET parameter.
+        domain = tools.parse_domain(self.request.GET)
+        if domain is None:
+            logging.error('Unable to decode valid domain from b64 GET param')
+            self.abort(500)
+
+        # Next, attempt to resolve via memcache. This returns None if not
+        # found, as upposed to False when we found it but it didn't resolve
+        # last time.
+        mc_key = 'ip:{}'.format(domain)
         try:
-            domain = base64.b64decode(self.request.GET['b64'])
-            if not dnstwist.validate_domain(domain):
-                raise Exception('Invalid domain')
+            ip = google.appengine.api.memcache.get(mc_key)
         except Exception as ex:
             logging.error(
-                'Unable to decode valid domain from b64 GET param ({})'.format(
-                    ex.message
+                'Unable to query memcache for {} ({})'.format(
+                    mc_key, ex.message
                 )
             )
-            self.response.out.write(
-                json.dumps({'ip': None, 'error': True})
-            )
-            return
 
-        # Attempt to get from memcache
-        ip = None
-        mc_key = 'ip:{}'.format(domain)
-        cached_ip = google.appengine.api.memcache.get(mc_key)
+        # If we got a memcache miss, attempt to resolve.
+        if ip is None:
 
-        # If in cache
-        if cached_ip is not None:
-
-            # We represent a cache hit for an unresolved IP as False but we
-            # return None in the JSON.
-            ip = None if cached_ip == False else cached_ip
-
-        # If not in cache, get via microservice
-        else:
-
-            # Pick a resolver app at "random".
-            appid = 'dnsresolve{}'.format(
-                random.randint(0, resolvers.COUNT - 1)
-            )
-
-            resolver_url = 'https://{}.appspot.com/?d={}'.format(appid, domain)
             try:
 
-                google.appengine.api.urlfetch.set_default_fetch_deadline(60)
-                payload = json.loads(google.appengine.api.urlfetch.fetch(
-                    resolver_url, follow_redirects=False,
-                ).content)
+                ip = socket.gethostbyname(domain)
 
-                if payload['error'] == True:
-                    raise Exception('error...')
+            except socket.gaierror:
 
-                ip = payload['ip']
+                # Indicates failure to resolve to IP address, not an error in
+                # the attempt.
+                ip = False
 
             except Exception as ex:
 
+                # Happens due to DNS issues, we can hand off to third party
+                # here?
                 logging.error(
-                    'Unable to req IP for domain: {} via {} ({})'.format(
-                        domain, resolver_url, ex.message,
+                    'Failed local resolution of domain {} ({})'.format(
+                        domain, ex.message
                     )
                 )
+                ip = False
+                error = True
 
-                # Any issue in resolving (503 for instance, for quota
-                # exhaustion, or JSON malformed) needs the error flag set.
-                self.response.out.write(
-                    json.dumps({'ip': None, 'error': True})
-                )
-                return
-
-            # We're here because the resolution request succeeded, even if the
-            # IP wasn't resolved. Attempt to store the value in cache for next
-            # time.
-            try:
-
-                if ip is not None:
+            # If we successfully attempted to resolve, store the result.
+            if error is False:
+                try:
                     google.appengine.api.memcache.set(mc_key, ip, time=86400)
-                else:
-                    # We set 'False' for a non-resolvable IP, though we return
-                    # None in the JSON in this circumstance. This is because
-                    # memcache hits return None when nothing is found. Expire
-                    # cache entry after 24 hours.
-                    google.appengine.api.memcache.set(mc_key, False, time=86400)
-
-            except:
-                # TODO: handle memcache error...
-                logging.error(
-                    'Unable to store {}:{} in memcache'.format(
-                        mc_key, ip
+                except Exception as ex:
+                    logging.error(
+                        'Unable to store in memcache for {}:{} ({})'.format(
+                            mc_key, ip, ex.message
+                        )
                     )
-                )
 
-        # Response IP is now an IP address, or None.
+        # Response IP is now an IP address, or False.
         self.response.out.write(json.dumps(
-            {'ip': ip, 'error': False})
+            {'ip': ip, 'error': error})
         )
 
 
