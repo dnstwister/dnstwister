@@ -10,6 +10,7 @@ import logging
 import os
 import socket
 import tools
+import urllib
 import webapp2
 
 
@@ -119,9 +120,38 @@ class IpResolveHandler(webapp2.RequestHandler):
         )
 
 
-class MainHandler(webapp2.RequestHandler):
-    """ Simple web app.
+class ReportHandler(webapp2.RequestHandler):
+    """ Report rendering.
     """
+    def _report(self, qry_domains):
+        """ Render and return the report.
+        """
+        reports = dict(filter(None, map(analyse, qry_domains)))
+
+        # Handle no valid domains by redirecting to GET page.
+        if len(reports) == 0:
+            # TODO: Log / help text...
+            return self.redirect('/')
+
+        template = JINJA_ENVIRONMENT.get_template('report.html')
+        self.response.out.write(template.render(reports=reports))
+
+    def get(self):
+        """ Handle redirect from form submit.
+        """
+        # Try to parse out the list of domains
+        try:
+            qry_domains = map(
+                base64.b64decode,
+                self.request.GET['q'].split(',')
+            )
+        except Exception as ex:
+            logging.error('Unable to decode valid domains from q GET param')
+            return self.redirect('/')
+
+        return self._report(qry_domains)
+
+
     def post(self):
         """ Handle form submit.
         """
@@ -129,18 +159,25 @@ class MainHandler(webapp2.RequestHandler):
 
         # Handle malformed domains data by redirecting to GET page.
         if qry_domains is None:
-            return self.get()
+            return self.redirect('/')
 
-        reports = dict(filter(None, map(analyse, qry_domains)))
+        # Attempt to create a <= 200 character GET parameter from the domains
+        # so we can redirect to that (allows bookmarking). As in '/ip' we use
+        # b64 to hide the domains from firewalls that already block some of
+        # them.
+        params = urllib.urlencode({
+            'q': ','.join(map(base64.b64encode, qry_domains))
+        })
+        if len(params) <= 200:
+            return self.redirect('?{}'.format(params))
 
-        # Handle no valid domains
-        if len(reports) == 0:
-            # TODO: Log / help text...
-            return self.get()
+        # If there's a ton of domains, just to the report.
+        return self._report(qry_domains)
 
-        template = JINJA_ENVIRONMENT.get_template('report.html')
-        self.response.out.write(template.render(reports=reports))
 
+class MainHandler(webapp2.RequestHandler):
+    """ Simple web app.
+    """
     def get(self):
         """ Main page.
         """
@@ -151,6 +188,7 @@ class MainHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/report', ReportHandler),
     ('/ip', IpResolveHandler),
 ])
 
