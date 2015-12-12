@@ -8,8 +8,6 @@ import jinja2
 import json
 import logging
 import os
-import random
-import resolvers
 import socket
 import tools
 import webapp2
@@ -158,10 +156,6 @@ app = webapp2.WSGIApplication([
 
 
 def main():
-    # Set the logging level in the main function See the section on <a
-    # href="/appengine/docs/python/#Python_App_caching">Requests and App
-    # Caching</a> for information on how App Engine reuses your request
-    # handlers when you specify a main function
     logging.getLogger().setLevel(logging.DEBUG)
     webapp2.util.run_wsgi_app(app)
 
