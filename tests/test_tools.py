@@ -1,8 +1,8 @@
 """ Tests of the tools module.
 """
-import dnstwist
 import base64
-import tools
+import dnstwister.dnstwist as dnstwist
+import dnstwister.tools as tools
 import unittest
 
 
