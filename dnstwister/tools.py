@@ -5,6 +5,27 @@ import dnstwist
 import operator
 
 
+def analyse(domain):
+    """ Analyse a domain.
+    """
+    data = {'fuzzy_domains': []}
+    try:
+        fuzzer = dnstwist.DomainFuzzer(domain)
+        fuzzer.fuzz()
+        results = list(fuzzer.domains)
+
+        # Add a base64 encoded version of the domain for the later IP
+        # resolution. We do this because the same people who may use this app
+        # already have blocking on things like www.exampl0e.com in URLs...
+        for r in results:
+            r['b64'] = base64.b64encode(r['domain'])
+        data['fuzzy_domains'] = results
+    except dnstwist.InvalidDomain:
+        return
+
+    return (domain, data)
+
+
 def parse_domain(get_dict):
     """ Given the dict of key:value pairs from a GET request, parse the 'b64'
         key and confirm it's a valid domain. If anything goes wrong, just

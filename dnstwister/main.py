@@ -23,27 +23,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
-def analyse(domain):
-    """ Analyse a domain.
-    """
-    data = {'fuzzy_domains': []}
-    try:
-        fuzzer = dnstwist.DomainFuzzer(domain)
-        fuzzer.fuzz()
-        results = list(fuzzer.domains)
-
-        # Add a base64 encoded version of the domain for the later IP
-        # resolution. We do this because the same people who may use this app
-        # already have blocking on things like www.exampl0e.com in URLs...
-        for r in results:
-            r['b64'] = base64.b64encode(r['domain'])
-        data['fuzzy_domains'] = results
-    except dnstwist.InvalidDomain:
-        return
-
-    return (domain, data)
-
-
 class IpResolveHandler(webapp2.RequestHandler):
     """ Resolves Domains to IPs.
 
@@ -126,7 +105,7 @@ class ReportHandler(webapp2.RequestHandler):
     def _report(self, qry_domains):
         """ Render and return the report.
         """
-        reports = dict(filter(None, map(analyse, qry_domains)))
+        reports = dict(filter(None, map(tools.analyse, qry_domains)))
 
         # Handle no valid domains by redirecting to GET page.
         if len(reports) == 0:
@@ -194,6 +173,8 @@ app = webapp2.WSGIApplication([
 
 
 def main():
+    """ Main method to set up logging only.
+    """
     logging.getLogger().setLevel(logging.DEBUG)
     webapp2.util.run_wsgi_app(app)
 
