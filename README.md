@@ -17,13 +17,12 @@ I have left the dnstwist original README and LICENCE in this snapshot, I hope
 this is correct attribution and a correct use of the dnstwist project within
 my project.
 
-I am also using the identical Apache 2.0 license on my project, as I am unsure
-how any other license would interact.
-
-If you come across this repository and disagree with my usage, please contact
-me via robert @ this is my robot . com and I will rectify it as quickly as
-possible.
+I have applied an "Unlicense" to DNS Twister and I believe
+[this is acceptable](http://opensource.stackexchange.com/a/963/3236). If you
+come across this repository and disagree with my usage, attribution or
+licensing of dnstwist, please raise a Git issue and I will address your
+concern as quickly as possible.
 
 ## Tests
 
-WIP, but run using 'py.test'.
+WIP, run using 'py.test'.
