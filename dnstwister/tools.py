@@ -17,7 +17,7 @@ def parse_domain(get_dict):
 
     try:
         domain = base64.b64decode(domainb64)
-    except TypeRrror:
+    except TypeError:
         return
 
     if not dnstwist.validate_domain(domain):
