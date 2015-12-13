@@ -1,9 +1,7 @@
 """ DNS Twister web app.
 """
 import base64
-import dnstwist
 import google.appengine.api.memcache
-import google.appengine.api.urlfetch
 import jinja2
 import json
 import logging
@@ -20,7 +18,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
         'templates'
     ))),
     extensions=['jinja2.ext.autoescape'],
-    autoescape=True)
+    autoescape=True
+)
 
 
 class IpResolveHandler(webapp2.RequestHandler):
