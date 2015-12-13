@@ -48,12 +48,10 @@ class TestTools(unittest.TestCase):
 
         """
 
-        print tools.query_domains({'domains': inp})
-
         self.assertItemsEqual(
             ['www.example.com', 'www.example2.com'],
             tools.query_domains({'domains': inp}),
-            'Two domains, duplicats and whitespace ignored',
+            'Two domains, duplicates and whitespace ignored',
         )
 
 
