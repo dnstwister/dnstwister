@@ -3,3 +3,10 @@
         width: 100%;
     }
 }
+
+.error {
+    font-style: italic;
+    font-weight: bold;
+    color: red;
+    padding-bottom: 1em;
+}

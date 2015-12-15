@@ -12,6 +12,14 @@ import urllib
 import webapp2
 
 
+# Possible rendered errors, indexed by integer in 'error' GET param.
+ERRORS = (
+    'No valid domains submitted.',
+    'Invalid report URL.',
+    'No domains submitted.',
+)
+
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join((
         os.path.dirname(__file__),
@@ -108,8 +116,10 @@ class ReportHandler(webapp2.RequestHandler):
 
         # Handle no valid domains by redirecting to GET page.
         if len(reports) == 0:
-            # TODO: Log / help text...
-            return self.redirect('/')
+            logging.error(
+                'No valid domains found in {}'.format(qry_domains)
+            )
+            return self.redirect('/?error=0')
 
         template = JINJA_ENVIRONMENT.get_template('report.html')
         self.response.out.write(template.render(reports=reports))
@@ -125,7 +135,7 @@ class ReportHandler(webapp2.RequestHandler):
             )
         except Exception as ex:
             logging.error('Unable to decode valid domains from q GET param')
-            return self.redirect('/')
+            return self.redirect('/?error=1')
 
         return self._report(qry_domains)
 
@@ -137,7 +147,10 @@ class ReportHandler(webapp2.RequestHandler):
 
         # Handle malformed domains data by redirecting to GET page.
         if qry_domains is None:
-            return self.redirect('/')
+            logging.error(
+                'No valid domains in POST dict {}'.format(self.request.POST)
+            )
+            return self.redirect('/?error=2')
 
         # Attempt to create a <= 200 character GET parameter from the domains
         # so we can redirect to that (allows bookmarking). As in '/ip' we use
@@ -159,8 +172,18 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         """ Main page.
         """
+        error = None
+        try:
+            error = ERRORS[int(self.request.GET['error'])]
+        except:
+            # This will fail on no error, an error that can't be converted to
+            # an integer and an error that can be converted to an integer but
+            # is not within the range of the tuple of errors. We don't need to
+            # log these situations.
+            pass
+
         template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.out.write(template.render())
+        self.response.out.write(template.render(error=error))
         return
 
 

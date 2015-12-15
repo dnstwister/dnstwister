@@ -5,17 +5,16 @@
             <h2>Domain name permutation service</h2>
 {% endblock %}
 {% block body %}
+{% if error is not none %}
+        <section class="error">
+            Error: {{ error }}
+        </section>
+{% endif %}
         <section>
             <form action="/report" method="post">
                 <textarea cols="80" rows="10" name="domains" placeholder="Enter one domain per line - eg: www.example.com" class="user-domains"></textarea>
                 <br />
                 <input type="submit" value="Submit" />
             </form>
-        </section>
-        <section>
-            <p>
-                DNS Twister is obviously not complete yet. Most errors cause a
-                redirect to this page.
-            </p>
         </section>
 {% endblock %}
