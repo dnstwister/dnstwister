@@ -11,10 +11,10 @@
         </section>
 {% endif %}
         <section>
-            <form action="/report" method="post">
-                <textarea cols="80" rows="10" name="domains" placeholder="Enter one domain per line - eg: www.example.com" class="user-domains"></textarea>
+            <form action="/report" method="post" class="pure-form pure-form-stacked">
+                <textarea name="domains" placeholder="Enter one domain per line - eg: www.example.com" class="u-full-width"></textarea>
                 <br />
-                <input type="submit" value="Submit" />
+                <input type="submit" value="Submit" class="button-primary" />
             </form>
         </section>
 {% endblock %}

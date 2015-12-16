@@ -7,9 +7,10 @@
         <link rel="stylesheet" type="text/css" href="/static/report.css">
 {% endblock %}
 {% block header %}
-        <h1>DNS Twister Report</h1>
+        <h1>DNS Twister</h1>
+        <h2>Report</h2>
         <p>
-            <button id="show_all">Show all domains</button> | <a href="/">New Report</a>
+            <button id="show_all">Toggle all domains</button> | <a href="/">New Report</a>
         </p>
 {% endblock %}
 {% block body %}
@@ -20,7 +21,7 @@
             </p>
         </section>
         <section>
-            <table class="report">
+            <table class="report u-full-width">
                 <thead>
                     <tr>
                         <th>Domain</th>

@@ -1,12 +1,18 @@
-@media (max-width:680px) {
-    .user-domains {
-        width: 100%;
-    }
-}
-
 .error {
-    font-style: italic;
     font-weight: bold;
     color: red;
     padding-bottom: 1em;
+}
+
+header {
+    margin-top: 5%;
+}
+
+/* Skeleton CSS overrides */
+textarea {
+    min-height: 100px;
+}
+
+.container {
+    max-width: 720px;
 }
