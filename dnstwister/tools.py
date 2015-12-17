@@ -48,7 +48,7 @@ def parse_domain(get_dict):
 
 
 def query_domains(data_dict):
-    """ Return the queried domains from a request data dict, or None.
+    """ Return the valid queried domains from a request data dict, or None.
 
         Domains are newline separated in a textarea.
     """
@@ -57,8 +57,14 @@ def query_domains(data_dict):
     except KeyError:
         return
 
+    # Filter out blank lines, leading/trailing whitespace
     domains = filter(
         None, map(operator.methodcaller('strip'), domains.split('\n'))
+    )
+
+    # Filter for only valid domains
+    domains = filter(
+        dnstwist.validate_domain, domains
     )
 
     return list(set(domains)) if len(domains) > 0 else None

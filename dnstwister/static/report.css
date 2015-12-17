@@ -8,3 +8,7 @@
 .report tr.displayed {
     display: table-row;
 }
+
+.domains {
+    margin-bottom: 3rem;
+}
