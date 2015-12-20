@@ -109,6 +109,27 @@ class IpResolveHandler(webapp2.RequestHandler):
 class ReportHandler(webapp2.RequestHandler):
     """ Report rendering.
     """
+    def _mc_resolve(self, reports):
+        """ Attempt to resolve domains via memcache.
+        """
+        for domain, results in reports.items():
+            for i, res in enumerate(results['fuzzy_domains']):
+                fuzzy_domain = res['domain']
+                mc_key = 'ip:{}'.format(fuzzy_domain)
+                try:
+                    ip = google.appengine.api.memcache.get(mc_key)
+                except Exception as ex:
+                    logging.error(
+                        'Unable to query memcache for {} ({})'.format(
+                            mc_key, ex.message
+                        )
+                    )
+                    continue
+                if ip is None:
+                    continue
+                reports[domain]['fuzzy_domains'][i]['ip'] = ip
+                del reports[domain]['fuzzy_domains'][i]['b64']
+
     def _report(self, qry_domains):
         """ Render and return the report.
         """
@@ -120,6 +141,9 @@ class ReportHandler(webapp2.RequestHandler):
                 'No valid domains found in {}'.format(qry_domains)
             )
             return self.redirect('/?error=0')
+
+        # Attempt to resolve any of the domains in memcache.
+        self._mc_resolve(reports)
 
         template = JINJA_ENVIRONMENT.get_template('report.html')
         self.response.out.write(template.render(reports=reports))
@@ -138,7 +162,6 @@ class ReportHandler(webapp2.RequestHandler):
             return self.redirect('/?error=1')
 
         return self._report(qry_domains)
-
 
     def post(self):
         """ Handle form submit.

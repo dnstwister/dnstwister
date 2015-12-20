@@ -14,6 +14,24 @@ $(document).ready(function() {
     $('.resolved_total').text(resolvable);
     $('.resolvable').each(function() {
         var elem = $(this)
+
+        // Detect pre-resolved IPs.
+        if (elem.data('ip') !== '') {
+            if (elem.data('ip') !== 'False') {
+                elem.text(elem.data('ip'));
+                elem.parent().addClass('resolved');
+                $('.report').show();
+                found += 1;
+            }
+            else {
+                elem.text('None');
+            }
+            to_resolve -= 1;
+            $('.resolved_count').text(resolvable - to_resolve);
+            return;
+        }
+
+        // (Attempt to) resolve unresolved IPs.
         var domainb64 = elem.data('b64');
         $.getJSON('/ip', {'b64': domainb64}, function(result) {
             if (result.ip !== false) {
