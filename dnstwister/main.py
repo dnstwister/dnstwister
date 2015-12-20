@@ -197,7 +197,9 @@ class MainHandler(webapp2.RequestHandler):
         """
         error = None
         try:
-            error = ERRORS[int(self.request.GET['error'])]
+            error_idx = int(self.request.GET['error'])
+            assert error_idx >= 0
+            error = ERRORS[error_idx]
         except:
             # This will fail on no error, an error that can't be converted to
             # an integer and an error that can be converted to an integer but
