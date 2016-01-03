@@ -10,8 +10,13 @@ handlers:
   upload: static/index_baked\.html
 
 - url: /favicon\.ico
-  static_files: favicon.ico
-  upload: favicon\.ico
+  static_files: static/favicon.ico
+  upload: static/favicon\.ico
+
+- url: /robots\.txt
+  static_files: static/robots.txt
+  upload: static/robots\.txt
+  expiration: 365d
 
 - url: /static
   static_dir: static
