@@ -5,6 +5,10 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+- url: /
+  static_files: static/index_baked.html
+  upload: static/index_baked\.html
+
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico

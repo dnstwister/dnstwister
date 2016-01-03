@@ -140,7 +140,7 @@ class ReportHandler(webapp2.RequestHandler):
             logging.error(
                 'No valid domains found in {}'.format(qry_domains)
             )
-            return self.redirect('/?error=0')
+            return self.redirect('/error/0')
 
         # Attempt to resolve any of the domains in memcache.
         self._mc_resolve(reports)
@@ -159,7 +159,7 @@ class ReportHandler(webapp2.RequestHandler):
             )
         except Exception as ex:
             logging.error('Unable to decode valid domains from q GET param')
-            return self.redirect('/?error=1')
+            return self.redirect('/error/1')
 
         return self._report(qry_domains)
 
@@ -173,7 +173,7 @@ class ReportHandler(webapp2.RequestHandler):
             logging.error(
                 'No valid domains in POST dict {}'.format(self.request.POST)
             )
-            return self.redirect('/?error=2')
+            return self.redirect('/error/2')
 
         # Attempt to create a <= 200 character GET parameter from the domains
         # so we can redirect to that (allows bookmarking). As in '/ip' we use
@@ -192,12 +192,12 @@ class ReportHandler(webapp2.RequestHandler):
 class MainHandler(webapp2.RequestHandler):
     """ Simple web app.
     """
-    def get(self):
+    def get(self, error_arg):
         """ Main page.
         """
         error = None
         try:
-            error_idx = int(self.request.GET['error'])
+            error_idx = int(error_arg)
             assert error_idx >= 0
             error = ERRORS[error_idx]
         except:
@@ -213,7 +213,7 @@ class MainHandler(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler),
+    (r'/error/(\d)', MainHandler),
     ('/report', ReportHandler),
     ('/ip', IpResolveHandler),
 ])
