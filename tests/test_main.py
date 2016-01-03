@@ -22,7 +22,10 @@ class TestMain(unittest.TestCase):
     def test_index(self):
         """ Test the index page
         """
-        res = self.app.get('/')
+        # Load index page. We have to include an invalid error here to get the
+        # page to load as the non-error index is static and not supported via
+        # webtest.
+        res = self.app.get('/error/9')
 
         self.assertEqual(res.status_int, 200)
         self.assertTrue(
@@ -33,8 +36,10 @@ class TestMain(unittest.TestCase):
     def test_report_lists_valid_domains(self):
         """ Test that the report page lists (only) valid domains.
         """
-        # Load index page
-        res = self.app.get('/')
+        # Load index page. We have to include an invalid error here to get the
+        # page to load as the non-error index is static and not supported via
+        # webtest.
+        res = self.app.get('/error/9')
 
         # Fill out 2 URLs (one valid, one not) and submit to the report
         # endpoint.
