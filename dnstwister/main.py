@@ -55,7 +55,7 @@ def resolve_ip():
 
 
 @app.route('/report', methods=['GET', 'POST'])
-def report(self):
+def report():
     """ Handle reports.
     """
     def render_report(qry_domains):
@@ -68,7 +68,7 @@ def report(self):
             app.logger.error(
                 'No valid domains found in {}'.format(qry_domains)
             )
-            return self.redirect('/error/0')
+            return flask.redirect('/error/0')
 
         return flask.render_template('report.html', reports=reports)
 
@@ -78,23 +78,24 @@ def report(self):
         try:
             qry_domains = map(
                 base64.b64decode,
-                self.request.GET['q'].split(',')
+                flask.request.args['q'].split(',')
             )
         except:
             app.logger.error('Unable to decode valid domains from q GET param')
-            return self.redirect('/error/1')
+            return flask.redirect('/error/1')
 
-        return self.render_report(qry_domains)
+        return render_report(qry_domains)
+
     else:
         # Handle form submit.
-        qry_domains = tools.query_domains(self.request.POST)
+        qry_domains = tools.query_domains(flask.request.form)
 
         # Handle malformed domains data by redirecting to GET page.
         if qry_domains is None:
             app.logger.error(
-                'No valid domains in POST dict {}'.format(self.request.POST)
+                'No valid domains in POST dict {}'.format(flask.request.args)
             )
-            return self.redirect('/error/2')
+            return flask.redirect('/error/2')
 
         # Attempt to create a <= 200 character GET parameter from the domains
         # so we can redirect to that (allows bookmarking). As in '/ip' we use
@@ -104,14 +105,15 @@ def report(self):
             'q': ','.join(map(base64.b64encode, qry_domains))
         })
         if len(params) <= 200:
-            return self.redirect('?{}'.format(params))
+            return flask.redirect('/report?{}'.format(params))
 
         # If there's a ton of domains, just to the report.
         return render_report(qry_domains)
 
 
+@app.route(r'/')
 @app.route(r'/error/<error_arg>')
-def index(error_arg):
+def index(error_arg=None):
     """ Main page, if there is an error to render.
     """
     error = None
@@ -126,8 +128,8 @@ def index(error_arg):
         # situations.
         pass
 
-    return flask.render_template('index', error=error)
+    return flask.render_template('index.html', error=error)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
