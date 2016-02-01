@@ -1,1 +1,1 @@
-web: gunicorn dnstwister:main --worker-class gevent --log-file -
+web: gunicorn dnstwister.main:app --worker-class gevent --log-file -
