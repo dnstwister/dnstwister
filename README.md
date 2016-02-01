@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
 
-A Google App Engine-hosted version of the very excellent
+A Heroku-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
 Hosted [here](https://dnstwister.appspot.com).
