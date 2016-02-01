@@ -1,0 +1,10 @@
+{
+  "name": "dnstwister",
+  "description": "DNS permutation engine.",
+  "website": "dnstwister.heroku.com",
+  "image": "heroku/python",
+  "repository": "https://github.com/thisismyrobot/dnstwister",
+  "keywords": [
+    "python", "flask", "dns", "thisismyrobot"
+  ],
+}
