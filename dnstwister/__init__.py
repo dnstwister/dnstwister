@@ -1,2 +1,1 @@
-""" Google App Engine application dnstwister.
-"""
+"""Heroku app dnstwister."""
