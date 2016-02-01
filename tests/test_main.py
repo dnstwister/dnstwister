@@ -1,7 +1,8 @@
 """ Tests of the main module.
 """
+import flask.ext.webtest
 import unittest
-import webtest
+
 import dnstwister.main
 
 
@@ -11,13 +12,8 @@ class TestMain(unittest.TestCase):
     def setUp(self):
         """ Set up the mock memcache.
         """
-        # Ensure the templates load
-        dnstwister.main.JINJA_ENVIRONMENT.loader.searchpath = [
-            'dnstwister/templates'
-        ]
-
         # Create a webtest Test App for use
-        self.app = webtest.TestApp(dnstwister.main.app)
+        self.app = flask.ext.webtest.TestApp(dnstwister.main.app)
 
     def test_index(self):
         """ Test the index page
@@ -54,7 +50,7 @@ class TestMain(unittest.TestCase):
         # This is a short list of domains so we have redirected to a GET url.
         # We have also dropped the invalid domain.
         self.assertEqual(
-            'http://localhost/report?q=d3d3LmV4YW1wbGUxLmNvbQ%3D%3D',
+            'http://localhost:80/report?q=d3d3LmV4YW1wbGUxLmNvbQ%3D%3D',
             res.location
         )
 
