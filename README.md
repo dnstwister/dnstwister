@@ -5,7 +5,7 @@
 A Heroku-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
-Hosted [here](https://dnstwister.appspot.com).
+Hosted [here](https://dnstwister.herokuapp.com).
 
 ## DNSTWIST module
 

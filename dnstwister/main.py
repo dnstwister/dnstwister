@@ -2,9 +2,11 @@
 """
 import base64
 import flask
+import flask_sslify
 import socket
-import tools
 import urllib
+
+import tools
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -132,4 +134,7 @@ def index(error_arg=None):
 
 
 if __name__ == '__main__':
+    # Force SSL under Heroku
+    if 'DYNO' in os.environ:
+        sslify = flask_sslify.SSLify(app)
     app.run(debug=True)
