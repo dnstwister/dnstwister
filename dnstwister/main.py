@@ -6,6 +6,7 @@ import flask_sslify
 import os
 import socket
 import urllib
+import werkzeug.contrib.fixers
 
 import tools
 
@@ -135,7 +136,10 @@ def index(error_arg=None):
 
 
 if __name__ == '__main__':
+
     # Force SSL under Heroku
     if 'DYNO' in os.environ:
+        app.wsgi_app = werkzeug.contrib.fixers.ProxyFix(app.wsgi_app)
         sslify = flask_sslify.SSLify(app)
+
     app.run(debug=True)
