@@ -1,6 +1,7 @@
 # DNS Twister
 
-[![Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
+[![Development Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
+[![Live Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=heroku-deploy)](https://travis-ci.org/thisismyrobot/dnstwister)
 
 A Heroku-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
