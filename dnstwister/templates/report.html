@@ -39,7 +39,7 @@
                         {% for entry in data.fuzzy_domains %}
                             <tr class="domain-row">
                                 <td>{{ domain }}</td>
-                                <td>{{ entry.domain }}</td>
+                                <td>{{ entry['domain-name'] }}</td>
                                 <td>{{ entry.fuzzer }}</td>
                                 <td class="resolvable" data-b64="{{ entry.b64 }}" data-ip="{{ entry.ip }}">...</td>
                             </tr>

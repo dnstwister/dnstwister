@@ -10,9 +10,8 @@ Hosted [here](https://dnstwister.herokuapp.com).
 
 ## DNSTWIST module
 
-This project uses a modified (by me) snapshot of dnstwist, in
-dnstwister/dnstwist. The snapshot of dnstwist was added to my project in
-[this commit](https://github.com/thisismyrobot/dnstwister/commit/7ca44e96cb3b394d3e85fdb07b20e679e76e0742).
+This project uses a modified (by me) snapshot of version 1.02 of dnstwist, in
+dnstwister/dnstwist.
 
 I have left the dnstwist original README and LICENCE in this snapshot, I hope
 this is correct attribution and a correct use of the dnstwist project within
