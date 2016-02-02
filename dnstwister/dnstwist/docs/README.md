@@ -6,6 +6,8 @@ Find similar-looking domains that adversaries can use to attack you. Can detect
 typosquatters, phishing attacks, fraud and corporate espionage. Useful as an
 additional source of targeted threat intelligence.
 
+![Demo](/docs/screens/demo.gif)
+
 The idea is quite straightforward: *dnstwist* takes in your domain name as a
 seed, generates a list of potential phishing domains and then checks to see if
 they are registered.
@@ -13,26 +15,29 @@ Additionally it can test if the mail server from MX record can be used to
 intercept misdirected corporate e-mails and it can generate fuzzy hashes of the
 web pages to see if they are live phishing sites.
 
-![Demo](/docs/screens/demo.gif)
 
 Key features
 ------------
+
 There are several pretty good reasons to give it a try:
 
 - Wide range of efficient domain fuzzing algorithms
 - Multithreaded job distribution
 - Resolves domain names to IPv4 and IPv6
 - Queries for NS and MX records
-- Evaluates web page similarity with fuzzy hashes to find live phising sites
-- Tests if MX host (mail server) can be used to intercept misdirected e-mails (espionage)
+- Evaluates web page similarity with fuzzy hashes to find live phishing sites
+- Tests if MX host (mail server) can be used to intercept misdirected e-mails
+  (espionage)
 - Generates additional domain variants using dictionary files
 - GeoIP location information
 - Grabs HTTP and SMTP service banners
 - WHOIS lookups for creation and modification date
-- Prints output in CSV format
+- Prints output in CSV and JSON format
+
 
 Requirements
 ------------
+
 If you want *dnstwist* to develop full power, please make sure the following
 Python modules are present on your system. If missing, *dnstwist* will still
 work, but without many cool features. You'll get a notification in absence of
@@ -44,20 +49,67 @@ required module.
 - [Requests: HTTP for Humans](http://www.python-requests.org/)
 - [ssdeep Python wrapper](https://pypi.python.org/pypi/ssdeep)
 
-Ubuntu Linux is the primary development platform, however *dnstwist* is
-confirmed to work also on Windows and MacOSX.
 
-If running Ubuntu 15.04 or newer, you can install dependencies like this:
+Installation
+------------
+
+**Linux**
+
+Ubuntu Linux is the primary development platform. If running Ubuntu 15.04 or
+newer, you can install dependencies like this:
 
 ```
 $ sudo apt-get install python-dnspython python-geoip python-whois \
 python-requests python-ssdeep
 ```
 
+Alternately, you can use Python tooling. This can be done within a virtual
+environment to avoid conflicts with other installations. However, you will
+still need a couple of libraries installed at the system level.
+
+```
+$ sudo apt-get install libgeoip-dev libffi-dev
+$ BUILD_LIB=1 pip install -r requirements.txt
+```
+
 Now it is fully equipped and ready for action.
+
+**OSX**
+
+If you're on a Mac, you can install dnstwist via
+[Homebrew](https://github.com/Homebrew/homebrew) like so:
+
+```
+$ brew install dnstwist
+```
+
+This is going to install `dnstwist.py` as `dnstwist` only, along with all
+requirements mentioned above. The usage is the same, you can just omit the
+file extension, and the binary will be added to `PATH`.
+
+**Docker**
+
+If you use Docker, you can build a local copy:
+
+```
+$ docker build -t dnstwist .
+```
+
+Then run that local image:
+
+```
+$ docker run dnstwist example.com
+```
+
+If you don't want to build locally here is a list of community maintained
+images:
+
+- [jrottenberg/dnstwist](https://hub.docker.com/r/jrottenberg/dnstwist/)
+
 
 How to use
 ----------
+
 To start, it's a good idea to enter only the domain name as an argument. The
 tool will run it through its fuzzing algorithms and generate a list of
 potential phishing domains with the following DNS records: A, AAAA, NS and MX.
@@ -75,7 +127,7 @@ enabled with *--ssdeep* argument. For each generated domain, *dnstwist* will
 fetch content from responding HTTP server (following possible redirects) and
 compare its fuzzy hash with the one for the original (initial) domain. The
 level of similarity will be expressed as a percentage. Please keep in mind it's
-rather unlikely to get 100% match for a dynamicaly generated web page, but each
+rather unlikely to get 100% match for a dynamically generated web page, but each
 notification should be inspected carefully regardless of the percentage level.
 
 ```
@@ -118,6 +170,15 @@ needs.
 $ dnstwist.py --dictionary dictionaries/english.dict example.com
 ``` 
 
+Apart from the default nice and colorful text terminal output, the tool
+provides two well known and easy to parse output formats: CSV and JSON. Use it
+for data interchange.
+
+```
+$ dnstwist.py --csv example.com > out.csv
+$ dnstwist.py --json example.com > out.json
+```
+
 Usually generated list of domains has more than a hundred of rows - especially
 for longer domain names. In such cases, it may be practical to display only
 registered (resolvable) ones using *--registered* argument.
@@ -142,8 +203,10 @@ $ dnstwist.py --help
 
 Good luck!
 
+
 Contact
 -------
+
 To send questions, comments or a chocolate, just drop an e-mail at
 [marcin@ulikowski.pl](mailto:marcin@ulikowski.pl)
 
