@@ -26,3 +26,10 @@ concern as quickly as possible.
 ## Tests
 
 WIP, run using 'py.test'.
+
+## Google App Engine
+
+This project used to be on GAE
+([link may still work?](https://dnstwister.appspot.com)) but has since been
+migrated to Heroku. To view the GAE codebase you'll need to look at the
+[1.1 tag](https://github.com/thisismyrobot/dnstwister/releases/tag/1.1).
