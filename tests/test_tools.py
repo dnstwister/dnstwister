@@ -73,27 +73,22 @@ class TestTools(unittest.TestCase):
 
 
     def test_parse_domain(self):
-        """ Tests of the helper that parses out a 'b64' key from the GET
-            params, decodes and validates it.
+        """ Tests of the helper that decodes and validates a domain.
 
             Function returns a valid domain or None.
         """
         self.assertIs(
-            None, tools.parse_domain({}),
-            'Missing b64 key should return None'
-        )
-        self.assertIs(
-            None, tools.parse_domain({'hi': 'hello'}),
-            'Missing b64 key should return None'
+            None, tools.parse_domain(''),
+            'Missing b64 data should return None'
         )
 
         self.assertIs(
-            None, tools.parse_domain({'b64': None}),
-            'Non-b64-decodable b64 key should return None'
+            None, tools.parse_domain(None),
+            'Non-b64-decodable data should return None'
         )
         self.assertIs(
-            None, tools.parse_domain({'b64': 'he378a -- ?'}),
-            'Non-b64-decodable b64 key should return None'
+            None, tools.parse_domain('he378a -- ?'),
+            'Non-b64-decodable data should return None'
         )
 
         bad_domain = '\\www.z.comasfff'
@@ -104,8 +99,8 @@ class TestTools(unittest.TestCase):
 
         bad_domain_data = base64.b64encode(bad_domain)
         self.assertIs(
-            None, tools.parse_domain({'b64': bad_domain_data}),
-            'b64-decodable (but invalid) domain in b64 key should return None'
+            None, tools.parse_domain(bad_domain_data),
+            'b64-decodable (but invalid) domain data should return None'
         )
 
         domain = 'www.example.com'
@@ -117,8 +112,8 @@ class TestTools(unittest.TestCase):
         domain_data = base64.b64encode(domain)
         self.assertEqual(
             'www.example.com',
-            tools.parse_domain({'b64': domain_data}),
-            'b64-decodable valid domain in b64 key should be returned'
+            tools.parse_domain(domain_data),
+            'b64-decodable valid domain data should be returned'
         )
 
 

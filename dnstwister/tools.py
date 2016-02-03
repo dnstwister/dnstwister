@@ -6,8 +6,7 @@ import operator
 
 
 def analyse(domain):
-    """ Analyse a domain.
-    """
+    """Analyse a domain."""
     data = {'fuzzy_domains': []}
     fuzzer = dnstwist.DomainFuzzer(domain)
     fuzzer.fuzz()
@@ -26,18 +25,13 @@ def analyse(domain):
     return (domain, data)
 
 
-def parse_domain(get_dict):
-    """ Given the dict of key:value pairs from a GET request, parse the 'b64'
-        key and confirm it's a valid domain. If anything goes wrong, just
-        return None.
+def parse_domain(b64domain):
+    """Given a base64-encoded string (hopefully), return a valid domain.
+
+    Return None on invalid domain/data.
     """
     try:
-        domainb64 = get_dict['b64']
-    except KeyError:
-        return
-
-    try:
-        domain = base64.b64decode(domainb64)
+        domain = base64.b64decode(b64domain)
     except TypeError:
         return
 

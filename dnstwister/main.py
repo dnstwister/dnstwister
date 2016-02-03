@@ -3,6 +3,7 @@
 import base64
 import flask
 import flask_sslify
+import flask.ext.cache
 import os
 import socket
 import urllib
@@ -20,19 +21,19 @@ ERRORS = (
 
 
 app = flask.Flask(__name__)
+
 # Force SSL under Heroku
 if 'DYNO' in os.environ:
     app.wsgi_app = werkzeug.contrib.fixers.ProxyFix(app.wsgi_app)
     flask_sslify.SSLify(app, subdomains=True, permanent=True)
 
+cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
-@app.route('/ip')
-def resolve_ip():
-    """ Resolves Domains to IPs.
 
-        We double-handle off another appspot app as gethostbyname() isn't
-        implemented in GAE for Python?!?!?!
-    """
+@app.route('/ip/<b64domain>')
+@cache.cached(timeout=86400)
+def resolve_ip(b64domain):
+    """Resolves Domains to IPs."""
     # We assume we don't resolve the IP but that we had no error in the
     # attempt.
     ip = None
@@ -40,23 +41,20 @@ def resolve_ip():
 
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
-    domain = tools.parse_domain(flask.request.args)
+    domain = tools.parse_domain(b64domain)
     if domain is None:
-        app.logger.error('Unable to decode valid domain from b64 GET param')
+        app.logger.error('Unable to decode valid domain from b64 data')
         flask.abort(500)
 
-    # Next, attempt to resolve via memcache. This returns None if not
-    # found, as opposed to False when we found it but it didn't resolve
-    # last time.
     try:
-
         ip = socket.gethostbyname(domain)
-
     except socket.gaierror:
-
         # Indicates failure to resolve to IP address, not an error in
         # the attempt.
         ip = False
+    except:
+        ip = None
+        error = True
 
     # Response IP is now an IP address, or False.
     return flask.json.jsonify({'ip': ip, 'error': error})
@@ -64,8 +62,7 @@ def resolve_ip():
 
 @app.route('/report', methods=['GET', 'POST'])
 def report():
-    """ Handle reports.
-    """
+    """Handle reports."""
     def render_report(qry_domains):
         """ Render and return the report.
         """
@@ -121,9 +118,9 @@ def report():
 
 @app.route(r'/')
 @app.route(r'/error/<error_arg>')
+@cache.cached(timeout=3600)
 def index(error_arg=None):
-    """ Main page, if there is an error to render.
-    """
+    """Main page, if there is an error to render."""
     error = None
     try:
         error_idx = int(error_arg)

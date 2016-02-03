@@ -33,7 +33,7 @@ $(document).ready(function() {
 
         // (Attempt to) resolve unresolved IPs.
         var domainb64 = elem.data('b64');
-        $.getJSON('/ip', {'b64': domainb64}, function(result) {
+        $.getJSON('/ip/' + domainb64, function(result) {
             if (result.ip !== false) {
                 elem.text(result.ip);
                 elem.parent().addClass('resolved');

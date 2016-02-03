@@ -45,7 +45,7 @@ class InvalidDomain(Exception):
 def validate_domain(domain):
     """ Validate a domain name.
     """
-    if len(domain) > 255:
+    if len(domain) > 255 or len(domain) == 0:
         return False
     if domain[-1] == '.':
         domain = domain[:-1]
