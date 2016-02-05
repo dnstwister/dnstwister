@@ -2,12 +2,9 @@
 """
 import base64
 import flask
-import flask_sslify
 import flask.ext.cache
-import os
 import socket
 import urllib
-import werkzeug.contrib.fixers
 
 import tools
 
@@ -21,11 +18,6 @@ ERRORS = (
 
 
 app = flask.Flask(__name__)
-
-# Force SSL under Heroku
-if 'DYNO' in os.environ:
-    app.wsgi_app = werkzeug.contrib.fixers.ProxyFix(app.wsgi_app)
-    flask_sslify.SSLify(app, subdomains=True, permanent=True)
 
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
