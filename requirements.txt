@@ -3,6 +3,7 @@ gunicorn==19.4.5
 gevent==1.0.2
 flask==0.10.1
 Flask-Cache
+dnspython
 
 # Tests only
 flask-webtest

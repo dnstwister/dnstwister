@@ -24,29 +24,18 @@ cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
 @app.route('/ip/<b64domain>')
 @cache.cached(timeout=86400)
-def resolve_ip(b64domain):
-    """Resolves Domains to IPs."""
-    # We assume we don't resolve the IP but that we had no error in the
-    # attempt.
-    ip = None
-    error = False
+def resolve(b64domain):
+    """Resolves Domains to IPs.
 
+    Cached to 24 hours.
+    """
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
     domain = tools.parse_domain(b64domain)
     if domain is None:
-        app.logger.error('Unable to decode valid domain from b64 data')
         flask.abort(500)
 
-    try:
-        ip = socket.gethostbyname(domain)
-    except socket.gaierror:
-        # Indicates failure to resolve to IP address, not an error in
-        # the attempt.
-        ip = False
-    except:
-        ip = None
-        error = True
+    ip, error = tools.resolve(domain)
 
     # Response IP is now an IP address, or False.
     return flask.json.jsonify({'ip': ip, 'error': error})
@@ -112,7 +101,7 @@ def report():
 @app.route(r'/error/<error_arg>')
 @cache.cached(timeout=3600)
 def index(error_arg=None):
-    """Main page, if there is an error to render."""
+    """Main page, cached to 2 hours."""
     error = None
     try:
         error_idx = int(error_arg)
