@@ -70,7 +70,7 @@ def atom(b64domain):
         feed.add(
             title=entry['domain-name'],
             title_type='text',
-            content='Tweak: {}\nIP: {}'.format(entry['fuzzer'], ip),
+            content='{} ({})'.format(ip, entry['fuzzer']),
             content_type='text',
             author='DNS Twister',
             updated=datetime.datetime.now(),
