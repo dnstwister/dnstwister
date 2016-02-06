@@ -6,6 +6,7 @@
         <meta name="description" content="Domain name permutation engine, based on dnstwist.">
         <meta name="author" content="Robert Wallhead">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="//fonts.googleapis.com/css?family=Raleway:300,400" rel="stylesheet" type="text/css">
         {% block head %}
         {% endblock %}
     </head>
@@ -44,19 +45,6 @@
           })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
           ga('create', 'UA-4080602-5', 'auto');
           ga('send', 'pageview');
-        </script>
-
-        <!-- Lazy-loading CSS -->
-        <script>
-          var cb = function() {
-            var l = document.createElement('link'); l.rel = 'stylesheet';
-            l.href = '//fonts.googleapis.com/css?family=Raleway:300,400';
-            var h = document.getElementsByTagName('head')[0]; h.parentNode.insertBefore(l, h);
-          };
-          var raf = requestAnimationFrame || mozRequestAnimationFrame ||
-              webkitRequestAnimationFrame || msRequestAnimationFrame;
-          if (raf) raf(cb);
-          else window.addEventListener('load', cb);
         </script>
     </body>
 </html>
