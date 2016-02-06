@@ -1,8 +1,15 @@
 """ Non-GAE tools.
 """
 import base64
+import dns.resolver
 import dnstwist
 import operator
+import socket
+
+
+RESOLVER = dns.resolver.Resolver()
+RESOLVER.lifetime = 5
+RESOLVER.timeout = 5
 
 
 def analyse(domain):
@@ -62,3 +69,29 @@ def query_domains(data_dict):
     )
 
     return list(set(domains)) if len(domains) > 0 else None
+
+
+def resolve(domain):
+    """Resolves a domain.
+
+    Returns and (IP, False) on successful resolution, (False, False) on
+    successful failure to resolve and (None, True) on error in attempting to
+    resolve.
+    """
+    # Try for an 'A' record.
+    try:
+        ip = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
+        return ip, False
+    except:
+        pass
+
+    # Try for a simple resolution if the 'A' record request failed
+    try:
+        ip = socket.gethostbyname(domain)
+        return ip, False
+    except socket.gaierror:
+        # Indicates failure to resolve to IP address, not an error in
+        # the attempt.
+        return False, False
+    except:
+        return False, True

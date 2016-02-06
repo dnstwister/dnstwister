@@ -4,7 +4,9 @@ import base64
 import flask
 import flask.ext.cache
 import socket
+import datetime
 import urllib
+import werkzeug.contrib.atom
 
 import tools
 
@@ -24,32 +26,58 @@ cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
 @app.route('/ip/<b64domain>')
 @cache.cached(timeout=86400)
-def resolve_ip(b64domain):
-    """Resolves Domains to IPs."""
-    # We assume we don't resolve the IP but that we had no error in the
-    # attempt.
-    ip = None
-    error = False
+def resolve(b64domain):
+    """Resolves Domains to IPs.
 
+    Cached to 24 hours.
+    """
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
     domain = tools.parse_domain(b64domain)
     if domain is None:
-        app.logger.error('Unable to decode valid domain from b64 data')
         flask.abort(500)
 
-    try:
-        ip = socket.gethostbyname(domain)
-    except socket.gaierror:
-        # Indicates failure to resolve to IP address, not an error in
-        # the attempt.
-        ip = False
-    except:
-        ip = None
-        error = True
+    ip, error = tools.resolve(domain)
 
     # Response IP is now an IP address, or False.
     return flask.json.jsonify({'ip': ip, 'error': error})
+
+
+@app.route('/atom/<b64domain>')
+@cache.cached(timeout=86400)
+def atom(b64domain):
+    """Atom feed functionality.
+
+    Cached to 24 hours to reduce load. Only returns resolved IPs.
+    """
+    domain = tools.parse_domain(b64domain)
+    if domain is None:
+        flask.abort(500)
+
+    feed = werkzeug.contrib.atom.AtomFeed(
+        title='DNS Twister matches for {}'.format(domain),
+        feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
+        url='https://dnstwister.report/report/?q={}'.format(b64domain),
+    )
+
+    for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
+
+        ip, error = tools.resolve(entry['domain-name'])
+
+        if ip == False or ip is None or error == True:
+            continue
+
+        feed.add(
+            title=entry['domain-name'],
+            title_type='text',
+            content='{} ({})'.format(ip, entry['fuzzer']),
+            content_type='text',
+            author='DNS Twister',
+            updated=datetime.datetime.now(),
+            id='{}:{}'.format(domain, entry['domain-name']),
+        )
+
+    return feed.get_response()
 
 
 @app.route('/report', methods=['GET', 'POST'])
@@ -112,7 +140,7 @@ def report():
 @app.route(r'/error/<error_arg>')
 @cache.cached(timeout=3600)
 def index(error_arg=None):
-    """Main page, if there is an error to render."""
+    """Main page, cached to 2 hours."""
     error = None
     try:
         error_idx = int(error_arg)
