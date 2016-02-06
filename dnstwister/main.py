@@ -64,7 +64,7 @@ def atom(b64domain):
 
         ip, error = tools.resolve(entry['domain-name'])
 
-        if ip is None or error == True:
+        if ip == False or ip is None or error == True:
             continue
 
         feed.add(
