@@ -4,7 +4,9 @@ import base64
 import flask
 import flask.ext.cache
 import socket
+import datetime
 import urllib
+import werkzeug.contrib.atom
 
 import tools
 
@@ -39,6 +41,43 @@ def resolve(b64domain):
 
     # Response IP is now an IP address, or False.
     return flask.json.jsonify({'ip': ip, 'error': error})
+
+
+@app.route('/atom/<b64domain>')
+@cache.cached(timeout=86400)
+def atom(b64domain):
+    """Atom feed functionality.
+
+    Cached to 24 hours to reduce load. Only returns resolved IPs.
+    """
+    domain = tools.parse_domain(b64domain)
+    if domain is None:
+        flask.abort(500)
+
+    feed = werkzeug.contrib.atom.AtomFeed(
+        title='DNS Twister matches for {}'.format(domain),
+        feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
+        url='https://dnstwister.report/report/?q={}'.format(b64domain),
+    )
+
+    for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
+
+        ip, error = tools.resolve(entry['domain-name'])
+
+        if ip is None or error == True:
+            continue
+
+        feed.add(
+            title=entry['domain-name'],
+            title_type='text',
+            content='Tweak: {}\nIP: {}'.format(entry['fuzzer'], ip),
+            content_type='text',
+            author='DNS Twister',
+            updated=datetime.datetime.now(),
+            id='{}:{}'.format(domain, entry['domain-name']),
+        )
+
+    return feed.get_response()
 
 
 @app.route('/report', methods=['GET', 'POST'])
