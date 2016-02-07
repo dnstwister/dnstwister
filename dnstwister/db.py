@@ -2,14 +2,13 @@
 import datetime
 import hashlib
 import json
-import operator
 import os
 import psycopg2
 import urlparse
 
 
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
+urlparse.uses_netloc.append('postgres')
+url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
 
 conn = psycopg2.connect(
@@ -79,38 +78,3 @@ def subscription_new(domain, auth_len=100):
     conn.commit()
 
     return auth
-
-
-def setup():
-    """Bootstrap the database on import."""
-
-    # Saved queries
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public';
-    """)
-
-    tables = map(operator.itemgetter(0), cur.fetchall())
-
-    if 'stored' not in tables:
-        print 'Creating "stored" table.'
-        cur.execute("""
-            CREATE TABLE stored
-                (domain varchar PRIMARY KEY, result varchar);
-        """)
-        conn.commit()
-
-    # Subscriptions
-    if 'subscriptions' not in tables:
-        print 'Creating "subscriptions" table.'
-        cur.execute("""
-            CREATE TABLE subscriptions
-                (auth_hash bytea PRIMARY KEY, domain varchar, expires timestamp);
-        """)
-        conn.commit()
-
-    cur.close()
-
-setup()
