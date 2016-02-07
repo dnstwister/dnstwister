@@ -1,6 +1,7 @@
 """ Tests of the main module.
 """
 import flask.ext.webtest
+import os
 import unittest
 
 import dnstwister.main
@@ -14,6 +15,7 @@ class TestMain(unittest.TestCase):
         """
         # Create a webtest Test App for use
         self.app = flask.ext.webtest.TestApp(dnstwister.main.app)
+
 
     def test_index(self):
         """ Test the index page

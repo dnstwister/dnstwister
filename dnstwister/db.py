@@ -9,17 +9,19 @@ import urlparse
 
 
 urlparse.uses_netloc.append('postgres')
-DB_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
-
-DB_CONN_POOL = psycopg2.pool.ThreadedConnectionPool(
-    1,
-    10,
-    database=DB_URL.path[1:],
-    user=DB_URL.username,
-    password=DB_URL.password,
-    host=DB_URL.hostname,
-    port=DB_URL.port,
-)
+try:
+    DB_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
+    DB_CONN_POOL = psycopg2.pool.ThreadedConnectionPool(
+        1,
+        10,
+        database=DB_URL.path[1:],
+        user=DB_URL.username,
+        password=DB_URL.password,
+        host=DB_URL.hostname,
+        port=DB_URL.port,
+    )
+except:
+    DB_CONN_POOL = None
 
 
 @contextlib.contextmanager
