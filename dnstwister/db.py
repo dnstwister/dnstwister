@@ -1,5 +1,8 @@
 """Storage of results for comparison and CUD alerting."""
+import datetime
+import hashlib
 import json
+import operator
 import os
 import psycopg2
 import urlparse
@@ -61,6 +64,23 @@ def stored_get(domain):
     return json.loads(result)
 
 
+def subscription_new(domain, auth_len=100):
+    """Create a new subscription for a domain, return the sub auth string."""
+    auth = os.urandom(auth_len).encode('hex')[:auth_len]
+
+    auth_hash = bytearray(hashlib.sha512(auth).digest())
+    expires = datetime.datetime.now() + datetime.timedelta(days=365)
+
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO subscriptions (auth_hash, domain, expires)
+        VALUES (%s, %s, %s)
+    """, (auth_hash, domain, expires))
+    conn.commit()
+
+    return auth
+
+
 def setup():
     """Bootstrap the database on import."""
 
@@ -72,11 +92,22 @@ def setup():
         WHERE table_schema = 'public';
     """)
 
-    if ('stored',) not in cur.fetchall():
+    tables = map(operator.itemgetter(0), cur.fetchall())
+
+    if 'stored' not in tables:
         print 'Creating "stored" table.'
         cur.execute("""
             CREATE TABLE stored
                 (domain varchar PRIMARY KEY, result varchar);
+        """)
+        conn.commit()
+
+    # Subscriptions
+    if 'subscriptions' not in tables:
+        print 'Creating "subscriptions" table.'
+        cur.execute("""
+            CREATE TABLE subscriptions
+                (auth_hash bytea PRIMARY KEY, domain varchar, expires timestamp);
         """)
         conn.commit()
 
