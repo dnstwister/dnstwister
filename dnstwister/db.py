@@ -27,20 +27,22 @@ def cursor():
     return DB.cursor()
 
 
-def stored_set(domain, result):
+def stored_set(domain, result, updated=None):
     """Store a result for a domain."""
+    if updated is None:
+        updated = datetime.datetime.now()
     with cursor() as cur:
         if stored_exists(domain):
             cur.execute("""
                 UPDATE stored
-                SET result = (%s)
+                SET (result, updated) = (%s, %s)
                 WHERE domain = (%s);
-            """, (result, domain))
+            """, (result, updated, domain))
         else:
             cur.execute("""
-                INSERT INTO stored (domain, result)
-                VALUES (%s, %s);
-            """, (domain, result))
+                INSERT INTO stored (domain, result, updated)
+                VALUES (%s, %s, %s);
+            """, (domain, result, updated))
 
 
 def stored_exists(domain):
@@ -63,6 +65,21 @@ def stored_get(domain):
             FROM stored
             WHERE domain = (%s);
         """, (domain,))
+        result = cur.fetchone()
+        if result is None:
+            return
+        return result[0]
+
+
+def stored_oldest():
+    """Return the domain that hasn't been checked for longest time."""
+    with cursor() as cur:
+        cur.execute("""
+            SELECT TOP 1 domain
+            FROM stored
+            ORDER BY updated DESC
+            LIMIT 1
+        """)
         result = cur.fetchone()
         if result is None:
             return

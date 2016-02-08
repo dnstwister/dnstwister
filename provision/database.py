@@ -1,16 +1,19 @@
 """Database provisioning."""
-import psycopg2
+import datetime
+import psycopg2.extras
 import sys
 import urlparse
 
 
-def setup(cursor):
+def setup(new_conn, cursor):
     """Bootstrap the database on import.
 
     Assumes no existing database.
     """
     print 'Setting up hstore'
     cursor.execute("""CREATE EXTENSION hstore;""")
+
+    psycopg2.extras.register_hstore(new_conn)
 
     print 'Creating "stored" table.'
     cursor.execute("""
@@ -24,6 +27,20 @@ def setup(cursor):
         CREATE TABLE subscriptions
             (auth_hash bytea PRIMARY KEY, domain varchar, expires timestamp);
     """)
+
+    # Some test data
+    print 'Injecting some test data.'
+    cursor.execute("""
+        INSERT INTO stored (domain, result, updated)
+        VALUES (%s, %s, %s);
+    """, ('www.example.com', {}, datetime.datetime.now()))
+    cursor.execute("""
+        INSERT INTO stored (domain, result, updated)
+        VALUES (%s, %s, %s);
+    """, (
+        'www.thisismyrobot.com', {},
+        datetime.datetime.now() - datetime.timedelta(days=10)
+    ))
 
 
 def migrate(conn_new, conn_old):
@@ -51,7 +68,7 @@ if __name__ == '__main__':
 
     new_cursor = new_conn.cursor()
 
-    setup(new_cursor)
+    setup(new_conn, new_cursor)
 
     new_conn.commit()
     new_cursor.close()
