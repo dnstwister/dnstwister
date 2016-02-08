@@ -21,6 +21,12 @@ def setup(new_conn, cursor):
             (domain varchar PRIMARY KEY, result hstore, updated timestamp);
     """)
 
+    print 'Creating "reports" table.'
+    cursor.execute("""
+        CREATE TABLE reports
+            (domain varchar PRIMARY KEY, report hstore, updated timestamp);
+    """)
+
     # Subscriptions
     print 'Creating "subscriptions" table.'
     cursor.execute("""
