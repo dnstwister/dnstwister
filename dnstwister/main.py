@@ -63,7 +63,7 @@ def atom(b64domain):
             if ip == last_read[dom]:
                 continue
             else:
-                report['updated'].append((dom, ip))
+                report['updated'].append((dom, last_read[dom], ip))
         else:
             report['new'].append((dom, ip))
 
@@ -86,17 +86,17 @@ def atom(b64domain):
             id='new:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
-    for (dom, ip) in report['updated']:
+    for (dom, old_ip, new_ip) in report['updated']:
 
         feed.add(
             title='UPDATED: {}'.format(dom),
             title_type='text',
-            content='IP: {}'.format(ip),
+            content='IP: {} > {}'.format(old_ip, new_ip),
             content_type='text',
             author='DNS Twister',
             updated=datetime.datetime.now(),
             published=datetime.datetime.now(),
-            id='updated:{}:{}'.format(dom, ip, datetime.datetime.now()),
+            id='updated:{}:{}:{}'.format(dom, old_ip, new_ip, datetime.datetime.now()),
         )
 
     # Record that these changes have been spotted.
