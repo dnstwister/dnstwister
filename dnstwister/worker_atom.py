@@ -15,11 +15,6 @@ if __name__ == '__main__':
             # Pick the oldest domain.
             domain = db.stored_oldest()
 
-            # Recover the last report.
-            existing = db.stored_get(domain)
-            if existing is None:
-                existing = {}
-
             # Generate a new report.
             latest = {}
             for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
@@ -32,7 +27,7 @@ if __name__ == '__main__':
             db.stored_set(domain, latest)
 
             print ','.join(map(str, (
-                domain, latest == existing, time.time() - start
+                domain, time.time() - start
             )))
 
         except Exception as ex:
