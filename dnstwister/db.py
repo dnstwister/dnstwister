@@ -37,13 +37,13 @@ def report_set(domain, report, updated=None):
     with cursor() as cur:
         if stored_exists(domain):
             cur.execute("""
-                UPDATE report
+                UPDATE reports
                 SET (report, updated) = (%s, %s)
                 WHERE domain = (%s);
             """, (report, updated, domain))
         else:
             cur.execute("""
-                INSERT INTO report (domain, report, updated)
+                INSERT INTO reports (domain, report, updated)
                 VALUES (%s, %s, %s);
             """, (domain, report, updated))
 

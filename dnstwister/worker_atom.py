@@ -14,7 +14,6 @@ if __name__ == '__main__':
 
             # Pick the oldest domain.
             domain = db.stored_oldest()
-            print 'Oldest: {}'.format(domain)
 
             # Recover the last report.
             existing = db.stored_get(domain)
