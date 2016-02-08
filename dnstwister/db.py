@@ -75,7 +75,7 @@ def stored_oldest():
     """Return the domain that hasn't been checked for longest time."""
     with cursor() as cur:
         cur.execute("""
-            SELECT TOP 1 domain
+            SELECT domain
             FROM stored
             ORDER BY updated DESC
             LIMIT 1
