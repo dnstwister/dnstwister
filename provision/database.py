@@ -18,17 +18,11 @@ def setup(new_conn, cursor):
     print 'Creating "stored" table.'
     cursor.execute("""
         CREATE TABLE stored
-            (domain varchar PRIMARY KEY, result hstore, updated timestamp);
-    """)
-
-    print 'Creating "reports" table.'
-    cursor.execute("""
-        CREATE TABLE reports
             (
                 domain varchar PRIMARY KEY,
-                new hstore,
-                updated hstore,
-                generated timestamp
+                last_read hstore,
+                latest hstore,
+                updated timestamp
             );
     """)
 
@@ -42,17 +36,17 @@ def setup(new_conn, cursor):
     # Some test data
     print 'Injecting some test data.'
     cursor.execute("""
-        INSERT INTO stored (domain, result, updated)
-        VALUES (%s, %s, %s);
+        INSERT INTO stored (domain, last_read, latest, updated)
+        VALUES (%s, %s, %s, %s);
     """, (
-        'www.example.com', {},
+        'www.example.com', {}, {},
         datetime.datetime.now() - datetime.timedelta(days=5)
     ))
     cursor.execute("""
-        INSERT INTO stored (domain, result, updated)
-        VALUES (%s, %s, %s);
+        INSERT INTO stored (domain, last_read, latest, updated)
+        VALUES (%s, %s, %s, %s);
     """, (
-        'www.thisismyrobot.com', {},
+        'www.thisismyrobot.com', {}, {},
         datetime.datetime.now() - datetime.timedelta(days=10)
     ))
 

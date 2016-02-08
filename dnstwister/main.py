@@ -55,23 +55,12 @@ def atom(b64domain):
     if domain is None:
         flask.abort(500)
 
-    existing = db.stored_get(domain)
-    if existing is None:
-        existing = {}
-
-    latest = {}
-    for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
-        ip, error = tools.resolve(entry['domain-name'])
-        if error or not ip or ip is None:
-            continue
-        latest[entry['domain-name']] = ip
-
-    db.stored_set(domain, latest)
+    last_read, latest = db.stored_get(domain)
 
     report = collections.defaultdict(list)
     for (dom, ip) in latest.items():
-        if dom in existing:
-            if ip == existing[dom]:
+        if dom in last_read.keys():
+            if ip == last_read[dom]:
                 continue
             else:
                 report['updated'].append((dom, ip))
@@ -109,6 +98,9 @@ def atom(b64domain):
             published=datetime.datetime.now(),
             id='updated:{}:{}'.format(dom, ip),
         )
+
+    # Record that these changes have been spotted.
+    db.stored_switch(domain)
 
     return feed.get_response()
 

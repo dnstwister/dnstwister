@@ -23,47 +23,45 @@ def cursor():
             host=DB_URL.hostname,
             port=DB_URL.port,
         )
-        db.autocommit = True
         psycopg2.extras.register_hstore(db)
         DB = db
     cursor = DB.cursor()
     return cursor
 
 
-def report_set(domain, new, updated, generated=None):
-    """Store a CRUD report for a domain."""
-    if generated is None:
-        generated = datetime.datetime.now()
-    with cursor() as cur:
-        if stored_exists(domain):
-            cur.execute("""
-                UPDATE reports
-                SET (new, updated, generated) = (%s, %s, %s)
-                WHERE domain = (%s);
-            """, (new, updated, generated, domain))
-        else:
-            cur.execute("""
-                INSERT INTO reports (domain, new, updated, generated)
-                VALUES (%s, %s, %s, %s);
-            """, (domain, new, updated, generated))
-
-
-def stored_set(domain, result, updated=None):
-    """Store a result for a domain."""
+def stored_set(domain, latest, updated=None):
+    """Store the latest result for a domain."""
     if updated is None:
         updated = datetime.datetime.now()
     with cursor() as cur:
         if stored_exists(domain):
             cur.execute("""
                 UPDATE stored
-                SET (result, updated) = (%s, %s)
+                SET (latest, updated) = (%s, %s)
                 WHERE domain = (%s);
-            """, (result, updated, domain))
+            """, (latest, updated, domain))
         else:
             cur.execute("""
-                INSERT INTO stored (domain, result, updated)
-                VALUES (%s, %s, %s);
-            """, (domain, result, updated))
+                INSERT INTO stored (domain, last_read, latest, updated)
+                VALUES (%s, %s, %s, %s);
+            """, (domain, {}, latest, updated))
+    DB.commit()
+
+
+def stored_switch(domain):
+    """Copy the latest to the last_read.
+
+    Triggered when the RSS feed is read.
+    """
+    DB.commit()
+    last_read, latest = stored_get(domain)
+    with cursor() as cur:
+        cur.execute("""
+            UPDATE stored
+            SET (last_read) = (%s)
+            WHERE domain = (%s);
+        """, (latest, domain))
+    DB.commit()
 
 
 def stored_exists(domain):
@@ -82,14 +80,14 @@ def stored_get(domain):
     """Return stored results for a domain or None if none exist."""
     with cursor() as cur:
         cur.execute("""
-            SELECT result
+            SELECT last_read, latest
             FROM stored
             WHERE domain = (%s);
         """, (domain,))
         result = cur.fetchone()
         if result is None:
             return
-        return result[0]
+        return result
 
 
 def stored_oldest():
@@ -119,6 +117,6 @@ def subscription_new(domain, auth_len=100):
             INSERT INTO subscriptions (auth_hash, domain, expires)
             VALUES (%s, %s, %s)
         """, (auth_hash, domain, expires))
-        cur.commit()
+    DB.commit()
 
     return auth

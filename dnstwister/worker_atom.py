@@ -28,24 +28,8 @@ if __name__ == '__main__':
                     continue
                 latest[entry['domain-name']] = ip
 
-            # Saving ensures the last-updated it ticked over.
+            # Update the "latest" version of the report.
             db.stored_set(domain, latest)
-
-            if latest != existing:
-
-                # Generate the CRUD report.
-                updated = {}
-                new = {}
-                for (dom, ip) in latest.items():
-                    if dom in existing:
-                        if ip == existing[dom]:
-                            continue
-                        else:
-                            updated[dom] = ip
-                    else:
-                        new[dom] = ip
-
-                db.report_set(domain, new, updated)
 
             print ','.join(map(str, (
                 domain, latest == existing, time.time() - start
