@@ -83,7 +83,7 @@ def atom(b64domain):
             author='DNS Twister',
             updated=datetime.datetime.now(),
             published=datetime.datetime.now(),
-            id='new:{}:{}'.format(dom, ip),
+            id='new:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
     for (dom, ip) in report['updated']:
@@ -96,7 +96,7 @@ def atom(b64domain):
             author='DNS Twister',
             updated=datetime.datetime.now(),
             published=datetime.datetime.now(),
-            id='updated:{}:{}'.format(dom, ip),
+            id='updated:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
     # Record that these changes have been spotted.
