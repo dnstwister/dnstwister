@@ -7,6 +7,7 @@ import tools
 
 if __name__ == '__main__':
     while True:
+        time.sleep(5)
         try:
             domain = db.stored_oldest()
             print 'Oldest: {}'.format(domain)
@@ -31,5 +32,3 @@ if __name__ == '__main__':
         except Exception as ex:
             db.DB = None
             print 'crashed... {}'.format(ex)
-
-        time.sleep(5)
