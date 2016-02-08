@@ -24,7 +24,9 @@ def cursor():
             port=DB_URL.port,
         )
         psycopg2.extras.register_hstore(DB)
-    return DB.cursor()
+    cursor = DB.cursor()
+    cursor.autocommit = True
+    return cursor
 
 
 def stored_set(domain, result, updated=None):
@@ -98,5 +100,6 @@ def subscription_new(domain, auth_len=100):
             INSERT INTO subscriptions (auth_hash, domain, expires)
             VALUES (%s, %s, %s)
         """, (auth_hash, domain, expires))
+        cur.commit()
 
     return auth
