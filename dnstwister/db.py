@@ -77,7 +77,7 @@ def stored_oldest():
         cur.execute("""
             SELECT domain
             FROM stored
-            ORDER BY updated DESC
+            ORDER BY updated ASC
             LIMIT 1
         """)
         result = cur.fetchone()
