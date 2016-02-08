@@ -30,22 +30,22 @@ def cursor():
     return cursor
 
 
-def report_set(domain, report, updated=None):
+def report_set(domain, new, updated, generated=None):
     """Store a CRUD report for a domain."""
-    if updated is None:
-        updated = datetime.datetime.now()
+    if generated is None:
+        generated = datetime.datetime.now()
     with cursor() as cur:
         if stored_exists(domain):
             cur.execute("""
                 UPDATE reports
-                SET (report, updated) = (%s, %s)
+                SET (new, updated, generated) = (%s, %s, %s)
                 WHERE domain = (%s);
-            """, (report, updated, domain))
+            """, (new, updated, generated, domain))
         else:
             cur.execute("""
-                INSERT INTO reports (domain, report, updated)
-                VALUES (%s, %s, %s);
-            """, (domain, report, updated))
+                INSERT INTO reports (domain, new, updated, generated)
+                VALUES (%s, %s, %s, %s);
+            """, (domain, new, updated, generated))
 
 
 def stored_set(domain, result, updated=None):

@@ -8,7 +8,7 @@ import tools
 
 if __name__ == '__main__':
     while True:
-        time.sleep(5)
+        time.sleep(1)
         try:
             start = time.time()
 
@@ -34,17 +34,18 @@ if __name__ == '__main__':
             if latest != existing:
 
                 # Generate the CRUD report.
-                report = collections.defaultdict(list)
+                updated = {}
+                new = {}
                 for (dom, ip) in latest.items():
                     if dom in existing:
                         if ip == existing[dom]:
                             continue
                         else:
-                            report['updated'].append((dom, ip))
+                            updated[dom] = ip
                     else:
-                        report['new'].append((dom, ip))
+                        new[dom] = ip
 
-                db.report_set(domain, dict(report))
+                db.report_set(domain, new, updated)
 
             print ','.join(map(str, (
                 domain, latest == existing, time.time() - start
