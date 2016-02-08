@@ -9,10 +9,13 @@ def setup(cursor):
 
     Assumes no existing database.
     """
+    print 'Setting up hstore'
+    cursor.execute("""CREATE EXTENSION hstore;""")
+
     print 'Creating "stored" table.'
     cursor.execute("""
         CREATE TABLE stored
-            (domain varchar PRIMARY KEY, result varchar);
+            (domain varchar PRIMARY KEY, result hstore);
     """)
 
     # Subscriptions

@@ -8,8 +8,8 @@ import socket
 
 
 RESOLVER = dns.resolver.Resolver()
-RESOLVER.lifetime = 5
-RESOLVER.timeout = 5
+RESOLVER.lifetime = 0.1
+RESOLVER.timeout = 0.1
 
 
 def analyse(domain):

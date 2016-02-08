@@ -1,41 +1,30 @@
 """Storage of results for comparison and CUD alerting."""
-import contextlib
 import datetime
 import hashlib
-import json
 import os
+import psycopg2.extras
 import psycopg2.pool
 import urlparse
 
 
 urlparse.uses_netloc.append('postgres')
-try:
-    DB_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
-    DB_CONN_POOL = psycopg2.pool.ThreadedConnectionPool(
-        1,
-        10,
-        database=DB_URL.path[1:],
-        user=DB_URL.username,
-        password=DB_URL.password,
-        host=DB_URL.hostname,
-        port=DB_URL.port,
-    )
-except:
-    DB_CONN_POOL = None
+DB_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
+DB = None
 
 
-@contextlib.contextmanager
 def cursor():
     """Return a database cursor."""
-    try:
-        conn = DB_CONN_POOL.getconn()
-        cur = conn.cursor()
-        try:
-            yield cur
-        finally:
-            cur.close()
-    finally:
-        DB_CONN_POOL.putconn(conn)
+    global DB
+    if DB is None or DB.closed != 0:
+        DB = psycopg2.connect(
+            database=DB_URL.path[1:],
+            user=DB_URL.username,
+            password=DB_URL.password,
+            host=DB_URL.hostname,
+            port=DB_URL.port,
+        )
+        psycopg2.extras.register_hstore(DB)
+    return DB.cursor()
 
 
 def stored_set(domain, result):
@@ -46,21 +35,22 @@ def stored_set(domain, result):
                 UPDATE stored
                 SET result = (%s)
                 WHERE domain = (%s);
-            """, (json.dumps(result), domain))
+            """, (result, domain))
         else:
             cur.execute("""
                 INSERT INTO stored (domain, result)
                 VALUES (%s, %s);
-            """, (domain, json.dumps(result)))
+            """, (domain, result))
 
 
 def stored_exists(domain):
     """Return whether a domain has results recorded."""
     with cursor() as cur:
         cur.execute("""
-            SELECT domain
+            SELECT 1
             FROM stored
-            where domain = (%s);
+            WHERE domain = (%s)
+            LIMIT 1;
         """, (domain,))
         return cur.fetchone() is not None
 
@@ -73,10 +63,10 @@ def stored_get(domain):
             FROM stored
             WHERE domain = (%s);
         """, (domain,))
-        (result,) = cur.fetchone()
+        result = cur.fetchone()
         if result is None:
             return
-        return json.loads(result)
+        return result[0]
 
 
 def subscription_new(domain, auth_len=100):

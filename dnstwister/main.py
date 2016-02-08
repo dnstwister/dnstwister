@@ -1,13 +1,14 @@
 """ DNS Twister web app.
 """
 import base64
+import collections
 import flask
 import flask.ext.cache
-import socket
 import datetime
 import urllib
 import werkzeug.contrib.atom
 
+import db
 import tools
 
 
@@ -46,35 +47,67 @@ def resolve(b64domain):
 @app.route('/atom/<b64domain>')
 @cache.cached(timeout=86400)
 def atom(b64domain):
-    """Atom feed functionality.
+    """Return new atom items for changes in resolved domains.
 
-    Cached to 24 hours to reduce load. Only returns resolved IPs.
+    Cached for 24 hours.
     """
     domain = tools.parse_domain(b64domain)
     if domain is None:
         flask.abort(500)
 
+    existing = db.stored_get(domain)
+    if existing is None:
+        existing = {}
+
+    latest = {}
+    for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
+        ip, error = tools.resolve(entry['domain-name'])
+        if error or not ip or ip is None:
+            continue
+        latest[entry['domain-name']] = ip
+
+    db.stored_set(domain, latest)
+
+    report = collections.defaultdict(list)
+    for (dom, ip) in latest.items():
+        if dom in existing:
+            if ip == existing[dom]:
+                continue
+            else:
+                report['updated'].append((dom, ip))
+        else:
+            report['new'].append((dom, ip))
+
     feed = werkzeug.contrib.atom.AtomFeed(
-        title='DNS Twister matches for {}'.format(domain),
+        title='DNS Twister report for {}'.format(domain),
         feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
         url='https://dnstwister.report/report/?q={}'.format(b64domain),
     )
 
-    for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
-
-        ip, error = tools.resolve(entry['domain-name'])
-
-        if ip == False or ip is None or error == True:
-            continue
+    for (dom, ip) in report['new']:
 
         feed.add(
-            title=entry['domain-name'],
+            title='NEW: {}'.format(dom),
             title_type='text',
-            content='{} ({})'.format(ip, entry['fuzzer']),
+            content='IP: {}'.format(ip),
             content_type='text',
             author='DNS Twister',
             updated=datetime.datetime.now(),
-            id='{}:{}'.format(domain, entry['domain-name']),
+            published=datetime.datetime.now(),
+            id='new:{}:{}'.format(dom, ip),
+        )
+
+    for (dom, ip) in report['updated']:
+
+        feed.add(
+            title='UPDATED: {}'.format(dom),
+            title_type='text',
+            content='IP: {}'.format(ip),
+            content_type='text',
+            author='DNS Twister',
+            updated=datetime.datetime.now(),
+            published=datetime.datetime.now(),
+            id='updated:{}:{}'.format(dom, ip),
         )
 
     return feed.get_response()
