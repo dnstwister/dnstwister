@@ -1,6 +1,6 @@
 """Database provisioning."""
-import os
 import psycopg2
+import sys
 import urlparse
 
 
@@ -15,7 +15,7 @@ def setup(cursor):
     print 'Creating "stored" table.'
     cursor.execute("""
         CREATE TABLE stored
-            (domain varchar PRIMARY KEY, result hstore);
+            (domain varchar PRIMARY KEY, result hstore, updated timestamp);
     """)
 
     # Subscriptions
@@ -34,8 +34,12 @@ def migrate(conn_new, conn_old):
 
 if __name__ == '__main__':
 
+    db_url = sys.argv[-1]
+    if not db_url.startswith('postgres'):
+        raise Exception('Missing database url')
+
     urlparse.uses_netloc.append("postgres")
-    new_url = urlparse.urlparse(os.environ["DATABASE_URL"])
+    new_url = urlparse.urlparse(db_url)
 
     new_conn = psycopg2.connect(
         database=new_url.path[1:],
