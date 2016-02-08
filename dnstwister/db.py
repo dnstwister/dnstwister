@@ -16,16 +16,17 @@ def cursor():
     """Return a database cursor."""
     global DB
     if DB is None or DB.closed != 0:
-        DB = psycopg2.connect(
+        db = psycopg2.connect(
             database=DB_URL.path[1:],
             user=DB_URL.username,
             password=DB_URL.password,
             host=DB_URL.hostname,
             port=DB_URL.port,
         )
-        psycopg2.extras.register_hstore(DB)
+        db.autocommit = True
+        psycopg2.extras.register_hstore(db)
+        DB = db
     cursor = DB.cursor()
-    cursor.autocommit = True
     return cursor
 
 
