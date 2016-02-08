@@ -29,6 +29,7 @@ if __name__ == '__main__':
                 continue
 
         except Exception as ex:
+            db.DB = None
             print 'crashed... {}'.format(ex)
 
         time.sleep(5)

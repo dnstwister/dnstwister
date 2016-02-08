@@ -39,7 +39,10 @@ def setup(new_conn, cursor):
     cursor.execute("""
         INSERT INTO stored (domain, result, updated)
         VALUES (%s, %s, %s);
-    """, ('www.example.com', {}, datetime.datetime.now()))
+    """, (
+        'www.example.com', {},
+        datetime.datetime.now() - datetime.timedelta(days=5)
+    ))
     cursor.execute("""
         INSERT INTO stored (domain, result, updated)
         VALUES (%s, %s, %s);
