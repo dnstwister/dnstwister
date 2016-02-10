@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
                 domain, updated = result
 
-                age = datetime.datetime.now() - updated
+                age = (datetime.datetime.now() - updated).total_seconds()
 
             # Generate a new report.
             latest = {}
