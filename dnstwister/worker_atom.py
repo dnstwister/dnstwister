@@ -27,7 +27,7 @@ if __name__ == '__main__':
                 # Get the first entry with an updated date older than the
                 # threshold.
                 cursor.execute("""
-                    SELECT domain
+                    SELECT domain, updated
                     FROM stored
                     WHERE updated < (%s)
                     ORDER BY updated ASC
@@ -41,7 +41,9 @@ if __name__ == '__main__':
                     time.sleep(1)
                     continue
 
-                domain = result[0]
+                domain, updated = result
+
+                age = datetime.datetime.now() - updated
 
             # Generate a new report.
             latest = {}
@@ -55,7 +57,7 @@ if __name__ == '__main__':
             db.stored_set(domain, latest)
 
             print ','.join(map(str, (
-                domain, time.time() - start
+                domain, age, time.time() - start
             )))
 
         except Exception as ex:
