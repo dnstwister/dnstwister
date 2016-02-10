@@ -7,7 +7,7 @@ import tools
 
 
 # Time in seconds between re-processing a domain.
-PERIOD = 60#86400
+PERIOD = 86400
 
 
 if __name__ == '__main__':
