@@ -1,5 +1,7 @@
 """Updates atom feeds."""
+import base64
 import datetime
+import requests
 import time
 
 import db
@@ -7,7 +9,7 @@ import tools
 
 
 # Time in seconds between re-processing a domain.
-PERIOD = 86400
+PERIOD = 60#86400
 
 
 if __name__ == '__main__':
@@ -48,7 +50,13 @@ if __name__ == '__main__':
             # Generate a new report.
             latest = {}
             for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
-                ip, error = tools.resolve(entry['domain-name'])
+
+                # Reuse the public API
+                res = requests.get(
+                    '/ip/{}'.format(base64.b64encode(entry['domain-name']))
+                ).json()
+
+                ip, error = res['ip'], res['error']
                 if error or not ip or ip is None:
                     continue
                 latest[entry['domain-name']] = ip
