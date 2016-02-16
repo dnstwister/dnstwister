@@ -7,8 +7,6 @@ import psycopg2.pool
 import urlparse
 
 
-urlparse.uses_netloc.append('postgres')
-DB_URL = urlparse.urlparse(os.environ['DATABASE_URL'])
 DB = None
 
 
@@ -16,17 +14,19 @@ def cursor():
     """Return a database cursor."""
     global DB
     if DB is None or DB.closed != 0:
+        urlparse.uses_netloc.append('postgres')
+        db_url = urlparse.urlparse(os.environ['DATABASE_URL'])
         db = psycopg2.connect(
-            database=DB_URL.path[1:],
-            user=DB_URL.username,
-            password=DB_URL.password,
-            host=DB_URL.hostname,
-            port=DB_URL.port,
+            database=db_url.path[1:],
+            user=db_url.username,
+            password=db_url.password,
+            host=db_url.hostname,
+            port=db_url.port,
         )
         psycopg2.extras.register_hstore(db)
         DB = db
-    cursor = DB.cursor()
-    return cursor
+    cur = DB.cursor()
+    return cur
 
 
 def stored_set(domain, latest, updated=None):
