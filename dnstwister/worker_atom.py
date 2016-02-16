@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
                 # Reuse the public API
                 res = requests.get(
-                    'https://dnstwister.report/ip/{}'.format(base64.b64encode(entry['domain-name']))
+                    '/ip/{}'.format(base64.b64encode(entry['domain-name']))
                 ).json()
 
                 ip, error = res['ip'], res['error']
