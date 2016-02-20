@@ -15,46 +15,33 @@ def setup(new_conn, cursor):
 
     psycopg2.extras.register_hstore(new_conn)
 
-    print 'Creating "stored" table.'
+    print 'Creating "report" table.'
     cursor.execute("""
-        CREATE TABLE stored
+        CREATE TABLE report
             (
                 domain varchar PRIMARY KEY,
-                last_read hstore,
-                latest hstore,
+                data hstore,
                 updated timestamp
             );
     """)
 
-    # Subscriptions
-    print 'Creating "subscriptions" table.'
-    cursor.execute("""
-        CREATE TABLE subscriptions
-            (auth_hash bytea PRIMARY KEY, domain varchar, expires timestamp);
-    """)
 
     # Some test data
     print 'Injecting some test data.'
     cursor.execute("""
-        INSERT INTO stored (domain, last_read, latest, updated)
-        VALUES (%s, %s, %s, %s);
+        INSERT INTO report (domain, data, updated)
+        VALUES (%s, %s, %s);
     """, (
-        'www.example.com', {}, {},
+        'www.example.com', {},
         datetime.datetime.now() - datetime.timedelta(days=5)
     ))
     cursor.execute("""
-        INSERT INTO stored (domain, last_read, latest, updated)
-        VALUES (%s, %s, %s, %s);
+        INSERT INTO report (domain, data, updated)
+        VALUES (%s, %s, %s);
     """, (
-        'www.thisismyrobot.com', {}, {},
+        'www.thisismyrobot.com', {},
         datetime.datetime.now() - datetime.timedelta(days=10)
     ))
-
-
-def migrate(conn_new, conn_old):
-    """This is where I'd load in the previous database's data.
-    """
-    pass
 
 
 if __name__ == '__main__':
