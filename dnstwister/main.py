@@ -8,7 +8,7 @@ import datetime
 import urllib
 import werkzeug.contrib.atom
 
-import report
+import reports
 import storage.pg_database
 import tools
 
@@ -60,30 +60,51 @@ def atom(b64domain):
 
     Cached for 24 hours.
     """
+    # Parse out the requested domain
     domain = tools.parse_domain(b64domain)
     if domain is None:
         flask.abort(500)
 
-    last_read, latest = db.stored_get(domain)
-
-    report = collections.defaultdict(list)
-    for (dom, ip) in latest.items():
-        if dom in last_read.keys():
-            if ip == last_read[dom]:
-                continue
-            else:
-                report['updated'].append((dom, last_read[dom], ip))
-        else:
-            report['new'].append((dom, ip))
-
+    # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
         title='DNS Twister report for {}'.format(domain),
         feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
         url='https://dnstwister.report/report/?q={}'.format(b64domain),
     )
 
-    for (dom, ip) in report['new']:
+    # Try to retrieve the latest report
+    latest_report = reports.get(domain)
 
+    # If there is no feed yet, add it to the queue for generation and return a
+    # helpful RSS item.
+    if latest_report is None:
+        reports.register(domain)
+        feed.add(
+            title='No report yet for {}'.format(domain),
+            title_type='text',
+            content='Your report will be generated within 24 hours.',
+            content_type='text',
+            author='DNS Twister',
+            updated=datetime.datetime.now(),
+            published=datetime.datetime.now(),
+            id='waiting:{}'.format(domain),
+        )
+        return feed.get_response()
+
+    return ''
+
+    # If there is a feed, return it.
+    crud_report = collections.defaultdict(list)
+    for (dom, ip) in latest_report.items():
+        if dom in last_read.keys():
+            if ip == last_read[dom]:
+                continue
+            else:
+                crud_report['updated'].append((dom, last_read[dom], ip))
+        else:
+            crud_report['new'].append((dom, ip))
+
+    for (dom, ip) in crud_report['new']:
         feed.add(
             title='NEW: {}'.format(dom),
             title_type='text',
@@ -95,8 +116,7 @@ def atom(b64domain):
             id='new:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
-    for (dom, old_ip, new_ip) in report['updated']:
-
+    for (dom, old_ip, new_ip) in crud_report['updated']:
         feed.add(
             title='UPDATED: {}'.format(dom),
             title_type='text',
@@ -105,11 +125,10 @@ def atom(b64domain):
             author='DNS Twister',
             updated=datetime.datetime.now(),
             published=datetime.datetime.now(),
-            id='updated:{}:{}:{}'.format(dom, old_ip, new_ip, datetime.datetime.now()),
+            id='updated:{}:{}:{}'.format(
+                dom, old_ip, new_ip, datetime.datetime.now()
+            ),
         )
-
-    # Record that these changes have been spotted.
-    db.stored_switch(domain)
 
     return feed.get_response()
 
