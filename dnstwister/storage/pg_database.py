@@ -41,13 +41,13 @@ class _Reports(_PGDatabase):
     def oldest(self):
         """Return the domain that hasn't been checked for the longest time.
 
-        Returns (domain, update_date) or None.
+        Returns (domain, generated_date) or None.
         """
         with self.cursor as cur:
             cur.execute("""
-                SELECT domain, updated
+                SELECT domain, generated
                 FROM report
-                ORDER BY updated ASC
+                ORDER BY generated ASC
                 LIMIT 1
             """)
             result = cur.fetchone()
@@ -55,14 +55,14 @@ class _Reports(_PGDatabase):
                 return
             return result
 
-    def update(self, domain, data, updated):
+    def update(self, domain, data, generated):
         """Update the latest result for a domain."""
         with self.cursor as cur:
             cur.execute("""
                 UPDATE report
-                SET (data, updated) = (%s, %s)
+                SET (data, generated) = (%s, %s)
                 WHERE domain = (%s);
-            """, (data, updated, domain))
+            """, (data, generated, domain))
         self._commit()
 
     def new(self, domain, start_date):
@@ -70,16 +70,22 @@ class _Reports(_PGDatabase):
 
         By using a date in the past you can push the report to the top of the
         queue.
+
+        If already exists, it **doesn't** update the date.
         """
-        with self.cursor as cur:
-            cur.execute("""
-                INSERT INTO report (domain, data, updated)
-                VALUES (%s, %s, %s);
-            """, (domain, {}, start_date))
-        self._commit()
+        try:
+            with self.cursor as cur:
+                cur.execute("""
+                    INSERT INTO report (domain, data, generated)
+                    VALUES (%s, %s, %s);
+                """, (domain, {}, start_date))
+            self._commit()
+        except psycopg2.IntegrityError:
+            # Indicates domain is already in the table.
+            pass
 
     def get(self, domain):
-        """Return the report for a domain, or None if no domain."""
+        """Return the report for a domain, or None if no report."""
         with self.cursor as cur:
             cur.execute("""
                 SELECT data
@@ -92,8 +98,60 @@ class _Reports(_PGDatabase):
             return result[0]
 
 
+class _Deltas(_PGDatabase):
+    """Report-deltas access."""
+    def oldest(self):
+        """Return the delta that hasn't been updated for the longest time.
+
+        Returns (domain, generated_date) or None.
+        """
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT domain, generated
+                FROM delta
+                ORDER BY generated ASC
+                LIMIT 1
+            """)
+            result = cur.fetchone()
+            if result is None:
+                return
+            return result
+
+    def update(self, domain, new, updated, deleted, generated):
+        """Add/update the delta for a domain."""
+        with self.cursor as cur:
+            if self.get(domain) is not None:
+                cur.execute("""
+                    UPDATE delta
+                    SET (new, updated, deleted, generated) = (%s, %s, %s, %s)
+                    WHERE domain = (%s);
+                """, (new, updated, deleted, generated, domain))
+            else:
+                cur.execute("""
+                    INSERT INTO delta (domain, new, updated, deleted, generated)
+                    VALUES (%s, %s, %s, %s, %s);
+                """, (domain, new, updated, deleted, generated))
+
+        self._commit()
+
+    def get(self, domain):
+        """Return the delta info for a domain, or None if no delta."""
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT new, updated, deleted
+                FROM delta
+                WHERE domain = (%s);
+            """, (domain,))
+            result = cur.fetchone()
+            if result is None:
+                return
+            return result
+
+
 # ABC registration
 base.Reports.register(_Reports)
+base.Deltas.register(_Deltas)
 
 # Singletons
 reports = _Reports()
+deltas = _Deltas()

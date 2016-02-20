@@ -16,7 +16,7 @@ class Reports(object):
         pass
 
     @abc.abstractmethod
-    def update(self, domain, data, updated):
+    def update(self, domain, data, generated):
         """Update the latest result for a domain."""
         pass
 
@@ -32,4 +32,28 @@ class Reports(object):
     @abc.abstractmethod
     def get(self, domain):
         """Return the report for a domain, or None if no domain."""
+        pass
+
+
+class Deltas(object):
+    """ABC for the deltas implementation.
+    """
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def oldest(self):
+        """Return the delta that hasn't been updated for the longest time.
+
+        Returns (domain, generated_date) or None.
+        """
+        pass
+
+    @abc.abstractmethod
+    def update(self, domain, new, updated, deleted, generated):
+        """Add/update the delta for a domain."""
+        pass
+
+    @abc.abstractmethod
+    def get(self, domain):
+        """Return the delta info for a domain, or None if no delta."""
         pass

@@ -27,7 +27,7 @@ def oldest(min_age=86400):
 
 
 def update(domain, report, updated=None):
-    """Update the report for a URL.
+    """Update the report for a domain.
 
     Args:
         domain: the domain (as string) being reported on
@@ -40,7 +40,8 @@ def update(domain, report, updated=None):
 
 
 def get(domain):
-    """Return the report for a URL, or None if one hasn't been created yet."""
+    """Return the report for a domain, or None if one hasn't been created yet.
+    """
     return db.reports.get(domain)
 
 

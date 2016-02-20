@@ -1,25 +1,34 @@
 """ DNS Twister web app.
 """
 import base64
-import collections
 import flask
 import flask.ext.cache
 import datetime
 import urllib
 import werkzeug.contrib.atom
 
-import reports
+
 import storage.pg_database
 import tools
 
 
-# We reference the module here as a form of DI. Then modules can access it as
-# main.db. We check each storage component is correctly implemented
+# We reference the module selected storage module here as a form of DI. Then
+# modules can access it as main.db. We check each storage component is
+# correctly implemented
 db = storage.pg_database
+
 if not isinstance(db.reports, storage.base.Reports):
     raise Exception(
         'DB reports implementation does not implement storage.Reports'
     )
+if not isinstance(db.deltas, storage.base.Deltas):
+    raise Exception(
+        'DB deltas implementation does not implement storage.Deltas'
+    )
+
+# Everything that uses main.db can now be imported
+import deltas
+import reports
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -72,17 +81,17 @@ def atom(b64domain):
         url='https://dnstwister.report/report/?q={}'.format(b64domain),
     )
 
-    # Try to retrieve the latest report
-    latest_report = reports.get(domain)
+    # Try to retrieve the latest delta
+    delta = deltas.get(domain)
 
-    # If there is no feed yet, add it to the queue for generation and return a
-    # helpful RSS item.
-    if latest_report is None:
+    # If there is no delta report yet, add it to the reports database for
+    # generation and return a helpful RSS item.
+    if delta is None:
         reports.register(domain)
         feed.add(
             title='No report yet for {}'.format(domain),
             title_type='text',
-            content='Your report will be generated within 24 hours.',
+            content='Your report feed will be generated within 24 hours.',
             content_type='text',
             author='DNS Twister',
             updated=datetime.datetime.now(),
@@ -91,20 +100,10 @@ def atom(b64domain):
         )
         return feed.get_response()
 
-    return ''
+    # If there is a delta report, generate the feed and return it.
+    new, updated, deleted = delta
 
-    # If there is a feed, return it.
-    crud_report = collections.defaultdict(list)
-    for (dom, ip) in latest_report.items():
-        if dom in last_read.keys():
-            if ip == last_read[dom]:
-                continue
-            else:
-                crud_report['updated'].append((dom, last_read[dom], ip))
-        else:
-            crud_report['new'].append((dom, ip))
-
-    for (dom, ip) in crud_report['new']:
+    for (dom, ip) in new:
         feed.add(
             title='NEW: {}'.format(dom),
             title_type='text',
@@ -116,7 +115,7 @@ def atom(b64domain):
             id='new:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
-    for (dom, old_ip, new_ip) in crud_report['updated']:
+    for (dom, old_ip, new_ip) in updated:
         feed.add(
             title='UPDATED: {}'.format(dom),
             title_type='text',
@@ -128,6 +127,18 @@ def atom(b64domain):
             id='updated:{}:{}:{}'.format(
                 dom, old_ip, new_ip, datetime.datetime.now()
             ),
+        )
+
+    for (dom, ip) in deleted:
+        feed.add(
+            title='DELETED: {}'.format(dom),
+            title_type='text',
+            content='IP: {}'.format(ip),
+            content_type='text',
+            author='DNS Twister',
+            updated=datetime.datetime.now(),
+            published=datetime.datetime.now(),
+            id='deleted:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
     return feed.get_response()

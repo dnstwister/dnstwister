@@ -21,22 +21,33 @@ def setup(new_conn, cursor):
             (
                 domain varchar PRIMARY KEY,
                 data hstore,
-                updated timestamp
+                generated timestamp
             );
     """)
 
+    print 'Creating "delta" table.'
+    cursor.execute("""
+        CREATE TABLE delta
+            (
+                domain varchar PRIMARY KEY,
+                new hstore,
+                updated hstore,
+                deleted hstore,
+                generated timestamp
+            );
+    """)
 
     # Some test data
     print 'Injecting some test data.'
     cursor.execute("""
-        INSERT INTO report (domain, data, updated)
+        INSERT INTO report (domain, data, generated)
         VALUES (%s, %s, %s);
     """, (
         'www.example.com', {},
         datetime.datetime.now() - datetime.timedelta(days=5)
     ))
     cursor.execute("""
-        INSERT INTO report (domain, data, updated)
+        INSERT INTO report (domain, data, generated)
         VALUES (%s, %s, %s);
     """, (
         'www.thisismyrobot.com', {},
