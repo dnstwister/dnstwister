@@ -5,6 +5,9 @@ import psycopg2.pool
 import urlparse
 
 
+import base
+
+
 class _PGDatabase(object):
     """Pseudo-ORM for a postgres database."""
     def __init__(self):
@@ -88,6 +91,9 @@ class _Reports(_PGDatabase):
                 return
             return result[0]
 
+
+# ABC registration
+base.Reports.register(_Reports)
 
 # Singletons
 reports = _Reports()

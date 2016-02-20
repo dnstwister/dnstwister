@@ -9,13 +9,17 @@ import urllib
 import werkzeug.contrib.atom
 
 import report
-import pg_database
+import storage.pg_database
 import tools
 
 
 # We reference the module here as a form of DI. Then modules can access it as
-# main.storage.
-storage = pg_database
+# main.db. We check each storage component is correctly implemented
+db = storage.pg_database
+if not isinstance(db.reports, storage.base.Reports):
+    raise Exception(
+        'DB reports implementation does not implement storage.Reports'
+    )
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.

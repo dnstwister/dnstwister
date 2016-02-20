@@ -3,7 +3,7 @@ import datetime
 
 
 import main
-db = main.storage
+db = main.db
 
 
 REGISTER_UPDATE_DATE = datetime.datetime(1970, 1, 1)
