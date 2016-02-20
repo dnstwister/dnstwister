@@ -8,8 +8,14 @@ import datetime
 import urllib
 import werkzeug.contrib.atom
 
-import db
+import report
+import pg_database
 import tools
+
+
+# We reference the module here as a form of DI. Then modules can access it as
+# main.storage.
+storage = pg_database
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -23,7 +29,6 @@ ERRORS = (
 app = flask.Flask(__name__)
 
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
-
 
 @app.route('/ip/<b64domain>')
 @cache.cached(timeout=86400)
