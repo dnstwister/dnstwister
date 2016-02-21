@@ -68,7 +68,6 @@ class _Reports(_PGDatabase):
 
         Returns (domain, generated_date) or None.
         """
-        print '_Reports.oldest request!'
         with self.cursor as cur:
             cur.execute("""
                 SELECT domain, generated
@@ -77,7 +76,6 @@ class _Reports(_PGDatabase):
                 LIMIT 1
             """)
             result = cur.fetchone()
-            print 'SQL res {}'.format(result)
             if result is not None:
                 return result
 
