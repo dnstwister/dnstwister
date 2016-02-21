@@ -119,7 +119,6 @@ class _Deltas(_PGDatabase):
 
     def set(self, domain, deltas, generated):
         """Add/update the deltas for a domain."""
-        print 'detlas, ', deltas
         with self.cursor as cur:
             if self.get(domain) is not None:
                 cur.execute("""
