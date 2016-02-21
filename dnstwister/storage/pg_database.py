@@ -17,6 +17,7 @@ class _PGDatabase(object):
     def cursor(self):
         """Return a database cursor."""
         if self._db is None or self._db.closed != 0:
+            print 'Creating a DB connection...'
             urlparse.uses_netloc.append('postgres')
             db_url = urlparse.urlparse(os.environ['DATABASE_URL'])
             db = psycopg2.connect(
@@ -35,9 +36,34 @@ class _PGDatabase(object):
         """Commit the current transaction."""
         self._db.commit()
 
+    def reset(self):
+        """Reset the database transaction and connection."""
+        try:
+            self._db.rollback()
+        except:
+            # If we can't rollback, let's assume something pretty bad has
+            # happened :(
+            self._db = None
+            raise
+
+
+def resetonfail(func):
+    """Decorator to ensure that the transaction is rolled back on failure.
+    """
+    def wrapped(instance, *args, **kwargs):
+        """ Wrapper to do DB reset."""
+        try:
+            func(instance, *args, **kwargs)
+        except:
+            instance.reset()
+            raise
+    return wrapped
+
 
 class _Reports(_PGDatabase):
     """Reports access."""
+
+    @resetonfail
     def oldest(self):
         """Return the domain that hasn't been checked for the longest time.
 
@@ -55,6 +81,7 @@ class _Reports(_PGDatabase):
                 return
             return result
 
+    @resetonfail
     def update(self, domain, data, generated):
         """Update the latest result for a domain."""
         with self.cursor as cur:
@@ -65,6 +92,7 @@ class _Reports(_PGDatabase):
             """, (psycopg2.extras.Json(data), generated, domain))
         self._commit()
 
+    @resetonfail
     def new(self, domain, start_date):
         """Create a new entry with no report.
 
@@ -84,6 +112,7 @@ class _Reports(_PGDatabase):
             # Indicates domain is already in the table.
             pass
 
+    @resetonfail
     def get(self, domain):
         """Return the report for a domain, or None if no report."""
         with self.cursor as cur:
@@ -100,6 +129,8 @@ class _Reports(_PGDatabase):
 
 class _Deltas(_PGDatabase):
     """Report-deltas access."""
+
+    @resetonfail
     def oldest(self):
         """Return the delta that hasn't been updated for the longest time.
 
@@ -117,6 +148,7 @@ class _Deltas(_PGDatabase):
                 return
             return result
 
+    @resetonfail
     def set(self, domain, deltas, generated):
         """Add/update the deltas for a domain."""
         with self.cursor as cur:
@@ -133,11 +165,12 @@ class _Deltas(_PGDatabase):
                 """, (domain, psycopg2.extras.Json(deltas), generated))
         self._commit()
 
+    @resetonfail
     def get(self, domain):
         """Return the delta info for a domain, or None if no delta."""
         with self.cursor as cur:
             cur.execute("""
-                SELECT deltas
+                SELECT deltas z
                 FROM delta
                 WHERE domain = (%s);
             """, (domain,))
