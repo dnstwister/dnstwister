@@ -44,7 +44,6 @@ class _PGDatabase(object):
             # If we can't rollback, let's assume something pretty bad has
             # happened :(
             self._db = None
-            raise
 
 
 def resetonfail(func):

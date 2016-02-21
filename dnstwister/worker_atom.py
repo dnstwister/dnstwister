@@ -61,6 +61,5 @@ if __name__ == '__main__':
             deltas.update(domain, delta)
 
         except Exception as ex:
-
-            time.sleep(1)
             print 'crashed... {}'.format(ex)
+            time.sleep(10)
