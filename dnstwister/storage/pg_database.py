@@ -143,9 +143,8 @@ class _Deltas(_PGDatabase):
                 LIMIT 1;
             """)
             result = cur.fetchone()
-            if result is None:
-                return
-            return result
+            if result is not None:
+                return result
 
     @resetonfail
     def set(self, domain, deltas, generated):

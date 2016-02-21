@@ -19,7 +19,7 @@ if __name__ == '__main__':
             start = time.time()
 
             # Pick the oldest delta.
-            domain = deltas.oldest(5)
+            domain = deltas.oldest(60)
 
             if domain is None:
                 print 'No deltas...'
@@ -65,5 +65,5 @@ if __name__ == '__main__':
             )
 
         except Exception as ex:
-            print 'crashed... {}'.format(ex)
+            print 'Crashed... {}'.format(ex)
             time.sleep(10)

@@ -20,16 +20,8 @@ def oldest(min_age=86400):
     age_delta = datetime.timedelta(seconds=min_age)
     try:
         domain, generated = db.deltas.oldest()
-        print domain, generated
         if datetime.datetime.now() - generated > age_delta:
-            print 'Delta older by {},{}'.format(
-                domain, datetime.datetime.now() - generated
-            )
             return domain
-        else:
-            print 'Oldest delta {},{}'.format(
-                domain, datetime.datetime.now() - generated
-            )
     except TypeError:
         # No deltas yet
         pass
