@@ -35,23 +35,6 @@ def setup(new_conn, cursor):
             );
     """)
 
-    # Some test data
-    print 'Injecting some test data.'
-    cursor.execute("""
-        INSERT INTO report (domain, data, generated)
-        VALUES (%s, %s, %s);
-    """, (
-        'www.example.com', psycopg2.extras.Json({}),
-        datetime.datetime.now() - datetime.timedelta(days=5)
-    ))
-    cursor.execute("""
-        INSERT INTO report (domain, data, generated)
-        VALUES (%s, %s, %s);
-    """, (
-        'www.thisismyrobot.com', psycopg2.extras.Json({}),
-        datetime.datetime.now() - datetime.timedelta(days=10)
-    ))
-
 
 if __name__ == '__main__':
 
