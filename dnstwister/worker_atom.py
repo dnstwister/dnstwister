@@ -19,7 +19,7 @@ if __name__ == '__main__':
             start = time.time()
 
             # Pick the oldest delta.
-            domain = deltas.oldest(60)
+            domain = deltas.oldest()
 
             if domain is None:
                 time.sleep(10)
