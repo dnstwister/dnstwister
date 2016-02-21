@@ -143,7 +143,6 @@ class _Deltas(_PGDatabase):
                 LIMIT 1;
             """)
             result = cur.fetchone()
-            print result
             if result is None:
                 return
             return result
