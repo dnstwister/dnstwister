@@ -60,6 +60,10 @@ if __name__ == '__main__':
             # Store it
             deltas.update(domain, delta)
 
+            print 'Updated deltas for {} in {} seconds'.format(
+                domain, time.time() - start
+            )
+
         except Exception as ex:
             print 'crashed... {}'.format(ex)
             time.sleep(10)
