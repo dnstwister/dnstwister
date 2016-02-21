@@ -9,7 +9,7 @@ db = main.db
 REGISTER_UPDATE_DATE = datetime.datetime(1970, 1, 1)
 
 
-def oldest(min_age=60):
+def oldest(min_age=86400):
     """ Return the oldest delta that hasn't been updated for more than
     min_age.
 
@@ -21,6 +21,9 @@ def oldest(min_age=60):
     try:
         domain, generated = db.deltas.oldest()
         if datetime.datetime.now() - generated > age_delta:
+            print 'Delta older by {},{}'.format(
+                domain, datetime.datetime.now() - generated
+            )
             return domain
         else:
             print 'Oldest delta {},{}'.format(
