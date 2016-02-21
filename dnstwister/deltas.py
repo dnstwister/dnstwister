@@ -22,10 +22,11 @@ def oldest(min_age=86400):
     try:
         domain, generated = db.deltas.oldest()
         if datetime.datetime.now() - generated > age_delta:
+            print 'Oldest domain over threshold {}'.format(domain)
             return domain
         else:
-            'Skipping domain {}, {}'.format(
-                domain, datetime.datetime.now() - generated
+            'No domain to resolve for approx {} seconds'.format(
+                datetime.datetime.now() - generated
             )
     except TypeError:
         # No deltas yet

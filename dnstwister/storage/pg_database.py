@@ -77,7 +77,7 @@ class _Reports(_PGDatabase):
                 LIMIT 1
             """)
             result = cur.fetchone()
-            print 'sql res', result
+            print 'SQL res {}'.format(result)
             if result is not None:
                 return result
 
