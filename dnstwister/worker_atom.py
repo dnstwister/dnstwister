@@ -22,7 +22,6 @@ if __name__ == '__main__':
             domain = deltas.oldest(60)
 
             if domain is None:
-                print 'No deltas...'
                 time.sleep(10)
                 continue
 
