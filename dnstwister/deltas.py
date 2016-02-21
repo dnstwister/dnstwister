@@ -17,6 +17,7 @@ def oldest(min_age=86400):
 
     min_age is in seconds, defaults to 24 hours.
     """
+    print 'deltas.oldest() called!'
     age_delta = datetime.timedelta(seconds=min_age)
     try:
         domain, generated = db.deltas.oldest()
