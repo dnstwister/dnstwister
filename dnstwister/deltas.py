@@ -24,7 +24,7 @@ def oldest(min_age=86400):
             return domain
         else:
             print 'No domain to resolve for approx {} seconds'.format(
-                datetime.datetime.now() - generated
+                age_delta - (datetime.datetime.now() - generated)
             )
     except TypeError:
         # No deltas yet
