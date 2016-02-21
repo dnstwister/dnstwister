@@ -83,6 +83,11 @@ def atom(b64domain):
     # Try to retrieve the latest delta
     delta = deltas.get(domain)
 
+    # The publish/update dates are locked to 00:00:00.000
+    today =  datetime.datetime.now().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+
     # If there is no delta report yet, add it to the delta database for
     # generation and return a helpful RSS item.
     if delta is None:
@@ -93,13 +98,18 @@ def atom(b64domain):
             content='Your report feed will be generated within 24 hours.',
             content_type='text',
             author='DNS Twister',
-            updated=datetime.datetime.now(),
-            published=datetime.datetime.now(),
+            updated=today,
+            published=today,
             id='waiting:{}'.format(domain),
         )
         return feed.get_response()
 
     # If there is a delta report, generate the feed and return it.
+
+    # Setting the ID to be epoch seconds, floored per 24 hours, ensure the
+    # updates are only every 24 hours max.
+    id_24hr = (today - datetime.datetime(1970, 1, 1)).total_seconds()
+
     for (dom, ip) in delta['new']:
         feed.add(
             title='NEW: {}'.format(dom),
@@ -107,9 +117,9 @@ def atom(b64domain):
             content='IP: {}'.format(ip),
             content_type='text',
             author='DNS Twister',
-            updated=datetime.datetime.now(),
-            published=datetime.datetime.now(),
-            id='new:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
+            updated=today,
+            published=today,
+            id='new:{}:{}:{}'.format(dom, ip, id_24hr),
         )
 
     for (dom, old_ip, new_ip) in delta['updated']:
@@ -119,11 +129,9 @@ def atom(b64domain):
             content='IP: {} > {}'.format(old_ip, new_ip),
             content_type='text',
             author='DNS Twister',
-            updated=datetime.datetime.now(),
-            published=datetime.datetime.now(),
-            id='updated:{}:{}:{}'.format(
-                dom, old_ip, new_ip, datetime.datetime.now()
-            ),
+            updated=today,
+            published=today,
+            id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
         )
 
     for (dom, ip) in delta['deleted']:
@@ -133,9 +141,9 @@ def atom(b64domain):
             content='IP: {}'.format(ip),
             content_type='text',
             author='DNS Twister',
-            updated=datetime.datetime.now(),
-            published=datetime.datetime.now(),
-            id='deleted:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
+            updated=today,
+            published=today,
+            id='deleted:{}:{}:{}'.format(dom, ip, id_24hr),
         )
 
     return feed.get_response()
