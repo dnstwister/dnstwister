@@ -9,7 +9,7 @@ db = main.db
 REGISTER_UPDATE_DATE = datetime.datetime(1970, 1, 1)
 
 
-def oldest(min_age=86400):
+def oldest(min_age=3600):
     """ Return the oldest delta that hasn't been updated for more than
     min_age.
 
