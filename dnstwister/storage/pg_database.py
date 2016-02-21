@@ -76,9 +76,9 @@ class _Reports(_PGDatabase):
                 LIMIT 1
             """)
             result = cur.fetchone()
-            if result is None:
-                return
-            return result
+            print 'sql res', result
+            if result is not None:
+                return result
 
     @resetonfail
     def update(self, domain, data, generated):
