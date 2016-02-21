@@ -6,9 +6,6 @@ import main
 db = main.db
 
 
-REGISTER_UPDATE_DATE = datetime.datetime(1970, 1, 1)
-
-
 def oldest(min_age=86400):
     """ Return the oldest URL that hasn't been updated for more than min_age.
 
@@ -43,8 +40,3 @@ def get(domain):
     """Return the report for a domain, or None if one hasn't been created yet.
     """
     return db.reports.get(domain)
-
-
-def register(domain):
-    """Add a domain to the reports storage, with no report data."""
-    db.reports.new(domain, REGISTER_UPDATE_DATE)

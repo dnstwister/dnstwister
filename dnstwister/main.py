@@ -28,7 +28,6 @@ if not isinstance(db.deltas, storage.base.Deltas):
 
 # Everything that uses main.db can now be imported
 import deltas
-import reports
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -84,10 +83,10 @@ def atom(b64domain):
     # Try to retrieve the latest delta
     delta = deltas.get(domain)
 
-    # If there is no delta report yet, add it to the reports database for
+    # If there is no delta report yet, add it to the delta database for
     # generation and return a helpful RSS item.
     if delta is None:
-        reports.register(domain)
+        deltas.register(domain)
         feed.add(
             title='No report yet for {}'.format(domain),
             title_type='text',
@@ -101,9 +100,7 @@ def atom(b64domain):
         return feed.get_response()
 
     # If there is a delta report, generate the feed and return it.
-    new, updated, deleted = delta
-
-    for (dom, ip) in new:
+    for (dom, ip) in delta['new']:
         feed.add(
             title='NEW: {}'.format(dom),
             title_type='text',
@@ -115,7 +112,7 @@ def atom(b64domain):
             id='new:{}:{}:{}'.format(dom, ip, datetime.datetime.now()),
         )
 
-    for (dom, old_ip, new_ip) in updated:
+    for (dom, old_ip, new_ip) in delta['updated']:
         feed.add(
             title='UPDATED: {}'.format(dom),
             title_type='text',
@@ -129,7 +126,7 @@ def atom(b64domain):
             ),
         )
 
-    for (dom, ip) in deleted:
+    for (dom, ip) in delta['deleted']:
         feed.add(
             title='DELETED: {}'.format(dom),
             title_type='text',

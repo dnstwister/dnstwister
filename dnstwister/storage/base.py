@@ -49,7 +49,7 @@ class Deltas(object):
         pass
 
     @abc.abstractmethod
-    def update(self, domain, new, updated, deleted, generated):
+    def set(self, domain, deltas, generated):
         """Add/update the delta for a domain."""
         pass
 

@@ -62,7 +62,7 @@ class _Reports(_PGDatabase):
                 UPDATE report
                 SET (data, generated) = (%s, %s)
                 WHERE domain = (%s);
-            """, (data, generated, domain))
+            """, (psycopg2.extras.Json(data), generated, domain))
         self._commit()
 
     def new(self, domain, start_date):
@@ -78,7 +78,7 @@ class _Reports(_PGDatabase):
                 cur.execute("""
                     INSERT INTO report (domain, data, generated)
                     VALUES (%s, %s, %s);
-                """, (domain, {}, start_date))
+                """, (domain, psycopg2.extras.Json({}), start_date))
             self._commit()
         except psycopg2.IntegrityError:
             # Indicates domain is already in the table.
@@ -110,42 +110,42 @@ class _Deltas(_PGDatabase):
                 SELECT domain, generated
                 FROM delta
                 ORDER BY generated ASC
-                LIMIT 1
+                LIMIT 1;
             """)
             result = cur.fetchone()
             if result is None:
                 return
             return result
 
-    def update(self, domain, new, updated, deleted, generated):
-        """Add/update the delta for a domain."""
+    def set(self, domain, deltas, generated):
+        """Add/update the deltas for a domain."""
+        print 'detlas, ', deltas
         with self.cursor as cur:
             if self.get(domain) is not None:
                 cur.execute("""
                     UPDATE delta
-                    SET (new, updated, deleted, generated) = (%s, %s, %s, %s)
+                    SET (deltas, generated) = (%s, %s)
                     WHERE domain = (%s);
-                """, (new, updated, deleted, generated, domain))
+                """, (psycopg2.extras.Json(deltas), generated, domain))
             else:
                 cur.execute("""
-                    INSERT INTO delta (domain, new, updated, deleted, generated)
-                    VALUES (%s, %s, %s, %s, %s);
-                """, (domain, new, updated, deleted, generated))
-
+                    INSERT INTO delta (domain, deltas, generated)
+                    VALUES (%s, %s, %s);
+                """, (domain, psycopg2.extras.Json(deltas), generated))
         self._commit()
 
     def get(self, domain):
         """Return the delta info for a domain, or None if no delta."""
         with self.cursor as cur:
             cur.execute("""
-                SELECT new, updated, deleted
+                SELECT deltas
                 FROM delta
                 WHERE domain = (%s);
             """, (domain,))
             result = cur.fetchone()
             if result is None:
                 return
-            return result
+            return result[0]
 
 
 # ABC registration

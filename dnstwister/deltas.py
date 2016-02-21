@@ -6,6 +6,9 @@ import main
 db = main.db
 
 
+REGISTER_UPDATE_DATE = datetime.datetime(1970, 1, 1)
+
+
 def oldest(min_age=86400):
     """ Return the oldest delta that hasn't been updated for more than
     min_age.
@@ -24,7 +27,7 @@ def oldest(min_age=86400):
         pass
 
 
-def update(domain, new, updated, deleted, generated=None):
+def update(domain, deltas, generated=None):
     """Update the delta for a domain.
 
     Args:
@@ -34,10 +37,15 @@ def update(domain, new, updated, deleted, generated=None):
     """
     if generated is None:
         generated = datetime.datetime.now()
-    db.deltas.update(domain, new, updated, deleted, generated)
+    db.deltas.set(domain, deltas, generated)
 
 
 def get(domain):
-    """Return the delta for a domain, or None if one hasn't been created yet.
+    """Return the deltas for a domain, or None if one hasn't been created yet.
     """
     return db.deltas.get(domain)
+
+
+def register(domain):
+    """Add a domain to the deltas storage, with no CRUD data."""
+    db.deltas.set(domain, {}, REGISTER_UPDATE_DATE)

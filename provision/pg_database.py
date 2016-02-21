@@ -10,17 +10,17 @@ def setup(new_conn, cursor):
 
     Assumes no existing database.
     """
-    print 'Setting up hstore'
+    print 'Setting up jsonb'
     cursor.execute("""CREATE EXTENSION hstore;""")
 
-    psycopg2.extras.register_hstore(new_conn)
+    psycopg2.extras.register_json(new_conn, name='jsonb')
 
     print 'Creating "report" table.'
     cursor.execute("""
         CREATE TABLE report
             (
                 domain varchar PRIMARY KEY,
-                data hstore,
+                data jsonb,
                 generated timestamp
             );
     """)
@@ -30,9 +30,7 @@ def setup(new_conn, cursor):
         CREATE TABLE delta
             (
                 domain varchar PRIMARY KEY,
-                new hstore,
-                updated hstore,
-                deleted hstore,
+                deltas jsonb,
                 generated timestamp
             );
     """)
@@ -43,14 +41,14 @@ def setup(new_conn, cursor):
         INSERT INTO report (domain, data, generated)
         VALUES (%s, %s, %s);
     """, (
-        'www.example.com', {},
+        'www.example.com', psycopg2.extras.Json({}),
         datetime.datetime.now() - datetime.timedelta(days=5)
     ))
     cursor.execute("""
         INSERT INTO report (domain, data, generated)
         VALUES (%s, %s, %s);
     """, (
-        'www.thisismyrobot.com', {},
+        'www.thisismyrobot.com', psycopg2.extras.Json({}),
         datetime.datetime.now() - datetime.timedelta(days=10)
     ))
 
