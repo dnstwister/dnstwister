@@ -52,7 +52,7 @@ def resetonfail(func):
     def wrapped(instance, *args, **kwargs):
         """ Wrapper to do DB reset."""
         try:
-            func(instance, *args, **kwargs)
+            return func(instance, *args, **kwargs)
         except:
             instance.reset()
             raise
