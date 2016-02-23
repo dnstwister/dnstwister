@@ -45,14 +45,14 @@ if __name__ == '__main__':
             # Create a delta report
             delta = {'new': [], 'updated': [], 'deleted': []}
 
-            for (ip, dom) in new_report.items():
+            for (dom, ip) in new_report.items():
                 if dom in old_report.keys():
                     if ip != old_report[dom]:
                         delta['updated'].append((dom, old_report[dom], ip))
                 else:
                     delta['new'].append((dom, ip))
 
-            for (ip, dom) in old_report.items():
+            for (dom, ip) in old_report.items():
                 if dom not in new_report.keys():
                     delta['deleted'].append(dom)
 
