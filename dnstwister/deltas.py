@@ -1,6 +1,6 @@
 """Delta report management."""
 import datetime
-
+import psycopg2
 
 import main
 db = main.db
@@ -49,4 +49,8 @@ def get(domain):
 
 def register(domain):
     """Add a domain to the deltas storage, with no CRUD data."""
-    db.deltas.set(domain, None, REGISTER_UPDATE_DATE)
+    try:
+        db.deltas.set(domain, None, REGISTER_UPDATE_DATE)
+    except psycopg2.IntegrityError:
+        # When doing duplicate entries - TODO: separate get/exists...
+        pass
