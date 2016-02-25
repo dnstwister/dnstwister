@@ -49,4 +49,4 @@ def get(domain):
 
 def register(domain):
     """Add a domain to the deltas storage, with no CRUD data."""
-    db.deltas.set(domain, {}, REGISTER_UPDATE_DATE)
+    db.deltas.set(domain, None, REGISTER_UPDATE_DATE)

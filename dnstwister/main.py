@@ -88,8 +88,8 @@ def atom(b64domain):
         hour=0, minute=0, second=0, microsecond=0
     )
 
-    # If there is no delta report yet, add it to the delta database for
-    # generation and return a helpful RSS item.
+    # If there is no delta report yet, add the domain to the delta database
+    # for generation and return a helpful RSS item.
     if delta is None:
         deltas.register(domain)
         feed.add(

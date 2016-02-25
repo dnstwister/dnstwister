@@ -21,6 +21,9 @@ class TestAtom(unittest.TestCase):
         # Create a webtest Test App for use
         self.app = flask.ext.webtest.TestApp(dnstwister.main.app)
 
+        # Clear the webapp cache
+        dnstwister.main.cache.clear()
+
     @mock.patch('dnstwister.main.storage.pg_database.deltas', patches.deltas)
     def test_new_feed(self):
         """Tests the registration of a new feed."""
@@ -58,4 +61,81 @@ class TestAtom(unittest.TestCase):
             date_today=datetime.datetime.now().replace(
                 hour=0, minute=0, second=0, microsecond=0
             ).strftime('%Y-%m-%dT%H:%M:%SZ')
+        )
+
+        # Clear the webapp cache
+        dnstwister.main.cache.clear()
+
+        # Until the first delta is actually created, this placeholder remains.
+        res = self.app.get('/atom/{}'.format(base64.b64encode(domain)))
+        assert str(res) == textwrap.dedent("""
+            Response: 200 OK
+            Content-Type: application/atom+xml; charset=utf-8
+            <?xml version="1.0" encoding="utf-8"?>
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title type="text">DNS Twister report for www.example.com</title>
+              <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
+              <updated>{date_today}</updated>
+              <link href="https://dnstwister.report/report/?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
+              <generator>Werkzeug</generator>
+              <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
+                <title type="text">No report yet for www.example.com</title>
+                <id>waiting:www.example.com</id>
+                <updated>{date_today}</updated>
+                <published>{date_today}</published>
+                <author>
+                  <name>DNS Twister</name>
+                </author>
+                <content type="text">Your report feed will be generated within 24 hours.</content>
+              </entry>
+            </feed>
+        """).strip().format(
+            date_today=datetime.datetime.now().replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ).strftime('%Y-%m-%dT%H:%M:%SZ')
+        )
+
+        # We can calculate a delta though - in this case we'll place it
+        # directly in the database.
+        update_date = datetime.datetime.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        patches.deltas.set(domain, {
+            'new': [('www.examp1e.com', '127.0.0.1')],
+            'updated': [],
+            'deleted': []
+        }, update_date)
+
+        # Clear the webapp cache
+        dnstwister.main.cache.clear()
+
+        res = self.app.get('/atom/{}'.format(base64.b64encode(domain)))
+        assert str(res) == textwrap.dedent("""
+            Response: 200 OK
+            Content-Type: application/atom+xml; charset=utf-8
+            <?xml version="1.0" encoding="utf-8"?>
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title type="text">DNS Twister report for www.example.com</title>
+              <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
+              <updated>{date_today}</updated>
+              <link href="https://dnstwister.report/report/?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
+              <generator>Werkzeug</generator>
+              <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
+                <title type="text">NEW: www.examp1e.com</title>
+                <id>new:www.examp1e.com:127.0.0.1:{secs_today}</id>
+                <updated>{date_today}</updated>
+                <published>{date_today}</published>
+                <author>
+                  <name>DNS Twister</name>
+                </author>
+                <content type="text">IP: 127.0.0.1</content>
+              </entry>
+            </feed>
+        """).strip().format(
+            date_today=update_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            secs_today=(
+                update_date - datetime.datetime(1970, 1, 1)
+            ).total_seconds()
         )
