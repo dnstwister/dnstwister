@@ -167,7 +167,7 @@ class _Deltas(_PGDatabase):
         """Return the delta info for a domain, or None if no delta."""
         with self.cursor as cur:
             cur.execute("""
-                SELECT deltas z
+                SELECT deltas
                 FROM delta
                 WHERE domain = (%s);
             """, (domain,))
