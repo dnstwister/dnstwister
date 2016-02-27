@@ -96,8 +96,8 @@ def atom(b64domain):
         feed.add(
             title='No report yet for {}'.format(domain),
             title_type='text',
-            content='Your report feed will be generated within 24 hours.',
-            content_type='text',
+            content=flask.render_template('atom_placeholder.html', domain=domain),
+            content_type='html',
             author='DNS Twister',
             updated=today,
             published=today,
