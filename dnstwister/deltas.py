@@ -1,6 +1,5 @@
 """Delta report management."""
 import datetime
-import psycopg2
 
 import main
 db = main.db
