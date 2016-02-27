@@ -49,8 +49,9 @@ def get(domain):
 
 def register(domain):
     """Add a domain to the deltas storage, with no CRUD data."""
-    try:
-        db.deltas.set(domain, None, REGISTER_UPDATE_DATE)
-    except psycopg2.IntegrityError:
-        # When doing duplicate entries - TODO: separate get/exists...
-        pass
+    db.deltas.set(domain, None, REGISTER_UPDATE_DATE)
+
+
+def registered(domain):
+    """Check whether a domain is registered."""
+    return db.deltas.exists(domain)

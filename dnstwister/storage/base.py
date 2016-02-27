@@ -57,3 +57,8 @@ class Deltas(object):
     def get(self, domain):
         """Return the delta info for a domain, or None if no delta."""
         pass
+
+    @abc.abstractmethod
+    def exists(self, domain):
+        """Return whether a delta exists (domains or not) in the database."""
+        pass

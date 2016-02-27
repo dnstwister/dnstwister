@@ -80,18 +80,19 @@ def atom(b64domain):
         url='https://dnstwister.report/report/?q={}'.format(b64domain),
     )
 
-    # Try to retrieve the latest delta
+    # If the domain isn't registered for delta reporting, add the domain to
+    # the delta database for generation and return a helpful RSS item.
+    if not deltas.registered(domain):
+        deltas.register(domain)
+
     delta = deltas.get(domain)
 
     # The publish/update dates are locked to 00:00:00.000
-    today =  datetime.datetime.now().replace(
+    today = datetime.datetime.now().replace(
         hour=0, minute=0, second=0, microsecond=0
     )
 
-    # If there is no delta report yet, add the domain to the delta database
-    # for generation and return a helpful RSS item.
     if delta is None:
-        deltas.register(domain)
         feed.add(
             title='No report yet for {}'.format(domain),
             title_type='text',

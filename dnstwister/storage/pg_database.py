@@ -176,6 +176,19 @@ class _Deltas(_PGDatabase):
                 return
             return result[0]
 
+    @resetonfail
+    def exists(self, domain):
+        """Return whether a domain exists in the database, for delta
+        reporting.
+        """
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT
+                FROM delta
+                WHERE domain = (%s);
+            """, (domain,))
+            return cur.fetchone() is not None
+
 
 # ABC registration
 base.Reports.register(_Reports)
