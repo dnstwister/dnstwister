@@ -54,7 +54,18 @@ class TestAtom(unittest.TestCase):
                 <author>
                   <name>DNS Twister</name>
                 </author>
-                <content type="text">Your report feed will be generated within 24 hours.</content>
+                <content type="html">&lt;p&gt;
+                This is the placeholder for your DNS Twister report for www.example.com.
+            &lt;/p&gt;
+            &lt;p&gt;
+                Your first report will be generated within 24 hours with all entries
+                marked as &quot;NEW&quot;.
+            &lt;/p&gt;
+            &lt;p&gt;
+                &lt;strong&gt;Important:&lt;/strong&gt; The &quot;delta&quot; between each report is generated
+                every 24 hours. If your feed reader polls this feed less often than that,
+                you will miss out on changes.
+            &lt;/p&gt;</content>
               </entry>
             </feed>
         """).strip().format(
@@ -87,7 +98,18 @@ class TestAtom(unittest.TestCase):
                 <author>
                   <name>DNS Twister</name>
                 </author>
-                <content type="text">Your report feed will be generated within 24 hours.</content>
+                <content type="html">&lt;p&gt;
+                This is the placeholder for your DNS Twister report for www.example.com.
+            &lt;/p&gt;
+            &lt;p&gt;
+                Your first report will be generated within 24 hours with all entries
+                marked as &quot;NEW&quot;.
+            &lt;/p&gt;
+            &lt;p&gt;
+                &lt;strong&gt;Important:&lt;/strong&gt; The &quot;delta&quot; between each report is generated
+                every 24 hours. If your feed reader polls this feed less often than that,
+                you will miss out on changes.
+            &lt;/p&gt;</content>
               </entry>
             </feed>
         """).strip().format(
