@@ -177,6 +177,20 @@ class _Deltas(_PGDatabase):
             return result[0]
 
     @resetonfail
+    def updated(self, domain):
+        """Return the update date for a delta, or None."""
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT generated
+                FROM delta
+                WHERE domain = (%s);
+            """, (domain,))
+            result = cur.fetchone()
+            if result is None:
+                return
+            return result[0]
+
+    @resetonfail
     def exists(self, domain):
         """Return whether a domain exists in the database, for delta
         reporting.

@@ -42,6 +42,7 @@ app = flask.Flask(__name__)
 
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
+
 @app.route('/ip/<b64domain>')
 @cache.cached(timeout=86400)
 def resolve(b64domain):
@@ -87,7 +88,8 @@ def atom(b64domain):
 
     delta = deltas.get(domain)
 
-    # The publish/update dates are locked to 00:00:00.000
+    # The publish/update date for the placeholde is are locked to 00:00:00.000
+    # (midnight UTC) on the current day.
     today = datetime.datetime.now().replace(
         hour=0, minute=0, second=0, microsecond=0
     )
@@ -96,7 +98,9 @@ def atom(b64domain):
         feed.add(
             title='No report yet for {}'.format(domain),
             title_type='text',
-            content=flask.render_template('atom_placeholder.html', domain=domain),
+            content=flask.render_template(
+                'atom_placeholder.html', domain=domain
+            ),
             content_type='html',
             author='DNS Twister',
             updated=today,
@@ -105,46 +109,48 @@ def atom(b64domain):
         )
         return feed.get_response()
 
-    # If there is a delta report, generate the feed and return it.
+    # If there is a delta report, generate the feed and return it. We use the
+    # actual date of generation here.
+    updated = deltas.updated(domain)
+    if updated is None:
+        updated = today
+    else:
+        updated = updated.replace(microsecond=0)
 
     # Setting the ID to be epoch seconds, floored per 24 hours, ensure the
     # updates are only every 24 hours max.
-    id_24hr = (today - datetime.datetime(1970, 1, 1)).total_seconds()
+    id_24hr = (updated - datetime.datetime(1970, 1, 1)).total_seconds()
+
+    common_kwargs = {
+        'title_type': 'text',
+        'content_type': 'text',
+        'author': 'DNS Twister',
+        'updated': updated,
+        'published': updated,
+    }
 
     for (dom, ip) in delta['new']:
         feed.add(
             title='NEW: {}'.format(dom),
-            title_type='text',
             content='IP: {}'.format(ip),
-            content_type='text',
-            author='DNS Twister',
-            updated=today,
-            published=today,
             id='new:{}:{}:{}'.format(dom, ip, id_24hr),
+            **common_kwargs
         )
 
     for (dom, old_ip, new_ip) in delta['updated']:
         feed.add(
             title='UPDATED: {}'.format(dom),
-            title_type='text',
             content='IP: {} > {}'.format(old_ip, new_ip),
-            content_type='text',
-            author='DNS Twister',
-            updated=today,
-            published=today,
             id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
+            **common_kwargs
         )
 
     for (dom, ip) in delta['deleted']:
         feed.add(
             title='DELETED: {}'.format(dom),
-            title_type='text',
             content='IP: {}'.format(ip),
-            content_type='text',
-            author='DNS Twister',
-            updated=today,
-            published=today,
             id='deleted:{}:{}:{}'.format(dom, ip, id_24hr),
+            **common_kwargs
         )
 
     return feed.get_response()

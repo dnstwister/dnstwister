@@ -62,3 +62,8 @@ class Deltas(object):
     def exists(self, domain):
         """Return whether a delta exists (domains or not) in the database."""
         pass
+
+    @abc.abstractmethod
+    def updated(self, domain):
+        """Return the update date for a delta, or None."""
+        pass

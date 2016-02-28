@@ -9,8 +9,7 @@ REGISTER_UPDATE_DATE = datetime.datetime(1970, 1, 1)
 
 
 def oldest(min_age=86400):
-    """ Return the oldest delta that hasn't been updated for more than
-    min_age.
+    """Return the oldest delta that hasn't been updated for more than min_age.
 
     Return None if all deltas are up to date.
 
@@ -44,6 +43,11 @@ def get(domain):
     """Return the deltas for a domain, or None if one hasn't been created yet.
     """
     return db.deltas.get(domain)
+
+
+def updated(domain):
+    """Return the last-updated date for a delta, or None if no delta."""
+    return db.deltas.updated(domain)
 
 
 def register(domain):

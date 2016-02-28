@@ -21,5 +21,11 @@ class DeltasDB(object):
     def reset(self):
         self._db = {}
 
+    def updated(self, domain):
+        try:
+            return self._db[domain][1]
+        except KeyError:
+            pass
+
 
 deltas = DeltasDB()
