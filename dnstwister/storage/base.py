@@ -2,7 +2,19 @@
 import abc
 
 
-class Reports(object):
+
+class Dataset(object):
+    """ABC for the datasets implementation.
+    """
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def count(self):
+        """Return the count of records."""
+        pass
+
+
+class Reports(Dataset):
     """ABC for the reports implementation.
     """
     __metaclass__ = abc.ABCMeta
@@ -35,7 +47,7 @@ class Reports(object):
         pass
 
 
-class Deltas(object):
+class Deltas(Dataset):
     """ABC for the deltas implementation.
     """
     __metaclass__ = abc.ABCMeta

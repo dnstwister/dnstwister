@@ -122,6 +122,16 @@ class _Reports(_PGDatabase):
                 return
             return result[0]
 
+    @resetonfail
+    def count(self):
+        """Return count of records."""
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM report;
+            """)
+            return int(cur.fetchone()[0])
+
 
 class _Deltas(_PGDatabase):
     """Report-deltas access."""
@@ -198,6 +208,16 @@ class _Deltas(_PGDatabase):
                 WHERE domain = (%s);
             """, (domain,))
             return cur.fetchone() is not None
+
+    @resetonfail
+    def count(self):
+        """Return count of records."""
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM delta;
+            """)
+            return int(cur.fetchone()[0])
 
 
 # ABC registration
