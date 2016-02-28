@@ -171,7 +171,10 @@ def report():
             )
             return flask.redirect('/error/0')
 
-        return flask.render_template('report.html', reports=reports)
+        return flask.render_template(
+            'report.html', reports=reports,
+            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
+        )
 
     if flask.request.method == 'GET':
         ### Handle redirect from form submit.
