@@ -1,12 +1,11 @@
 # DNS Twister
 
 [![Development Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
-[![Live Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=heroku-deploy)](https://travis-ci.org/thisismyrobot/dnstwister)
 
 A Heroku-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
-Hosted [here](https://dnstwister.herokuapp.com).
+Hosted [here](https://dnstwister.report).
 
 ## DNSTWIST module
 
@@ -29,7 +28,6 @@ WIP, run using 'py.test'.
 
 ## Google App Engine
 
-This project used to be on GAE
-([link may still work?](https://dnstwister.appspot.com)) but has since been
-migrated to Heroku. To view the GAE codebase you'll need to look at the
-[1.1 tag](https://github.com/thisismyrobot/dnstwister/releases/tag/1.1).
+This project used to be on GAE but has since been migrated to Heroku. To view
+the GAE codebase you'll need to look at the [1.1
+tag](https://github.com/thisismyrobot/dnstwister/releases/tag/1.1).
