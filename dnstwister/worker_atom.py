@@ -1,5 +1,4 @@
 """Updates atom feeds."""
-import datetime
 import time
 
 import deltas
