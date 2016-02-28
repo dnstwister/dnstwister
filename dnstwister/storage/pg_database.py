@@ -81,32 +81,29 @@ class _Reports(_PGDatabase):
     def update(self, domain, data, generated):
         """Update the latest result for a domain."""
         with self.cursor as cur:
-            cur.execute("""
-                UPDATE report
-                SET (data, generated) = (%s, %s)
-                WHERE domain = (%s);
-            """, (psycopg2.extras.Json(data), generated, domain))
-        self._commit()
-
-    @resetonfail
-    def new(self, domain, start_date):
-        """Create a new entry with no report.
-
-        By using a date in the past you can push the report to the top of the
-        queue.
-
-        If already exists, it **doesn't** update the date.
-        """
-        try:
-            with self.cursor as cur:
+            if self.exists(domain):
+                cur.execute("""
+                    UPDATE report
+                    SET (data, generated) = (%s, %s)
+                    WHERE domain = (%s);
+                """, (psycopg2.extras.Json(data), generated, domain))
+            else:
                 cur.execute("""
                     INSERT INTO report (domain, data, generated)
                     VALUES (%s, %s, %s);
-                """, (domain, psycopg2.extras.Json({}), start_date))
-            self._commit()
-        except psycopg2.IntegrityError:
-            # Indicates domain is already in the table.
-            pass
+                """, (domain, psycopg2.extras.Json(data), generated))
+        self._commit()
+
+    @resetonfail
+    def exists(self, domain):
+        """Return whether a domain exists in the database, for reports."""
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT
+                FROM report
+                WHERE domain = (%s);
+            """, (domain,))
+            return cur.fetchone() is not None
 
     @resetonfail
     def get(self, domain):
