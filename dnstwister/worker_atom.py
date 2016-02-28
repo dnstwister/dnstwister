@@ -12,55 +12,49 @@ PERIOD = 86400
 
 if __name__ == '__main__':
     while True:
+        start = time.time()
 
-        try:
-            start = time.time()
+        # Pick the oldest delta.
+        domain = deltas.oldest()
 
-            # Pick the oldest delta.
-            domain = deltas.oldest()
+        if domain is None:
+            time.sleep(60)
+            continue
 
-            if domain is None:
-                time.sleep(60)
+        # Get the existing report
+        old_report = reports.get(domain)
+
+        if old_report is None:
+            old_report = {}
+
+        # Create a new report
+        new_report = {}
+        for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
+            ip, error = tools.resolve(entry['domain-name'])
+            if error or not ip or ip is None:
                 continue
+            new_report[entry['domain-name']] = ip
 
-            # Get the existing report
-            old_report = reports.get(domain)
+        # Store it
+        reports.update(domain, new_report)
 
-            if old_report is None:
-                old_report = {}
+        # Create a delta report
+        delta = {'new': [], 'updated': [], 'deleted': []}
 
-            # Create a new report
-            new_report = {}
-            for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
-                ip, error = tools.resolve(entry['domain-name'])
-                if error or not ip or ip is None:
-                    continue
-                new_report[entry['domain-name']] = ip
+        for (dom, ip) in new_report.items():
+            if dom in old_report.keys():
+                if ip != old_report[dom]:
+                    delta['updated'].append((dom, old_report[dom], ip))
+            else:
+                delta['new'].append((dom, ip))
 
-            # Store it
-            reports.update(domain, new_report)
+        for (dom, ip) in old_report.items():
+            if dom not in new_report.keys():
+                delta['deleted'].append(dom)
 
-            # Create a delta report
-            delta = {'new': [], 'updated': [], 'deleted': []}
+        # Store it
+        deltas.update(domain, delta)
 
-            for (dom, ip) in new_report.items():
-                if dom in old_report.keys():
-                    if ip != old_report[dom]:
-                        delta['updated'].append((dom, old_report[dom], ip))
-                else:
-                    delta['new'].append((dom, ip))
-
-            for (dom, ip) in old_report.items():
-                if dom not in new_report.keys():
-                    delta['deleted'].append(dom)
-
-            # Store it
-            deltas.update(domain, delta)
-
-            print 'Updated deltas for {} in {} seconds'.format(
-                domain, time.time() - start
-            )
-
-        except Exception as ex:
-            print 'Crashed... {}'.format(ex)
-            time.sleep(10)
+        print 'Updated deltas for {} in {} seconds'.format(
+            domain, time.time() - start
+        )
