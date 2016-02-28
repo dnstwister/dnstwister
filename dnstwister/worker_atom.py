@@ -21,7 +21,7 @@ if __name__ == '__main__':
             domain = deltas.oldest()
 
             if domain is None:
-                time.sleep(10)
+                time.sleep(60)
                 continue
 
             # Get the existing report
