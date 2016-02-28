@@ -1,21 +1,21 @@
 """Database provisioning."""
-import datetime
 import psycopg2.extras
 import sys
 import urlparse
 
 
 def setup(new_conn, cursor):
-    """Bootstrap the database on import.
+    """Bootstrap the database.
 
     Assumes no existing database.
     """
-    print 'Setting up jsonb'
+    print 'Setting up hstore...'
     cursor.execute("""CREATE EXTENSION hstore;""")
 
+    print 'Setting up jsonb...'
     psycopg2.extras.register_json(new_conn, name='jsonb')
 
-    print 'Creating "report" table.'
+    print 'Creating "report" table...'
     cursor.execute("""
         CREATE TABLE report
             (
@@ -25,7 +25,7 @@ def setup(new_conn, cursor):
             );
     """)
 
-    print 'Creating "delta" table.'
+    print 'Creating "delta" table...'
     cursor.execute("""
         CREATE TABLE delta
             (
