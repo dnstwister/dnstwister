@@ -10,8 +10,11 @@
 {% endblock %}
 {% block body %}
         <section class="domains">
-            Domain{{ 's' if reports|length > 1}}:
-            {{ reports.keys()|join(', ') }}
+            Domain{{ 's' if atoms|length > 1}}:
+            {% for domain, b64 in atoms.items() %}
+                {{ domain }}
+                <a href="/atom/{{ b64 }}"><img class="feed_ico" src="/static/feed.png"/></a>
+            {% endfor %}
             <br />
             <a href="/">New Report</a>
         </section>

@@ -3,12 +3,31 @@
 import base64
 import flask
 import flask.ext.cache
-import socket
 import datetime
 import urllib
 import werkzeug.contrib.atom
 
+
+import storage.pg_database
 import tools
+
+
+# We reference the module selected storage module here as a form of DI. Then
+# modules can access it as main.db. We check each storage component is
+# correctly implemented
+db = storage.pg_database
+
+if not isinstance(db.reports, storage.base.Reports):
+    raise Exception(
+        'DB reports implementation does not implement storage.Reports'
+    )
+if not isinstance(db.deltas, storage.base.Deltas):
+    raise Exception(
+        'DB deltas implementation does not implement storage.Deltas'
+    )
+
+# Everything that uses main.db can now be imported
+import deltas
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -46,35 +65,92 @@ def resolve(b64domain):
 @app.route('/atom/<b64domain>')
 @cache.cached(timeout=86400)
 def atom(b64domain):
-    """Atom feed functionality.
+    """Return new atom items for changes in resolved domains.
 
-    Cached to 24 hours to reduce load. Only returns resolved IPs.
+    Cached for 24 hours.
     """
+    # Parse out the requested domain
     domain = tools.parse_domain(b64domain)
     if domain is None:
         flask.abort(500)
 
+    # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
-        title='DNS Twister matches for {}'.format(domain),
+        title='DNS Twister report for {}'.format(domain),
         feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
         url='https://dnstwister.report/report/?q={}'.format(b64domain),
     )
 
-    for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
+    # If the domain isn't registered for delta reporting, add the domain to
+    # the delta database for generation and return a helpful RSS item.
+    if not deltas.registered(domain):
+        deltas.register(domain)
 
-        ip, error = tools.resolve(entry['domain-name'])
+    delta = deltas.get(domain)
 
-        if ip == False or ip is None or error == True:
-            continue
+    # The publish/update date for the placeholde is are locked to 00:00:00.000
+    # (midnight UTC) on the current day.
+    today = datetime.datetime.now().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
 
+    if delta is None:
         feed.add(
-            title=entry['domain-name'],
+            title='No report yet for {}'.format(domain),
             title_type='text',
-            content='{} ({})'.format(ip, entry['fuzzer']),
-            content_type='text',
+            content=flask.render_template(
+                'atom_placeholder.html', domain=domain
+            ),
+            content_type='html',
             author='DNS Twister',
-            updated=datetime.datetime.now(),
-            id='{}:{}'.format(domain, entry['domain-name']),
+            updated=today,
+            published=today,
+            id='waiting:{}'.format(domain),
+        )
+        return feed.get_response()
+
+    # If there is a delta report, generate the feed and return it. We use the
+    # actual date of generation here.
+    updated = deltas.updated(domain)
+    if updated is None:
+        updated = today
+    else:
+        updated = updated.replace(microsecond=0)
+
+    # Setting the ID to be epoch seconds, floored per 24 hours, ensure the
+    # updates are only every 24 hours max.
+    id_24hr = (updated - datetime.datetime(1970, 1, 1)).total_seconds()
+
+    common_kwargs = {
+        'title_type': 'text',
+        'content_type': 'text',
+        'author': 'DNS Twister',
+        'updated': updated,
+        'published': updated,
+    }
+
+    for (dom, ip) in delta['new']:
+        feed.add(
+            title='NEW: {}'.format(dom),
+            content='IP: {}'.format(ip),
+            id='new:{}:{}:{}'.format(dom, ip, id_24hr),
+            **common_kwargs
+        )
+
+    for (dom, old_ip, new_ip) in delta['updated']:
+        feed.add(
+            title='UPDATED: {}'.format(dom),
+            content='IP: {} > {}'.format(old_ip, new_ip),
+            id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
+            **common_kwargs
+        )
+
+    for (dom, ip) in delta['deleted']:
+        feed.add(
+            title='DELETED: {}'.format(dom),
+            content='IP: {}'.format(ip),
+            id='deleted:{}:{}:{}'.format(dom, ip, id_24hr),
+            **common_kwargs
         )
 
     return feed.get_response()
@@ -95,7 +171,10 @@ def report():
             )
             return flask.redirect('/error/0')
 
-        return flask.render_template('report.html', reports=reports)
+        return flask.render_template(
+            'report.html', reports=reports,
+            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
+        )
 
     if flask.request.method == 'GET':
         ### Handle redirect from form submit.
