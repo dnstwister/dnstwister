@@ -1,10 +1,9 @@
 """Application repository."""
+import main
 
 
 class Repository(object):
     """Application repository to handle database activities."""
-    def __init__(self, storage):
-        self._storage = storage
 
     def register_domain(self, domain):
         """Register a new domain for reporting.

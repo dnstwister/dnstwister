@@ -3,9 +3,9 @@ import os
 import psycopg2.extras
 import psycopg2.pool
 import urlparse
+import zope.interface
 
-
-import base
+import interfaces
 
 
 class _PGDatabase(object):
@@ -61,49 +61,25 @@ def resetonfail(func):
 
 class _Reports(_PGDatabase):
     """Reports access."""
+    zope.interface.implements(interfaces.IReports)
 
     @resetonfail
-    def oldest(self):
-        """Return the domain that hasn't been checked for the longest time.
-
-        Returns (domain, generated_date) or None.
-        """
+    def set(self, domain, data, generated):
+        """Insert/Update the resolution report for a domain."""
         with self.cursor as cur:
-            cur.execute("""
-                SELECT domain, generated
-                FROM report
-                ORDER BY generated ASC
-                LIMIT 1
-            """)
-            return cur.fetchone()
-
-    @resetonfail
-    def update(self, domain, data, generated):
-        """Update the latest result for a domain."""
-        with self.cursor as cur:
-            if self.exists(domain):
+            try:
+                cur.execute("""
+                    INSERT INTO report (domain, data, generated)
+                    VALUES (%s, %s, %s);
+                """, (domain, psycopg2.extras.Json(data), generated))
+            except psycopg2.IntegrityError as ex:
+                print 'ex detail', ex.pgcode
                 cur.execute("""
                     UPDATE report
                     SET (data, generated) = (%s, %s)
                     WHERE domain = (%s);
                 """, (psycopg2.extras.Json(data), generated, domain))
-            else:
-                cur.execute("""
-                    INSERT INTO report (domain, data, generated)
-                    VALUES (%s, %s, %s);
-                """, (domain, psycopg2.extras.Json(data), generated))
         self._commit()
-
-    @resetonfail
-    def exists(self, domain):
-        """Return whether a domain exists in the database, for reports."""
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT
-                FROM report
-                WHERE domain = (%s);
-            """, (domain,))
-            return cur.fetchone() is not None
 
     @resetonfail
     def get(self, domain):
@@ -119,19 +95,10 @@ class _Reports(_PGDatabase):
                 return
             return result[0]
 
-    @resetonfail
-    def count(self):
-        """Return count of records."""
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT COUNT(*)
-                FROM report;
-            """)
-            return int(cur.fetchone()[0])
-
 
 class _Deltas(_PGDatabase):
     """Report-deltas access."""
+    zope.interface.implements(interfaces.IDeltas)
 
     @resetonfail
     def oldest(self):
@@ -150,19 +117,21 @@ class _Deltas(_PGDatabase):
 
     @resetonfail
     def set(self, domain, deltas, generated):
-        """Add/update the deltas for a domain."""
+        """Insert/Update the deltas for a domain."""
         with self.cursor as cur:
-            if self.exists(domain):
+            try:
+                cur.execute("""
+                    INSERT INTO delta (domain, deltas, generated)
+                    VALUES (%s, %s, %s);
+                """, (domain, psycopg2.extras.Json(deltas), generated))
+            except psycopg2.IntegrityError as ex:
+                print 'ex detail', ex.pgcode
                 cur.execute("""
                     UPDATE delta
                     SET (deltas, generated) = (%s, %s)
                     WHERE domain = (%s);
                 """, (psycopg2.extras.Json(deltas), generated, domain))
-            else:
-                cur.execute("""
-                    INSERT INTO delta (domain, deltas, generated)
-                    VALUES (%s, %s, %s);
-                """, (domain, psycopg2.extras.Json(deltas), generated))
+
         self._commit()
 
     @resetonfail
@@ -179,47 +148,6 @@ class _Deltas(_PGDatabase):
                 return
             return result[0]
 
-    @resetonfail
-    def updated(self, domain):
-        """Return the update date for a delta, or None."""
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT generated
-                FROM delta
-                WHERE domain = (%s);
-            """, (domain,))
-            result = cur.fetchone()
-            if result is None:
-                return
-            return result[0]
-
-    @resetonfail
-    def exists(self, domain):
-        """Return whether a domain exists in the database, for delta
-        reporting.
-        """
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT
-                FROM delta
-                WHERE domain = (%s);
-            """, (domain,))
-            return cur.fetchone() is not None
-
-    @resetonfail
-    def count(self):
-        """Return count of records."""
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT COUNT(*)
-                FROM delta;
-            """)
-            return int(cur.fetchone()[0])
-
-
-# ABC registration
-base.Reports.register(_Reports)
-base.Deltas.register(_Deltas)
 
 # Singletons
 reports = _Reports()

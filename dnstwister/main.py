@@ -6,28 +6,23 @@ import flask.ext.cache
 import datetime
 import urllib
 import werkzeug.contrib.atom
+import zope.interface.verify
 
-
-import storage.pg_database
+import storage.interfaces
 import tools
 
 
 # We reference the module selected storage module here as a form of DI. Then
 # modules can access it as main.db. We check each storage component is
 # correctly implemented
+import storage.pg_database
 db = storage.pg_database
 
-if not isinstance(db.reports, storage.base.Reports):
-    raise Exception(
-        'DB reports implementation does not implement storage.Reports'
-    )
-if not isinstance(db.deltas, storage.base.Deltas):
-    raise Exception(
-        'DB deltas implementation does not implement storage.Deltas'
-    )
+zope.interface.verify.verifyObject(storage.interfaces.IReports, db.reports)
+zope.interface.verify.verifyObject(storage.interfaces.IDeltas, db.deltas)
 
-# Everything that uses main.db can now be imported
-import deltas
+# Import anything that uses main.db here.
+import repository
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
