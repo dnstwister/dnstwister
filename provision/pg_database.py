@@ -9,29 +9,15 @@ def setup(new_conn, cursor):
 
     Assumes no existing database.
     """
-    print 'Setting up hstore...'
-    cursor.execute("""CREATE EXTENSION hstore;""")
-
     print 'Setting up jsonb...'
     psycopg2.extras.register_json(new_conn, name='jsonb')
 
-    print 'Creating "report" table...'
+    print 'Creating "domaindata" table...'
     cursor.execute("""
-        CREATE TABLE report
+        CREATE TABLE domaindata
             (
                 domain varchar PRIMARY KEY,
-                data jsonb,
-                generated timestamp
-            );
-    """)
-
-    print 'Creating "delta" table...'
-    cursor.execute("""
-        CREATE TABLE delta
-            (
-                domain varchar PRIMARY KEY,
-                deltas jsonb,
-                generated timestamp
+                data jsonb
             );
     """)
 
@@ -42,7 +28,7 @@ if __name__ == '__main__':
     if not db_url.startswith('postgres'):
         raise Exception('Missing database url')
 
-    urlparse.uses_netloc.append("postgres")
+    urlparse.uses_netloc.append('postgres')
     new_url = urlparse.urlparse(db_url)
 
     new_conn = psycopg2.connect(
