@@ -84,6 +84,16 @@ class _PGDatabase(object):
                     yield row[0]
 
     @resetonfail
+    def delete(self, key):
+        """Delete by key."""
+        with self.cursor as cur:
+            cur.execute("""
+                DELETE FROM data
+                WHERE key = (%s);
+            """, (key,))
+            self._commit()
+
+    @resetonfail
     def set(self, key, value):
         """Insert/Update the value for a key."""
         with self.cursor as cur:

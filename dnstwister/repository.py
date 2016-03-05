@@ -10,6 +10,9 @@ class Repository(object):
 
         If the domain is already registered this is a no-op.
         """
+        main.db.set(
+            '_'.join(('registered', 'for', 'reporting', domain)), True
+        )
 
 
     def oldest_updated(self, threshold=86400):
@@ -28,8 +31,10 @@ class Repository(object):
         """
 
 
-    def unregister(self, domain):
+    def unregister_domain(self, domain):
         """Unregisters a domain from reporting.
 
         Unregistering a domain that isn't registered is a no-op.
         """
+        main.db.delete('_'.join(('registered', 'for', 'reporting', domain)))
+

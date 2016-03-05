@@ -15,3 +15,7 @@ class IKeyValueDB(zope.interface.Interface):
     def ikeys(self, prefix=''):
         """Return an iterator of all keys, optionally filtered on prefix."""
         pass
+
+    def delete(self, key):
+        """Delete a key."""
+        pass
