@@ -8,6 +8,19 @@ import zope.interface
 import interfaces
 
 
+def resetonfail(func):
+    """Decorator to ensure that the transaction is rolled back on failure.
+    """
+    def wrapped(instance, *args, **kwargs):
+        """ Wrapper to do DB reset."""
+        try:
+            return func(instance, *args, **kwargs)
+        except:
+            instance.reset()
+            raise
+    return wrapped
+
+
 class _PGDatabase(object):
     """Pseudo-ORM for a postgres database."""
     def __init__(self):
@@ -45,18 +58,20 @@ class _PGDatabase(object):
             # happened :(
             self._db = None
 
-
-def resetonfail(func):
-    """Decorator to ensure that the transaction is rolled back on failure.
-    """
-    def wrapped(instance, *args, **kwargs):
-        """ Wrapper to do DB reset."""
-        try:
-            return func(instance, *args, **kwargs)
-        except:
-            instance.reset()
-            raise
-    return wrapped
+    @resetonfail
+    def iter(self, *keys):
+        """Iterate all the rows, returning tuples of values for the keys."""
+        whitelist = set(('domain', 'data', 'generated')) # injection...
+        with self.cursor as cur:
+            cur.execute("""
+                SELECT {columns}
+                FROM report;
+            """.format(columns=','.join(tuple(set(keys) & whitelist))))
+            while True:
+                next = cur.fetchone()
+                if next is None:
+                    break
+                yield next
 
 
 class _Reports(_PGDatabase):
