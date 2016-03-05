@@ -22,7 +22,9 @@ def resetonfail(func):
 
 
 class _PGDatabase(object):
-    """Pseudo-ORM for a postgres database."""
+    """Postgres database storage implementation."""
+    zope.interface.implements(interfaces.IKeyValueDB)
+
     def __init__(self):
         self._db = None
 
@@ -30,7 +32,7 @@ class _PGDatabase(object):
     def cursor(self):
         """Return a database cursor."""
         if self._db is None or self._db.closed != 0:
-            print 'Creating a DB connection...'
+            print 'Creating postgres database connection.'
             urlparse.uses_netloc.append('postgres')
             db_url = urlparse.urlparse(os.environ['DATABASE_URL'])
             db = psycopg2.connect(
@@ -49,6 +51,10 @@ class _PGDatabase(object):
         """Commit the current transaction."""
         self._db.commit()
 
+    def _rollback(self):
+        """Rollback the current transaction."""
+        self._db.rollback()
+
     def reset(self):
         """Reset the database transaction and connection."""
         try:
@@ -57,107 +63,53 @@ class _PGDatabase(object):
             # If we can't rollback, let's assume something pretty bad has
             # happened :(
             self._db = None
+            raise
 
     @resetonfail
-    def iter(self, *keys):
-        """Iterate all the rows, returning tuples of values for the keys."""
-        whitelist = set(('domain', 'data', 'generated')) # injection...
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT {columns}
-                FROM report;
-            """.format(columns=','.join(tuple(set(keys) & whitelist))))
-            while True:
-                next = cur.fetchone()
-                if next is None:
-                    break
-                yield next
+    def ikeys(self, prefix=''):
+        """Return an iterator of all the keys in the database.
 
-
-class _Reports(_PGDatabase):
-    """Reports access."""
-    zope.interface.implements(interfaces.IReports)
-
-    @resetonfail
-    def set(self, domain, data, generated):
-        """Insert/Update the resolution report for a domain."""
-        with self.cursor as cur:
-            try:
-                cur.execute("""
-                    INSERT INTO report (domain, data, generated)
-                    VALUES (%s, %s, %s);
-                """, (domain, psycopg2.extras.Json(data), generated))
-            except psycopg2.IntegrityError as ex:
-                print 'ex detail', ex.pgcode
-                cur.execute("""
-                    UPDATE report
-                    SET (data, generated) = (%s, %s)
-                    WHERE domain = (%s);
-                """, (psycopg2.extras.Json(data), generated, domain))
-        self._commit()
-
-    @resetonfail
-    def get(self, domain):
-        """Return the report for a domain, or None if no report."""
-        with self.cursor as cur:
-            cur.execute("""
-                SELECT data
-                FROM report
-                WHERE domain = (%s);
-            """, (domain,))
-            result = cur.fetchone()
-            if result is None:
-                return
-            return result[0]
-
-
-class _Deltas(_PGDatabase):
-    """Report-deltas access."""
-    zope.interface.implements(interfaces.IDeltas)
-
-    @resetonfail
-    def oldest(self):
-        """Return the delta that hasn't been updated for the longest time.
-
-        Returns (domain, generated_date) or None.
+        Optionally filter by key prefix.
         """
         with self.cursor as cur:
             cur.execute("""
-                SELECT domain, generated
-                FROM delta
-                ORDER BY generated ASC
-                LIMIT 1;
+                SELECT key
+                FROM data;
             """)
-            return cur.fetchone()
+            while True:
+                row = cur.fetchone()
+                if row is None:
+                    break
+                if row[0].startswith(prefix):
+                    yield row[0]
 
     @resetonfail
-    def set(self, domain, deltas, generated):
-        """Insert/Update the deltas for a domain."""
+    def set(self, key, value):
+        """Insert/Update the value for a key."""
         with self.cursor as cur:
             try:
                 cur.execute("""
-                    INSERT INTO delta (domain, deltas, generated)
-                    VALUES (%s, %s, %s);
-                """, (domain, psycopg2.extras.Json(deltas), generated))
-            except psycopg2.IntegrityError as ex:
-                print 'ex detail', ex.pgcode
+                    INSERT INTO data (key, value)
+                    VALUES (%s, %s);
+                """, (key, psycopg2.extras.Json(value)))
+            except psycopg2.IntegrityError:
+                self._rollback()
                 cur.execute("""
-                    UPDATE delta
-                    SET (deltas, generated) = (%s, %s)
-                    WHERE domain = (%s);
-                """, (psycopg2.extras.Json(deltas), generated, domain))
-
-        self._commit()
+                    UPDATE data
+                    SET (value) = (%s)
+                    WHERE key = (%s);
+                """, (psycopg2.extras.Json(value), key))
+            self._commit()
 
     @resetonfail
-    def get(self, domain):
-        """Return the delta info for a domain, or None if no delta."""
+    def get(self, key):
+        """Return the value for key, or None if no value."""
         with self.cursor as cur:
             cur.execute("""
-                SELECT deltas
-                FROM delta
-                WHERE domain = (%s);
-            """, (domain,))
+                SELECT value
+                FROM data
+                WHERE key = (%s);
+            """, (key,))
             result = cur.fetchone()
             if result is None:
                 return
@@ -165,5 +117,4 @@ class _Deltas(_PGDatabase):
 
 
 # Singletons
-reports = _Reports()
-deltas = _Deltas()
+database = _PGDatabase()

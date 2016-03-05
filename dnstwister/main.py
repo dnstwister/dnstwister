@@ -13,13 +13,13 @@ import tools
 
 
 # We reference the module selected storage module here as a form of DI. Then
-# modules can access it as main.db. We check each storage component is
-# correctly implemented
+# modules can access it as main.db.
 import storage.pg_database
-db = storage.pg_database
+db = storage.pg_database.database
 
-zope.interface.verify.verifyObject(storage.interfaces.IReports, db.reports)
-zope.interface.verify.verifyObject(storage.interfaces.IDeltas, db.deltas)
+# We check each storage is correctly implemented
+zope.interface.verify.verifyObject(storage.interfaces.IKeyValueDB, db)
+
 
 # Import anything that uses main.db here.
 import repository

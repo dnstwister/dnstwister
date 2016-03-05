@@ -2,30 +2,16 @@
 import zope.interface
 
 
-class IReports(zope.interface.Interface):
-    """Interface for the resolution reports implementation."""
-    def set(self, domain, data, generated):
-        """Insert/Update the resolution report for a domain."""
+class IKeyValueDB(zope.interface.Interface):
+    """Interface for a key-value storage."""
+    def set(self, prefix, key, value):
+        """Set the value for key"""
         pass
 
-    def get(self, domain):
-        """Return the resolution report for a domain, or None if no report."""
+    def get(self, key):
+        """Get a value for key or None."""
         pass
 
-
-class IDeltas(zope.interface.Interface):
-    """Interface for the deltas implementation."""
-    def oldest(self):
-        """Return the delta that hasn't been updated for the longest time.
-
-        Returns (domain, generated_date) or None.
-        """
-        pass
-
-    def set(self, domain, deltas, generated):
-        """Insert/Update the delta for a domain."""
-        pass
-
-    def get(self, domain):
-        """Return the delta report for a domain, or None if no delta."""
+    def ikeys(self, prefix=''):
+        """Return an iterator of all keys, optionally filtered on prefix."""
         pass
