@@ -19,3 +19,8 @@ class IKeyValueDB(zope.interface.Interface):
     def delete(self, key):
         """Delete a key."""
         pass
+
+
+def instance_valid(instance):
+    """Check an instance correctly implements storage."""
+    return zope.interface.verify.verifyObject(IKeyValueDB, instance)
