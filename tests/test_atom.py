@@ -40,7 +40,7 @@ class TestAtom(unittest.TestCase):
               <title type="text">DNS Twister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
-              <link href="https://dnstwister.report/report/?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
               <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
               <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
@@ -84,7 +84,7 @@ class TestAtom(unittest.TestCase):
               <title type="text">DNS Twister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
-              <link href="https://dnstwister.report/report/?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
               <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
               <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
@@ -138,7 +138,7 @@ class TestAtom(unittest.TestCase):
               <title type="text">DNS Twister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>2016-02-28T11:10:34Z</updated>
-              <link href="https://dnstwister.report/report/?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
               <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
               <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
