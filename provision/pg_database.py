@@ -20,6 +20,9 @@ def setup(new_conn, cursor):
                 value jsonb
             );
     """)
+    cursor.execute("""
+        CREATE INDEX on data (lower(key))
+    """)
 
     print 'Importing old data...'
     cursor.execute("""
