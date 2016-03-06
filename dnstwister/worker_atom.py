@@ -67,3 +67,5 @@ if __name__ == '__main__':
             print 'Updated deltas for {} in {} seconds'.format(
                 domain, time.time() - start
             )
+
+        time.sleep(60)
