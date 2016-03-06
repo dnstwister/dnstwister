@@ -6,18 +6,15 @@ import flask.ext.cache
 import datetime
 import urllib
 import werkzeug.contrib.atom
-import zope.interface.verify
 
-import storage.interfaces
+import storage.pg_database
 import tools
 
 
-# We reference the module selected storage module here as a form of DI. Then
-# modules can access it as main.db.
-import storage.pg_database
-db = storage.pg_database.database
+# Any implementation of storage.interfaces.IKeyValueDB.
+db = storage.pg_database.PGDatabase()
 
-# Import anything that uses main.db here.
+# Set up the repository. Will import main.db.
 import repository
 
 

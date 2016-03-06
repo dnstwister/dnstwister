@@ -21,7 +21,7 @@ def resetonfail(func):
     return wrapped
 
 
-class _PGDatabase(object):
+class PGDatabase(object):
     """Postgres database storage implementation."""
     zope.interface.implements(interfaces.IKeyValueDB)
 
@@ -124,7 +124,3 @@ class _PGDatabase(object):
             if result is None:
                 return
             return result[0]
-
-
-# Singletons
-database = _PGDatabase()

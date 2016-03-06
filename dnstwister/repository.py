@@ -5,58 +5,56 @@ import main
 import storage.interfaces
 
 
-class Repository(object):
-    """Application repository to handle domain activities."""
-    def __init__(self, db=main.db):
-        if storage.interfaces.instance_valid(db):
-            self._db = db
+storage.interfaces.instance_valid(main.db)
 
-    def register_domain(self, domain):
-        """Register a new domain for reporting.
+    #import pdb; pdb.set_trace()
 
-        If the domain is already registered this is a no-op.
-        """
-        self._db.set('registered_for_reporting_{}'.format(domain), True)
+def register_domain(domain):
+    """Register a new domain for reporting.
 
-    def is_domain_registered(self, domain):
-        """Return whether a domain is registered for reporting."""
-        return self._db.get(
-            'registered_for_reporting_{}'.format(domain) == True
-        )
+    If the domain is already registered this is a no-op.
+    """
+    main.db.set('registered_for_reporting_{}'.format(domain), True)
 
-    def get_resolution_report(self, domain):
-        """Retrieve the resolution report for a domain, or None."""
-        return self._db.get('delta_report_{}'.format(domain))
+def is_domain_registered(domain):
+    """Return whether a domain is registered for reporting."""
+    return main.db.get(
+        'registered_for_reporting_{}'.format(domain) == True
+    )
 
-    def get_delta_report(self, domain):
-        """Retrieve the delta report for a domain, or None."""
-        return self._db.get('delta_report_{}'.format(domain))
+def get_resolution_report(domain):
+    """Retrieve the resolution report for a domain, or None."""
+    return main.db.get('delta_report_{}'.format(domain))
 
-    def delta_report_updated(self, domain):
-        """Retrieve when a delta report was last updated, or None."""
-        return self._db.get('delta_report_updated_{}'.format(domain))
+def get_delta_report(domain):
+    """Retrieve the delta report for a domain, or None."""
+    return main.db.get('delta_report_{}'.format(domain))
 
-    def update_delta(self, domain, delta=None, updated=None):
-        """Update the delta report for a domain."""
-        if delta is None:
-            delta = {'new': [], 'updated': [], 'deleted': []}
-        if updated is None:
-            updated = datetime.datetime.now()
-        self._db.set('delta_report_{}'.format(domain), delta)
-        self._db.set('delta_report_updated_{}'.format(domain), updated)
+def delta_report_updated(domain):
+    """Retrieve when a delta report was last updated, or None."""
+    return main.db.get('delta_report_updated_{}'.format(domain))
 
-    def update_resolution_report(self, domain, report=None, updated=None):
-        """Update the resolution report for a domain."""
-        if report is None:
-            report = {}
-        if updated is None:
-            updated = datetime.datetime.now()
-        self._db.set('resolution_report_{}'.format(domain), report)
-        self._db.set('resolution_report_updated_{}'.format(domain), updated)
+def update_delta(domain, delta=None, updated=None):
+    """Update the delta report for a domain."""
+    if delta is None:
+        delta = {'new': [], 'updated': [], 'deleted': []}
+    if updated is None:
+        updated = datetime.datetime.now()
+    main.db.set('delta_report_{}'.format(domain), delta)
+    main.db.set('delta_report_updated_{}'.format(domain), updated)
 
-    def unregister_domain(self, domain):
-        """Unregisters a domain from reporting.
+def update_resolution_report(domain, report=None, updated=None):
+    """Update the resolution report for a domain."""
+    if report is None:
+        report = {}
+    if updated is None:
+        updated = datetime.datetime.now()
+    main.db.set('resolution_report_{}'.format(domain), report)
+    main.db.set('resolution_report_updated_{}'.format(domain), updated)
 
-        Unregistering a domain that isn't registered is a no-op.
-        """
-        self._db.delete('registered_for_reporting_{}'.format(domain))
+def unregister_domain(domain):
+    """Unregisters a domain from reporting.
+
+    Unregistering a domain that isn't registered is a no-op.
+    """
+    main.db.delete('registered_for_reporting_{}'.format(domain))

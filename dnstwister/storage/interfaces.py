@@ -1,10 +1,10 @@
 """Storage implementations are expected to implement this interface."""
-import zope.interface
+import zope.interface.verify
 
 
 class IKeyValueDB(zope.interface.Interface):
     """Interface for a key-value storage."""
-    def set(self, prefix, key, value):
+    def set(self, key, value):
         """Set the value for key"""
         pass
 
