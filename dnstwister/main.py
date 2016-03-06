@@ -66,7 +66,7 @@ def atom(b64domain):
     feed = werkzeug.contrib.atom.AtomFeed(
         title='DNS Twister report for {}'.format(domain),
         feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
-        url='https://dnstwister.report/report/?q={}'.format(b64domain),
+        url='https://dnstwister.report/report?q={}'.format(b64domain),
     )
 
     # The publish/update date for the placeholder is locked to 00:00:00.000
@@ -95,6 +95,7 @@ def atom(b64domain):
             updated=today,
             published=today,
             id='waiting:{}'.format(domain),
+            url=feed.url,
         )
         return feed.get_response()
 
@@ -114,6 +115,7 @@ def atom(b64domain):
         'author': 'DNS Twister',
         'updated': updated,
         'published': updated,
+        'url': feed.url,
     }
 
     for (dom, ip) in delta_report['new']:
