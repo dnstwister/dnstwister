@@ -1,31 +1,30 @@
 """Mocks."""
-
-
-class DeltasDB(object):
+class SimpleKVDatabase(object):
     """Replace the main storage with a lightweight in-memory shim."""
+
     def __init__(self):
-        self._db = {}
+        self._data = {}
 
-    def get(self, domain):
+    def set(self, key, value):
+        """Set the value for key"""
+        self._data[key] = value
+
+    def get(self, key):
+        """Get a value for key or None."""
         try:
-            return self._db[domain][0]
+            return self._data[key]
         except KeyError:
             pass
 
-    def exists(self, domain):
-        return domain in self._db.keys()
+    def ikeys(self, prefix=''):
+        """Return an iterator of all keys, optionally filtered on prefix."""
+        for key in self._data.keys():
+            if key.startswith(prefix):
+                yield key
 
-    def set(self, domain, delta, generated):
-        self._db[domain] = (delta, generated)
-
-    def reset(self):
-        self._db = {}
-
-    def updated(self, domain):
+    def delete(self, key):
+        """Delete a key."""
         try:
-            return self._db[domain][1]
+            del self._data[key]
         except KeyError:
             pass
-
-
-deltas = DeltasDB()

@@ -9,31 +9,53 @@ def setup(new_conn, cursor):
 
     Assumes no existing database.
     """
-    print 'Setting up hstore...'
-    cursor.execute("""CREATE EXTENSION hstore;""")
-
     print 'Setting up jsonb...'
     psycopg2.extras.register_json(new_conn, name='jsonb')
 
-    print 'Creating "report" table...'
+    print 'Creating "data" table...'
     cursor.execute("""
-        CREATE TABLE report
+        CREATE TABLE data
             (
-                domain varchar PRIMARY KEY,
-                data jsonb,
-                generated timestamp
+                key varchar PRIMARY KEY,
+                value jsonb
             );
     """)
 
-    print 'Creating "delta" table...'
+    print 'Importing old data...'
     cursor.execute("""
-        CREATE TABLE delta
-            (
-                domain varchar PRIMARY KEY,
-                deltas jsonb,
-                generated timestamp
-            );
+        delete from data
     """)
+    new_conn.commit()
+
+    sys.path.append('..')
+    import dnstwister.repository as repository
+
+    # Domains for reporting
+    cursor.execute("""
+        select domain from report
+    """)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        repository.register_domain(row[0])
+
+    # Reports
+    cursor.execute("""
+        select * from report
+    """)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        repository.update_resolution_report(*row)
+
+    # Deltas
+    cursor.execute("""
+        select * from delta
+    """)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        repository.update_delta_report(*row)
 
 
 if __name__ == '__main__':
@@ -42,7 +64,7 @@ if __name__ == '__main__':
     if not db_url.startswith('postgres'):
         raise Exception('Missing database url')
 
-    urlparse.uses_netloc.append("postgres")
+    urlparse.uses_netloc.append('postgres')
     new_url = urlparse.urlparse(db_url)
 
     new_conn = psycopg2.connect(
