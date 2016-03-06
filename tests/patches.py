@@ -1,12 +1,6 @@
 """Mocks."""
-import zope.interface
-
-import storage.interfaces
-
-
 class SimpleKVDatabase(object):
     """Replace the main storage with a lightweight in-memory shim."""
-    zope.interface.implements(storage.interfaces.IKeyValueDB)
 
     def __init__(self):
         self._data = {}

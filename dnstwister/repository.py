@@ -5,9 +5,9 @@ import main
 import storage.interfaces
 
 
+# Check the database we're using implements the interface.
 storage.interfaces.instance_valid(main.db)
 
-    #import pdb; pdb.set_trace()
 
 def register_domain(domain):
     """Register a new domain for reporting.
