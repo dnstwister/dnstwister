@@ -18,9 +18,7 @@ def register_domain(domain):
 
 def is_domain_registered(domain):
     """Return whether a domain is registered for reporting."""
-    return main.db.get(
-        'registered_for_reporting_{}'.format(domain) == True
-    )
+    return main.db.get('registered_for_reporting_{}'.format(domain)) == True
 
 def get_resolution_report(domain):
     """Retrieve the resolution report for a domain, or None."""
