@@ -1,8 +1,9 @@
 """Updates atom feeds."""
+import datetime
 import time
 
-import deltas
-import reports
+import dnstwist
+import repository
 import tools
 
 
@@ -12,49 +13,59 @@ PERIOD = 86400
 
 if __name__ == '__main__':
     while True:
-        start = time.time()
 
-        # Pick the oldest delta.
-        domain = deltas.oldest()
+        domains_iter = repository.iregistered_domains()
 
-        if domain is None:
-            time.sleep(60)
-            continue
+        while True:
+            try:
+                domain = domains_iter.next()
+            except StopIteration:
+                break
 
-        # Get the existing report
-        old_report = reports.get(domain)
-
-        if old_report is None:
-            old_report = {}
-
-        # Create a new report
-        new_report = {}
-        for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
-            ip, error = tools.resolve(entry['domain-name'])
-            if error or not ip or ip is None:
+            if dnstwist.validate_domain(domain) is None:
                 continue
-            new_report[entry['domain-name']] = ip
 
-        # Store it
-        reports.update(domain, new_report)
+            # Skip domains that have been recently updated
+            delta_last_updated = repository.delta_report_updated(domain)
+            if delta_last_updated is not None:
+                age = datetime.datetime.now() - delta_last_updated
+                if age < datetime.timedelta(seconds=PERIOD):
+                    print 'Skipping {}'.format(domain)
+                    continue
 
-        # Create a delta report
-        delta = {'new': [], 'updated': [], 'deleted': []}
+            start = time.time()
 
-        for (dom, ip) in new_report.items():
-            if dom in old_report.keys():
-                if ip != old_report[dom]:
-                    delta['updated'].append((dom, old_report[dom], ip))
-            else:
-                delta['new'].append((dom, ip))
+            existing_report = repository.get_resolution_report(domain)
 
-        for (dom, ip) in old_report.items():
-            if dom not in new_report.keys():
-                delta['deleted'].append(dom)
+            if existing_report is None:
+                existing_report = {}
 
-        # Store it
-        deltas.update(domain, delta)
+            new_report = {}
+            for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
+                ip, error = tools.resolve(entry['domain-name'])
+                if error or not ip or ip is None:
+                    continue
+                new_report[entry['domain-name']] = ip
 
-        print 'Updated deltas for {} in {} seconds'.format(
-            domain, time.time() - start
-        )
+            repository.update_resolution_report(domain, new_report)
+
+            delta_report = {'new': [], 'updated': [], 'deleted': []}
+            for (dom, ip) in new_report.items():
+                if dom in existing_report.keys():
+                    if ip != existing_report[dom]:
+                        delta_report['updated'].append(
+                            (dom, existing_report[dom], ip)
+                        )
+                else:
+                    delta_report['new'].append((dom, ip))
+            for (dom, ip) in existing_report.items():
+                if dom not in new_report.keys():
+                    delta_report['deleted'].append(dom)
+
+            repository.update_delta_report(domain, delta_report)
+
+            print 'Updated deltas for {} in {} seconds'.format(
+                domain, time.time() - start
+            )
+
+        time.sleep(60)

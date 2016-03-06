@@ -3,27 +3,25 @@ import base64
 import datetime
 import flask.ext.webtest
 import mock
-import patches
 import textwrap
 import unittest
 
 import dnstwister.main
+import patches
 
 
 class TestAtom(unittest.TestCase):
     """Tests of the atom feed behaviour."""
+
     def setUp(self):
         """Set up the mock memcache."""
-        # Reset the test databases
-        patches.deltas.reset()
-
         # Create a webtest Test App for use
         self.app = flask.ext.webtest.TestApp(dnstwister.main.app)
 
         # Clear the webapp cache
         dnstwister.main.cache.clear()
 
-    @mock.patch('dnstwister.main.storage.pg_database.deltas', patches.deltas)
+    @mock.patch('dnstwister.main.db', patches.SimpleKVDatabase())
     def test_new_feed(self):
         """Tests the registration of a new feed."""
         # We need a domain to get the feed for.
@@ -117,14 +115,16 @@ class TestAtom(unittest.TestCase):
             ).strftime('%Y-%m-%dT%H:%M:%SZ')
         )
 
-        # We can calculate a delta though - in this case we'll place it
-        # directly in the database.
+        # We can calculate a delta though.
         update_date = datetime.datetime(2016, 2, 28, 11, 10, 34)
-        patches.deltas.set(domain, {
-            'new': [('www.examp1e.com', '127.0.0.1')],
-            'updated': [],
-            'deleted': []
-        }, update_date)
+        dnstwister.main.repository.update_delta_report(
+            domain, {
+                'new': [('www.examp1e.com', '127.0.0.1')],
+                'updated': [],
+                'deleted': []
+            },
+            update_date
+        )
 
         # Clear the webapp cache
         dnstwister.main.cache.clear()
