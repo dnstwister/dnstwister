@@ -21,6 +21,21 @@ def setup(new_conn, cursor):
             );
     """)
 
+    print 'Importing old data...'
+    import sys
+    sys.path.append('..')
+    import dnstwister.repository as repository
+
+    cursor.execute("""
+        select domain from report
+    """)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        repository.register_domain(row[0])
+
+    print 'Migrated:', domains
+
 
 if __name__ == '__main__':
 
