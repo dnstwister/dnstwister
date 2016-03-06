@@ -12,12 +12,12 @@ def setup(new_conn, cursor):
     print 'Setting up jsonb...'
     psycopg2.extras.register_json(new_conn, name='jsonb')
 
-    print 'Creating "domaindata" table...'
+    print 'Creating "data" table...'
     cursor.execute("""
-        CREATE TABLE domaindata
+        CREATE TABLE data
             (
-                domain varchar PRIMARY KEY,
-                data jsonb
+                key varchar PRIMARY KEY,
+                value jsonb
             );
     """)
 
