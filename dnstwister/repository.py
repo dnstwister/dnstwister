@@ -60,6 +60,7 @@ def update_delta_report(domain, delta=None, updated=None):
         updated.strftime('%Y-%m-%dT%H:%M:%SZ')
     )
 
+
 def update_resolution_report(domain, report=None, updated=None):
     """Update the resolution report for a domain."""
     if report is None:

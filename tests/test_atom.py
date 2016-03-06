@@ -117,7 +117,7 @@ class TestAtom(unittest.TestCase):
 
         # We can calculate a delta though.
         update_date = datetime.datetime(2016, 2, 28, 11, 10, 34)
-        dnstwister.main.repository.update_delta(
+        dnstwister.main.repository.update_delta_report(
             domain, {
                 'new': [('www.examp1e.com', '127.0.0.1')],
                 'updated': [],
