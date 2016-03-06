@@ -95,6 +95,7 @@ def atom(b64domain):
             updated=today,
             published=today,
             id='waiting:{}'.format(domain),
+            url=feed.url,
         )
         return feed.get_response()
 
@@ -114,6 +115,7 @@ def atom(b64domain):
         'author': 'DNS Twister',
         'updated': updated,
         'published': updated,
+        'url': feed.url,
     }
 
     for (dom, ip) in delta_report['new']:
