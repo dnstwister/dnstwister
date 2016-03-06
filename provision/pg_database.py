@@ -22,10 +22,16 @@ def setup(new_conn, cursor):
     """)
 
     print 'Importing old data...'
+    cursor.execute("""
+        delete from data
+    """)
+    new_conn.commit()
+
     import sys
     sys.path.append('..')
     import dnstwister.repository as repository
 
+    # Domains for reporting
     cursor.execute("""
         select domain from report
     """)
@@ -34,7 +40,23 @@ def setup(new_conn, cursor):
     for row in rows:
         repository.register_domain(row[0])
 
-    print 'Migrated:', domains
+    # Reports
+    cursor.execute("""
+        select domain, data from report
+    """)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        repository.update_resolution_report(*row)
+
+    # Deltas
+    cursor.execute("""
+        select domain, deltas from delta
+    """)
+    rows = cursor.fetchall()
+
+    for row in rows:
+        repository.update_delta(*row)
 
 
 if __name__ == '__main__':

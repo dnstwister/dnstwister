@@ -37,7 +37,7 @@ def update_delta(domain, delta=None, updated=None):
     if delta is None:
         delta = {'new': [], 'updated': [], 'deleted': []}
     if updated is None:
-        updated = datetime.datetime.now()
+        updated = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     main.db.set('delta_report_{}'.format(domain), delta)
     main.db.set('delta_report_updated_{}'.format(domain), updated)
 
@@ -46,7 +46,7 @@ def update_resolution_report(domain, report=None, updated=None):
     if report is None:
         report = {}
     if updated is None:
-        updated = datetime.datetime.now()
+        updated = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     main.db.set('resolution_report_{}'.format(domain), report)
     main.db.set('resolution_report_updated_{}'.format(domain), updated)
 

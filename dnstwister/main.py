@@ -104,7 +104,7 @@ def atom(b64domain):
     if updated is None:
         updated = today
     else:
-        updated = updated.replace(microsecond=0)
+        updated = datetime.datetime.strptime(updated, '%Y-%m-%dT%H:%M:%SZ')
 
     # Setting the ID to be epoch seconds, floored per 24 hours, ensure the
     # updates are only every 24 hours max.
