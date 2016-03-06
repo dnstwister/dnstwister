@@ -27,7 +27,6 @@ def setup(new_conn, cursor):
     """)
     new_conn.commit()
 
-    import sys
     sys.path.append('..')
     import dnstwister.repository as repository
 
@@ -42,7 +41,7 @@ def setup(new_conn, cursor):
 
     # Reports
     cursor.execute("""
-        select domain, data from report
+        select * from report
     """)
     rows = cursor.fetchall()
 
@@ -51,12 +50,12 @@ def setup(new_conn, cursor):
 
     # Deltas
     cursor.execute("""
-        select domain, deltas from delta
+        select * from delta
     """)
     rows = cursor.fetchall()
 
     for row in rows:
-        repository.update_delta(*row)
+        repository.update_delta_report(*row)
 
 
 if __name__ == '__main__':
