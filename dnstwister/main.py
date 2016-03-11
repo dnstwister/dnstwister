@@ -1,9 +1,10 @@
 """ DNS Twister web app.
 """
 import base64
+import datetime
 import flask
 import flask.ext.cache
-import datetime
+import sys
 import urllib
 import werkzeug.contrib.atom
 
@@ -226,4 +227,4 @@ def index(error_arg=None):
 
 if __name__ == '__main__':
 
-    app.run(debug=False)
+    app.run(debug=(sys.argv[-1] == '-d'))
