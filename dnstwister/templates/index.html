@@ -1,23 +1,39 @@
 {% extends "layout.html" %}
 {% block title %}Domain name permutation service{% endblock %}
 {% block head %}
-        <link rel="stylesheet" type="text/css" href="/static/index.min.css">
+<!--        <link rel="stylesheet" type="text/css" href="/static/index.min.css"> -->
+        <link rel="stylesheet" type="text/css" href="/static/sources/normalize.css">
+        <link rel="stylesheet" type="text/css" href="/static/sources/skeleton.css">
+        <link rel="stylesheet" type="text/css" href="/static/sources/common.css">
+        <link rel="stylesheet" type="text/css" href="/static/sources/layout.css">
 {% endblock %}
 {% block header %}
-            <h1>DNS Twister</h1>
-            <h2>Domain name permutation service</h2>
+            <h3>Domain name permutation service</h3>
+            <div class="row">
+                <div class="ten columns offset-by-one">
+                    <p class="section-description">
+                        The registration of domains similar to yours can be used
+                        by malicious parties to support
+                        <a href="https://en.wikipedia.org/wiki/Phishing" target="_blank">phishing</a>
+                        attacks and infringe on your trademarks.
+                    </p>
+                </div>
+            </div>
 {% endblock %}
 {% block body %}
-{% if error is not none %}
-        <section class="error">
-            Error: {{ error }}
-        </section>
-{% endif %}
-        <section>
-            <form action="/report" method="post" class="pure-form pure-form-stacked">
-                <textarea name="domains" placeholder="Enter one domain per line - eg: www.example.com" class="u-full-width"></textarea>
-                <br />
-                <input type="submit" value="Submit" class="button-primary" />
+        <section class="searchbox">
+            <form action="/report" method="post"><!-- class="pure-form pure-form-stacked">-->
+                <div class="row">
+                    <div class="ten columns offset-by-one">
+                        <input type="text" name="domains" placeholder="Enters domains - eg: www.example.com www.dnstwister.report" class="u-full-width" />
+                        {% if error is not none %}
+                            <section class="error">
+                                {{ error }}
+                            </section>
+                        {% endif %}
+                        <input type="submit" value="Search" class="button-primary" />
+                    </div>
+                </div>
             </form>
         </section>
 {% endblock %}

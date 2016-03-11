@@ -25,7 +25,7 @@ class TestMain(unittest.TestCase):
 
         self.assertEqual(res.status_int, 200)
         self.assertTrue(
-            '<h1>DNS Twister</h1>' in res.body,
+            'Domain name permutation engine' in res.body,
             'Page loaded HTML AOK'
         )
 
