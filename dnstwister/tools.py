@@ -59,7 +59,7 @@ def query_domains(data_dict):
     except KeyError:
         return
 
-    domains = re.sub(r'[\t\r,]', '\n', domains)
+    domains = re.sub(r'[\t\r, ]', '\n', domains)
 
     # Filter out blank lines, leading/trailing whitespace
     domains = filter(

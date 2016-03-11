@@ -62,6 +62,13 @@ class TestTools(unittest.TestCase):
             'Three domains, commas treated as tabs as whitespace',
         )
 
+        inp = "a.com, b.com c.com"
+
+        self.assertItemsEqual(
+            ['a.com', 'b.com', 'c.com'],
+            tools.query_domains({'domains': inp}),
+        )
+
         inp = u"""
 
             www.example.com\r\n
