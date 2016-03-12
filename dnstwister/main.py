@@ -146,7 +146,6 @@ def atom(b64domain):
 
 
 @app.route('/report', methods=['GET', 'POST'])
-@cache.cached(timeout=3600)
 def report():
     """Handle reports."""
     def render_report(qry_domains):
