@@ -5,18 +5,17 @@
         <link rel="stylesheet" type="text/css" href="/static/report.min.css">
 {% endblock %}
 {% block header %}
-        <h1>DNS Twister</h1>
-        <h2>Report</h2>
+        <h1>dnstwister report</h1>
 {% endblock %}
 {% block body %}
         <section class="domains">
-            Domain{{ 's' if atoms|length > 1}}:
+            For:
             {% for domain, b64 in atoms.items() %}
                 {{ domain }}
                 <a href="/atom/{{ b64 }}"><img class="feed_ico" src="/static/feed.png"/></a>
             {% endfor %}
             <br />
-            <a href="/">New Report</a>
+            <a href="/">new report</a>
         </section>
         <section class="progress">
             <p>
