@@ -4,12 +4,12 @@
     padding-bottom: 1.5rem;
 }
 
-.searchbox {
-    padding-top: 5%;
+.searchbox .columns {
+    text-align: center;
 }
 
-.searchbox .columns{
-    text-align: center;
+section.description {
+    margin-top: 2rem;
 }
 
 textarea {
@@ -26,14 +26,18 @@ footer {
 }
 
 header {
-    margin-top: 10%;
+    margin-top: 30%;
 }
 
 footer {
     font-size: 1.25rem;
-    padding-top: 5%;
+    padding-top: 15%;
 }
 
 footer p {
     margin-bottom: 1.5rem;
+}
+
+header h1 {
+    margin-bottom: 0;
 }

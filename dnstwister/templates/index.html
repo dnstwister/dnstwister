@@ -1,31 +1,18 @@
 {% extends "layout.html" %}
 {% block title %}Domain name permutation service{% endblock %}
 {% block head %}
-<!--        <link rel="stylesheet" type="text/css" href="/static/index.min.css"> -->
-        <link rel="stylesheet" type="text/css" href="/static/sources/normalize.css">
-        <link rel="stylesheet" type="text/css" href="/static/sources/skeleton.css">
-        <link rel="stylesheet" type="text/css" href="/static/sources/common.css">
-        <link rel="stylesheet" type="text/css" href="/static/sources/layout.css">
+        <link rel="stylesheet" type="text/css" href="/static/index.min.css">
 {% endblock %}
 {% block header %}
-            <h3>Domain name permutation service</h3>
-            <div class="row">
-                <div class="ten columns offset-by-one">
-                    <p class="section-description">
-                        The registration of domains similar to yours can be used
-                        by malicious parties to support
-                        <a href="https://en.wikipedia.org/wiki/Phishing" target="_blank">phishing</a>
-                        attacks and infringe on your trademarks.
-                    </p>
-                </div>
-            </div>
+            <h1>dnstwister</h1>
+            <p>The simple and fast domain name permutation engine</p>
 {% endblock %}
 {% block body %}
         <section class="searchbox">
-            <form action="/report" method="post"><!-- class="pure-form pure-form-stacked">-->
+            <form action="/report" method="post">
                 <div class="row">
                     <div class="ten columns offset-by-one">
-                        <input type="text" name="domains" placeholder="Enters domains - eg: www.example.com www.dnstwister.report" class="u-full-width" />
+                        <input type="text" name="domains" placeholder="Enter domains like: www.example.com www.dnstwister.report" class="u-full-width" />
                         {% if error is not none %}
                             <section class="error">
                                 {{ error }}
