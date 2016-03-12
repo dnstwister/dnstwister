@@ -1,22 +1,20 @@
 {% extends "layout.html" %}
 {% block title %}Report{% endblock %}
 {% block head %}
-        <script type="text/javascript" src="/static/report.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="/static/report.min.css">
+        <script type="text/javascript" src="{{ url_for('static', filename='report.min.js') }}"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
 {% endblock %}
 {% block header %}
-        <h1>DNS Twister</h1>
-        <h2>Report</h2>
+        <h1>dnstwister report</h1>
 {% endblock %}
 {% block body %}
         <section class="domains">
-            Domain{{ 's' if atoms|length > 1}}:
             {% for domain, b64 in atoms.items() %}
                 {{ domain }}
                 <a href="/atom/{{ b64 }}"><img class="feed_ico" src="/static/feed.png"/></a>
             {% endfor %}
             <br />
-            <a href="/">New Report</a>
+            <a href="/">new report</a>
         </section>
         <section class="progress">
             <p>
@@ -25,7 +23,7 @@
             </p>
         </section>
         <section>
-            <button id="show_all">Toggle full report</button>
+            <button id="show_all">Toggle unresolved domains</button>
         </section>
         <section>
             <table class="report u-full-width">

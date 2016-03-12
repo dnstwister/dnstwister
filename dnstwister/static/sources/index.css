@@ -1,0 +1,43 @@
+.error {
+    font-weight: bold;
+    color: red;
+    padding-bottom: 1.5rem;
+}
+
+.searchbox .columns {
+    text-align: center;
+}
+
+section.description {
+    margin-top: 2rem;
+}
+
+textarea {
+    min-height: 100px;
+}
+
+.container {
+    max-width: 720px;
+}
+
+header,
+footer {
+    text-align: center;
+}
+
+header {
+    margin-top: 30%;
+}
+
+footer {
+    font-size: 1.25rem;
+    padding-top: 15%;
+}
+
+footer p {
+    margin-bottom: 1.5rem;
+}
+
+header h1 {
+    margin-bottom: 0;
+}

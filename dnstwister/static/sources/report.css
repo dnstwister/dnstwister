@@ -16,3 +16,13 @@
 .feed_ico {
     margin-bottom: -2px;
 }
+
+header {
+    margin-top: 2rem;
+}
+
+footer {
+    text-align: center;
+    margin-top: 6rem;
+    font-size: 1.25rem;
+}

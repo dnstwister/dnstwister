@@ -25,7 +25,7 @@ class TestMain(unittest.TestCase):
 
         self.assertEqual(res.status_int, 200)
         self.assertTrue(
-            '<h1>DNS Twister</h1>' in res.body,
+            'Domain name permutation engine' in res.body,
             'Page loaded HTML AOK'
         )
 
@@ -53,6 +53,9 @@ class TestMain(unittest.TestCase):
             'http://localhost:80/report?q=d3d3LmV4YW1wbGUxLmNvbQ%3D%3D',
             res.location
         )
+
+        # Clear the webapp cache
+        dnstwister.main.cache.clear()
 
         # Follow the 302 to the report page
         res = res.follow()

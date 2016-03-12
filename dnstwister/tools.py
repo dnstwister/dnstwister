@@ -4,6 +4,7 @@ import base64
 import dns.resolver
 import dnstwist
 import operator
+import re
 import socket
 
 
@@ -57,6 +58,8 @@ def query_domains(data_dict):
         domains = data_dict['domains']
     except KeyError:
         return
+
+    domains = re.sub(r'[\t\r, ]', '\n', domains)
 
     # Filter out blank lines, leading/trailing whitespace
     domains = filter(

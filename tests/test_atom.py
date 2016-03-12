@@ -37,7 +37,7 @@ class TestAtom(unittest.TestCase):
             Content-Type: application/atom+xml; charset=utf-8
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
-              <title type="text">DNS Twister report for www.example.com</title>
+              <title type="text">dnstwister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
               <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
@@ -50,10 +50,10 @@ class TestAtom(unittest.TestCase):
                 <published>{date_today}</published>
                 <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
                 <author>
-                  <name>DNS Twister</name>
+                  <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;p&gt;
-                This is the placeholder for your DNS Twister report for www.example.com.
+                This is the placeholder for your dnstwister report for www.example.com.
             &lt;/p&gt;
             &lt;p&gt;
                 Your first report will be generated within 24 hours with all entries
@@ -82,7 +82,7 @@ class TestAtom(unittest.TestCase):
             Content-Type: application/atom+xml; charset=utf-8
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
-              <title type="text">DNS Twister report for www.example.com</title>
+              <title type="text">dnstwister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
               <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
@@ -95,10 +95,10 @@ class TestAtom(unittest.TestCase):
                 <published>{date_today}</published>
                 <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
                 <author>
-                  <name>DNS Twister</name>
+                  <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;p&gt;
-                This is the placeholder for your DNS Twister report for www.example.com.
+                This is the placeholder for your dnstwister report for www.example.com.
             &lt;/p&gt;
             &lt;p&gt;
                 Your first report will be generated within 24 hours with all entries
@@ -137,7 +137,7 @@ class TestAtom(unittest.TestCase):
             Content-Type: application/atom+xml; charset=utf-8
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
-              <title type="text">DNS Twister report for www.example.com</title>
+              <title type="text">dnstwister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>2016-02-28T11:10:34Z</updated>
               <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
@@ -150,7 +150,7 @@ class TestAtom(unittest.TestCase):
                 <published>2016-02-28T11:10:34Z</published>
                 <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
                 <author>
-                  <name>DNS Twister</name>
+                  <name>dnstwister</name>
                 </author>
                 <content type="text">IP: 127.0.0.1</content>
               </entry>

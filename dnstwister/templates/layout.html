@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>DNS Twister | {% block title %}{% endblock %}</title>
+        <title>dnstwister | {% block title %}{% endblock %}</title>
         <meta name="description" content="Domain name permutation engine, based on dnstwist.">
         <meta name="author" content="Robert Wallhead">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,17 +22,16 @@
                 {% endblock %}
                 <footer>
                     <p>
-                        DNS Twister was created by
-                        <a href="https://about.me/robertwallhead">Robert Wallhead</a>
+                        <strong>dnstwister</strong> was created by
+                        <a href="https://about.me/robertwallhead" target="_blank">Robert Wallhead</a>
                         and takes advantage of the excellent
-                        <a href="https://github.com/elceef/dnstwist">dnstwist</a>
+                        <a href="https://github.com/elceef/dnstwist" target="_blank">dnstwist</a>
                         library.
                     </p>
                     <p>
-                        You can
-                        <a href="https://github.com/thisismyrobot/dnstwister/issues">report bugs</a>
-                        if you're keen and the source code
-                        <a href="https://github.com/thisismyrobot/dnstwister">is available on GitHub</a>.
+                        <a href="https://github.com/thisismyrobot/dnstwister/issues" target="_blank">report bugs</a>
+                        <a href="https://github.com/thisismyrobot/dnstwister" target="_blank">source code</a>
+                        <a href="{{ url_for('static', filename='privacy.html') }}">privacy statement</a>
                     </p>
                 </footer>
             </div>

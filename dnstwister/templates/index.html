@@ -1,23 +1,26 @@
 {% extends "layout.html" %}
 {% block title %}Domain name permutation service{% endblock %}
 {% block head %}
-        <link rel="stylesheet" type="text/css" href="/static/index.min.css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.min.css') }}">
 {% endblock %}
 {% block header %}
-            <h1>DNS Twister</h1>
-            <h2>Domain name permutation service</h2>
+            <h1>dnstwister</h1>
+            <p>The simple and fast domain name permutation engine</p>
 {% endblock %}
 {% block body %}
-{% if error is not none %}
-        <section class="error">
-            Error: {{ error }}
-        </section>
-{% endif %}
-        <section>
-            <form action="/report" method="post" class="pure-form pure-form-stacked">
-                <textarea name="domains" placeholder="Enter one domain per line - eg: www.example.com" class="u-full-width"></textarea>
-                <br />
-                <input type="submit" value="Submit" class="button-primary" />
+        <section class="searchbox">
+            <form action="/report" method="post">
+                <div class="row">
+                    <div class="ten columns offset-by-one">
+                        <input type="text" name="domains" placeholder="Enter domains like: www.example.com www.dnstwister.report" class="u-full-width" />
+                        {% if error is not none %}
+                            <section class="error">
+                                {{ error }}
+                            </section>
+                        {% endif %}
+                        <input type="submit" value="Search" class="button-primary" />
+                    </div>
+                </div>
             </form>
         </section>
 {% endblock %}
