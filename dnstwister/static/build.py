@@ -21,6 +21,7 @@ maps = {
 
 
 def build():
+    print 'building...'
     for (dest, srcs) in maps.items():
         dest_data = []
         for src in srcs:
@@ -34,16 +35,14 @@ def build():
 
 if __name__ == '__main__':
 
-    if sys.argv[-1] != '--watch':
-        build()
-    else:
+    build()
+    if sys.argv[-1] == '--watch':
         import time
         import watchdog.events
         import watchdog.observers
 
         class Handler(watchdog.events.FileSystemEventHandler):
             def on_any_event(*args):
-                print 'building...'
                 build()
 
         observer = watchdog.observers.Observer()

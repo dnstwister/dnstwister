@@ -1,5 +1,4 @@
-""" DNS Twister web app.
-"""
+"""dnstwister web app."""
 import base64
 import datetime
 import flask
@@ -65,7 +64,7 @@ def atom(b64domain):
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
-        title='DNS Twister report for {}'.format(domain),
+        title='dnstwister report for {}'.format(domain),
         feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
         url='https://dnstwister.report/report?q={}'.format(b64domain),
     )
@@ -92,7 +91,7 @@ def atom(b64domain):
                 'atom_placeholder.html', domain=domain
             ),
             content_type='html',
-            author='DNS Twister',
+            author='dnstwister',
             updated=today,
             published=today,
             id='waiting:{}'.format(domain),
@@ -113,7 +112,7 @@ def atom(b64domain):
     common_kwargs = {
         'title_type': 'text',
         'content_type': 'text',
-        'author': 'DNS Twister',
+        'author': 'dnstwister',
         'updated': updated,
         'published': updated,
         'url': feed.url,
