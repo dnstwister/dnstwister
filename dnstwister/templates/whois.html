@@ -8,21 +8,8 @@
 {% endblock %}
 {% block body %}
         <section>
-            <table class="report u-full-width">
-                <thead>
-                    <tr>
-                        <th>Field</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for field, value in whois_data.items() %}
-                        <tr>
-                            <td>{{ field }}</td>
-                            <td>{{ value }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <pre>
+{{ whois_data }}
+            </pre>
         </section>
 {% endblock %}

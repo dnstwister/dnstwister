@@ -14,12 +14,12 @@ def _pairs(response):
               for row
               in response.split('\n')]
 
-    whois_data = dict([token
+    whois_pairs = dict([token
                        for token
                        in tokens
                        if len(token) == 2
                        and tokens[1] != ''])
-    return whois_data
+    return whois_pairs
 
 
 def _interact(server, query):
@@ -36,7 +36,7 @@ def _interact(server, query):
             if 'whois:' in chunk or chunk == '':
                 break
 
-        return _pairs(payload)
+        return payload
 
 
 def lookup(domain, start_server='whois.iana.org', max_hops=5):
@@ -51,22 +51,23 @@ def lookup(domain, start_server='whois.iana.org', max_hops=5):
             return
 
         whois_data = _interact(whois_server, domain)
+        whois_pairs = _pairs(whois_data)
 
         seen.add(whois_server)
         hops += 1
 
-        if any([key.startswith('Registrant') for key in whois_data.keys()]):
-            return whois_data
+        if any([key.startswith('Registrant') for key in whois_pairs.keys()]):
+            return whois_data.strip()
 
         # Try to find a referrer whois server.
         try:
-            whois_server = whois_data['whois']
+            whois_server = whois_pairs['whois']
             continue
         except KeyError:
             pass
 
         try:
-            whois_server = whois_data['Whois Server']
+            whois_server = whois_pairs['Whois Server']
             continue
         except KeyError:
             pass
@@ -74,7 +75,7 @@ def lookup(domain, start_server='whois.iana.org', max_hops=5):
         try:
             whois_server = [val
                             for val
-                            in whois_data.values()
+                            in whois_pairs.values()
                             if val.startswith('whois.')][0]
             continue
         except IndexError:
@@ -83,5 +84,4 @@ def lookup(domain, start_server='whois.iana.org', max_hops=5):
 
 if __name__ == '__main__':
     import sys
-    for (field, value) in lookup(sys.argv[-1]).items():
-        print ': '.join((field, value))
+    print lookup(sys.argv[-1])

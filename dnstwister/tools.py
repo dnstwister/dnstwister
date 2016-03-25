@@ -107,4 +107,4 @@ def whois_query(domain):
     try:
         return whois.lookup(domain)
     except:
-        return {'error': 'whois lookup failed'}
+        return 'Error: whois lookup failed'
