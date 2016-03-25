@@ -38,6 +38,7 @@ if __name__ == '__main__':
                 if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
                     print 'Unregistering {}'.format(domain)
                     repository.unregister_domain(domain)
+                    continue
 
             # Skip domains that have been recently updated
             delta_last_updated = repository.delta_report_updated(domain)
