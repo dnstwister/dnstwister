@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Whois{% endblock %}
+{% block head %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='whois.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>whois report</h1>
+{% endblock %}
+{% block body %}
+        <section>
+            <pre>
+{{ whois_data }}
+            </pre>
+        </section>
+{% endblock %}

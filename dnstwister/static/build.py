@@ -8,6 +8,10 @@ maps = {
         'skeleton.css',
         'index.css',
     ),
+    'whois.min.css': (
+        'normalize.css',
+        'skeleton.css',
+    ),
     'report.min.css': (
         'normalize.css',
         'skeleton.css',
