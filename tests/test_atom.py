@@ -156,3 +156,35 @@ class TestAtom(unittest.TestCase):
               </entry>
             </feed>
         """).strip()
+
+
+    @mock.patch('dnstwister.main.db', patches.SimpleKVDatabase())
+    def test_feed_reading_is_tracked(self):
+        """Tests that reading a feed is logged."""
+        domain = 'www.example.com'
+        b64domain = base64.b64encode(domain)
+
+        # Read dates are None by default
+        read_date = dnstwister.main.repository.delta_report_last_read(domain)
+        assert read_date is None
+
+        # Registering a feed will update the read date
+        self.app.get('/atom/{}'.format(b64domain))
+        read_date = dnstwister.main.repository.delta_report_last_read(domain)
+        assert type(read_date) is datetime.datetime
+
+        # Manually set the date to an older date so we don't have to 'sleep'
+        # in the test.
+        dnstwister.main.repository.mark_delta_report_as_read(
+            domain, datetime.datetime(2000, 1, 1, 0, 0, 0)
+        )
+
+        # Clear the webapp cache
+        dnstwister.main.cache.clear()
+
+        # Reading a feed will update the read date
+        read_date = dnstwister.main.repository.delta_report_last_read(domain)
+        self.app.get('/atom/{}'.format(b64domain))
+        read_date2 = dnstwister.main.repository.delta_report_last_read(domain)
+
+        assert read_date2 > read_date

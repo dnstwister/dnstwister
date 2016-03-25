@@ -162,6 +162,8 @@ def atom(b64domain):
 
     feed_response = feed.get_response()
 
+    repository.mark_delta_report_as_read(domain)
+
     return feed_response
 
 
