@@ -196,11 +196,12 @@ def index(error_arg=None):
 
 @app.route('/search', methods=['POST'])
 @app.route('/search/<report_domains>')
-def report(report_domains=None):
+@app.route('/search/<report_domains>/<format>')
+def report(report_domains=None, format=None):
     """Handle reports."""
-    def render_report(qry_domains):
-        """ Render and return the report.
-        """
+
+    def html_render(qry_domains):
+        """Render and return the html report."""
         reports = dict(filter(None, map(tools.analyse, qry_domains)))
 
         # Handle no valid domains by redirecting to GET page.
@@ -215,6 +216,20 @@ def report(report_domains=None):
             atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
         )
 
+    def json_render(qry_domains):
+        """Render and return the json-formatted report."""
+        reports = dict(filter(None, map(tools.analyse, qry_domains)))
+
+        for report in reports.values():
+            for entry in report['fuzzy_domains']:
+                ip, error = tools.resolve(entry['domain-name'])
+                entry['resolution'] = {
+                    'ip': ip,
+                    'error': error,
+                }
+
+        return flask.json.jsonify(reports)
+
     if flask.request.method == 'GET':
         ### Handle redirect from form submit.
         # Try to parse out the list of domains
@@ -227,7 +242,12 @@ def report(report_domains=None):
             app.logger.error('Unable to decode valid domains from path')
             return flask.redirect('/error/1')
 
-        return render_report(qry_domains)
+        if format is None:
+            return html_render(qry_domains)
+        elif format == 'json':
+            return json_render(qry_domains)
+        else:
+            flask.abort(500)
 
     else:
         # Handle form submit.
@@ -249,7 +269,7 @@ def report(report_domains=None):
             return flask.redirect('/search/{}'.format(path))
 
         # If there's a ton of domains, just to the report.
-        return render_report(qry_domains)
+        return html_render(qry_domains)
 
 
 if __name__ == '__main__':
