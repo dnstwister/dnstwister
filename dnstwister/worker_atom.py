@@ -10,6 +10,9 @@ import tools
 # Time in seconds between re-processing a domain.
 PERIOD = 86400
 
+# Multiplier on period to unregister if not read.
+UNREGISTER = 7
+
 
 if __name__ == '__main__':
     while True:
@@ -23,7 +26,20 @@ if __name__ == '__main__':
                 break
 
             if dnstwist.validate_domain(domain) is None:
+                print 'Unregistering (invalid) {}'.format(domain)
+                repository.unregister_domain(domain)
                 continue
+
+            # Unregister long-time unread domains
+            last_read = repository.delta_report_last_read(domain)
+            if last_read is None:
+                repository.mark_delta_report_as_read(domain)
+            else:
+                age = datetime.datetime.now() - last_read
+                if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
+                    print 'Unregistering {}'.format(domain)
+                    repository.unregister_domain(domain)
+                    continue
 
             # Skip domains that have been recently updated
             delta_last_updated = repository.delta_report_updated(domain)
