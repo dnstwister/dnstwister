@@ -114,52 +114,55 @@ def atom(b64domain):
             id='waiting:{}'.format(domain),
             url=feed.url,
         )
-        return feed.get_response()
 
-    # If there is a delta report, generate the feed and return it. We use the
-    # actual date of generation here.
-    updated = repository.delta_report_updated(domain)
-    if updated is None:
-        updated = today
+    else:
 
-    # Setting the ID to be epoch seconds, floored per 24 hours, ensure the
-    # updates are only every 24 hours max.
-    id_24hr = (updated - datetime.datetime(1970, 1, 1)).total_seconds()
+        # If there is a delta report, generate the feed and return it. We use
+        # the actual date of generation here.
+        updated = repository.delta_report_updated(domain)
+        if updated is None:
+            updated = today
 
-    common_kwargs = {
-        'title_type': 'text',
-        'content_type': 'text',
-        'author': 'dnstwister',
-        'updated': updated,
-        'published': updated,
-        'url': feed.url,
-    }
+        # Setting the ID to be epoch seconds, floored per 24 hours, ensure the
+        # updates are only every 24 hours max.
+        id_24hr = (updated - datetime.datetime(1970, 1, 1)).total_seconds()
 
-    for (dom, ip) in delta_report['new']:
-        feed.add(
-            title='NEW: {}'.format(dom),
-            content='IP: {}'.format(ip),
-            id='new:{}:{}:{}'.format(dom, ip, id_24hr),
-            **common_kwargs
-        )
+        common_kwargs = {
+            'title_type': 'text',
+            'content_type': 'text',
+            'author': 'dnstwister',
+            'updated': updated,
+            'published': updated,
+            'url': feed.url,
+        }
 
-    for (dom, old_ip, new_ip) in delta_report['updated']:
-        feed.add(
-            title='UPDATED: {}'.format(dom),
-            content='IP: {} > {}'.format(old_ip, new_ip),
-            id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
-            **common_kwargs
-        )
+        for (dom, ip) in delta_report['new']:
+            feed.add(
+                title='NEW: {}'.format(dom),
+                content='IP: {}'.format(ip),
+                id='new:{}:{}:{}'.format(dom, ip, id_24hr),
+                **common_kwargs
+            )
 
-    for (dom, ip) in delta_report['deleted']:
-        feed.add(
-            title='DELETED: {}'.format(dom),
-            content='IP: {}'.format(ip),
-            id='deleted:{}:{}:{}'.format(dom, ip, id_24hr),
-            **common_kwargs
-        )
+        for (dom, old_ip, new_ip) in delta_report['updated']:
+            feed.add(
+                title='UPDATED: {}'.format(dom),
+                content='IP: {} > {}'.format(old_ip, new_ip),
+                id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
+                **common_kwargs
+            )
 
-    return feed.get_response()
+        for (dom, ip) in delta_report['deleted']:
+            feed.add(
+                title='DELETED: {}'.format(dom),
+                content='IP: {}'.format(ip),
+                id='deleted:{}:{}:{}'.format(dom, ip, id_24hr),
+                **common_kwargs
+            )
+
+    feed_response = feed.get_response()
+
+    return feed_response
 
 
 @app.route('/report')
