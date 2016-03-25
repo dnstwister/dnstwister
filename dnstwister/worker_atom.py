@@ -26,7 +26,8 @@ if __name__ == '__main__':
                 break
 
             if dnstwist.validate_domain(domain) is None:
-                # TODO: Need to handle this appropriately. Maybe unregister?
+                print 'Unregistering (invalid) {}'.format(domain)
+                repository.unregister_domain(domain)
                 continue
 
             # Unregister long-time unread domains
