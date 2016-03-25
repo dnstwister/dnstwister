@@ -61,6 +61,23 @@ def update_delta_report(domain, delta=None, updated=None):
     )
 
 
+def mark_delta_report_as_read(domain, last_read=None):
+    """Update the "last-read" date for delta report."""
+    if last_read is None:
+        last_read = datetime.datetime.now()
+    main.db.set(
+        'delta_report_read_{}'.format(domain),
+        last_read.strftime('%Y-%m-%dT%H:%M:%SZ')
+    )
+
+
+def delta_report_last_read(domain):
+    """Retrieve the "last-read" date for delta report."""
+    last_read = main.db.get('delta_report_read_{}'.format(domain))
+    if last_read is not None:
+        return datetime.datetime.strptime(last_read, '%Y-%m-%dT%H:%M:%SZ')
+
+
 def update_resolution_report(domain, report=None, updated=None):
     """Update the resolution report for a domain."""
     if report is None:
