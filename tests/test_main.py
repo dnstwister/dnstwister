@@ -54,9 +54,6 @@ class TestMain(unittest.TestCase):
             res.location
         )
 
-        # Clear the webapp cache
-        dnstwister.main.cache.clear()
-
         # Follow the 302 to the report page
         res = res.follow()
         html = res.html
