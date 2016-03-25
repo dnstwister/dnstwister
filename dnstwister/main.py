@@ -4,7 +4,6 @@ import datetime
 import flask
 import flask.ext.cache
 import sys
-import urllib
 import werkzeug.contrib.atom
 
 import storage.pg_database
@@ -163,8 +162,41 @@ def atom(b64domain):
     return feed.get_response()
 
 
-@app.route('/report', methods=['GET', 'POST'])
-def report():
+@app.route('/report')
+def report_old():
+    """Redirect old bookmarked reports to the new path format."""
+    try:
+        path = flask.request.args['q']
+    except:
+        app.logger.error('Unable to decode valid domains from q GET param')
+        return flask.redirect('/error/1')
+
+    return flask.redirect('/{}'.format(path))
+
+
+@app.route(r'/')
+@app.route(r'/error/<error_arg>')
+@cache.cached(timeout=3600)
+def index(error_arg=None):
+    """Main page, cached to 2 hours."""
+    error = None
+    try:
+        error_idx = int(error_arg)
+        assert error_idx >= 0
+        error = ERRORS[error_idx]
+    except:
+        # This will fail on no error, an error that can't be converted to an
+        # integer and an error that can be converted to an integer but is not
+        # within the range of the tuple of errors. We don't need to log these
+        # situations.
+        pass
+
+    return flask.render_template('index.html', error=error)
+
+
+@app.route('/', methods=['POST'])
+@app.route('/<report_domains>')
+def report(report_domains=None):
     """Handle reports."""
     def render_report(qry_domains):
         """ Render and return the report.
@@ -189,10 +221,10 @@ def report():
         try:
             qry_domains = map(
                 base64.b64decode,
-                flask.request.args['q'].split(',')
+                report_domains.split(',')
             )
         except:
-            app.logger.error('Unable to decode valid domains from q GET param')
+            app.logger.error('Unable to decode valid domains from path')
             return flask.redirect('/error/1')
 
         return render_report(qry_domains)
@@ -212,34 +244,12 @@ def report():
         # so we can redirect to that (allows bookmarking). As in '/ip' we use
         # b64 to hide the domains from firewalls that already block some of
         # them.
-        params = urllib.urlencode({
-            'q': ','.join(map(base64.b64encode, qry_domains))
-        })
-        if len(params) <= 200:
-            return flask.redirect('/report?{}'.format(params))
+        path = ','.join(map(base64.b64encode, qry_domains))
+        if len(path) <= 200:
+            return flask.redirect('/{}'.format(path))
 
         # If there's a ton of domains, just to the report.
         return render_report(qry_domains)
-
-
-@app.route(r'/')
-@app.route(r'/error/<error_arg>')
-@cache.cached(timeout=3600)
-def index(error_arg=None):
-    """Main page, cached to 2 hours."""
-    error = None
-    try:
-        error_idx = int(error_arg)
-        assert error_idx >= 0
-        error = ERRORS[error_idx]
-    except:
-        # This will fail on no error, an error that can't be converted to an
-        # integer and an error that can be converted to an integer but is not
-        # within the range of the tuple of errors. We don't need to log these
-        # situations.
-        pass
-
-    return flask.render_template('index.html', error=error)
 
 
 if __name__ == '__main__':

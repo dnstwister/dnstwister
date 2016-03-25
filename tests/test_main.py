@@ -1,5 +1,6 @@
 """ Tests of the main module.
 """
+import base64
 import flask.ext.webtest
 import unittest
 
@@ -47,13 +48,6 @@ class TestMain(unittest.TestCase):
         form['domains'] = domains
         res = form.submit()
 
-        # This is a short list of domains so we have redirected to a GET url.
-        # We have also dropped the invalid domain.
-        self.assertEqual(
-            'http://localhost:80/report?q=d3d3LmV4YW1wbGUxLmNvbQ%3D%3D',
-            res.location
-        )
-
         # Follow the 302 to the report page
         res = res.follow()
         html = res.html
@@ -64,3 +58,23 @@ class TestMain(unittest.TestCase):
         # Check we only have one
         self.assertTrue('www.example1.com' in domains)
         self.assertFalse('www/example2/.com' in domains)
+
+    def test_report_redirect(self):
+        """Test the /report?q= urls redirect to the new urls."""
+
+        res = self.app.get('/report?q={}'.format(','.join((
+            base64.b64encode('a.com'),
+            base64.b64encode('b.com'),
+        ))))
+
+        self.assertEqual(
+            'http://localhost:80/YS5jb20=,Yi5jb20=',
+            res.location
+        )
+
+        res = self.app.post('/', { 'domains': 'b.com c.com' })
+
+        self.assertEqual(
+            'http://localhost:80/Yi5jb20=,Yy5jb20=',
+            res.location
+        )
