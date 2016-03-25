@@ -36,6 +36,7 @@ if __name__ == '__main__':
             else:
                 age = datetime.datetime.now() - last_read
                 if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
+                    print 'Unregistering {}'.format(domain)
                     repository.unregister_domain(domain)
 
             # Skip domains that have been recently updated
