@@ -2,10 +2,12 @@
 """
 import base64
 import dns.resolver
-import dnstwist
 import operator
 import re
 import socket
+
+import dnstwist
+import whois
 
 
 RESOLVER = dns.resolver.Resolver()
@@ -75,7 +77,7 @@ def query_domains(data_dict):
 
 
 def resolve(domain):
-    """Resolves a domain.
+    """Resolves a domain to an IP.
 
     Returns and (IP, False) on successful resolution, (False, False) on
     successful failure to resolve and (None, True) on error in attempting to
@@ -98,3 +100,12 @@ def resolve(domain):
         return False, False
     except:
         return False, True
+
+
+def whois_query(domain):
+    """Returns the whois info for a domain or None."""
+    try:
+        result = whois.lookup(domain)
+        print result
+    except:
+        pass

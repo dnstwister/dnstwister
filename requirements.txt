@@ -17,4 +17,4 @@ waitress==0.8.10
 WebOb==1.5.1
 WebTest==2.0.20
 Werkzeug==0.11.3
-zope.interface
+zope.interface==4.1.3
