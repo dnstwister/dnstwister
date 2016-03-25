@@ -188,3 +188,31 @@ class TestAtom(unittest.TestCase):
         read_date2 = dnstwister.main.repository.delta_report_last_read(domain)
 
         assert read_date2 > read_date
+
+    @mock.patch('dnstwister.main.db', patches.SimpleKVDatabase())
+    def test_unregister_tidies_database(self):
+        """Tests that you can unregister domains."""
+        repository = dnstwister.main.repository
+
+        domain = 'www.example.com'
+        b64domain = base64.b64encode(domain)
+
+        assert repository.is_domain_registered(domain) == False
+        assert dnstwister.main.db.data == {}
+
+        self.app.get('/atom/{}'.format(b64domain))
+        repository.update_delta_report(
+            domain, {
+                'new': [('www.examp1e.com', '127.0.0.1')],
+                'updated': [],
+                'deleted': [],
+            },
+        )
+
+        assert repository.is_domain_registered(domain) == True
+        assert dnstwister.main.db.data != {}
+
+        repository.unregister_domain(domain)
+
+        assert repository.is_domain_registered(domain) == False
+        assert dnstwister.main.db.data == {}

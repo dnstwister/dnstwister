@@ -5,6 +5,11 @@ class SimpleKVDatabase(object):
     def __init__(self):
         self._data = {}
 
+    @property
+    def data(self):
+        """Return a dict representation of the data, for testing."""
+        return dict(self._data)
+
     def set(self, key, value):
         """Set the value for key"""
         self._data[key] = value

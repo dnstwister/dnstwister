@@ -17,6 +17,23 @@ def register_domain(domain):
     main.db.set('registered_for_reporting_{}'.format(domain), True)
 
 
+def unregister_domain(domain):
+    """Unregisters a domain from reporting.
+
+    Unregistering a domain that isn't registered is a no-op.
+    """
+    keys = (
+        'registered_for_reporting',
+        'resolution_report',
+        'resolution_report_updated',
+        'delta_report',
+        'delta_report_updated',
+        'delta_report_read',
+    )
+    for key in keys:
+        main.db.delete('_'.join((key, domain)))
+
+
 def is_domain_registered(domain):
     """Return whether a domain is registered for reporting."""
     return main.db.get('registered_for_reporting_{}'.format(domain)) == True
@@ -89,11 +106,3 @@ def update_resolution_report(domain, report=None, updated=None):
         'resolution_report_updated_{}'.format(domain),
         updated.strftime('%Y-%m-%dT%H:%M:%SZ')
     )
-
-
-def unregister_domain(domain):
-    """Unregisters a domain from reporting.
-
-    Unregistering a domain that isn't registered is a no-op.
-    """
-    main.db.delete('registered_for_reporting_{}'.format(domain))
