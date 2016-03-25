@@ -24,42 +24,6 @@ def setup(new_conn, cursor):
         CREATE INDEX on data (lower(key))
     """)
 
-    print 'Importing old data...'
-    cursor.execute("""
-        delete from data
-    """)
-    new_conn.commit()
-
-    sys.path.append('..')
-    import dnstwister.repository as repository
-
-    # Domains for reporting
-    cursor.execute("""
-        select domain from report
-    """)
-    rows = cursor.fetchall()
-
-    for row in rows:
-        repository.register_domain(row[0])
-
-    # Reports
-    cursor.execute("""
-        select * from report
-    """)
-    rows = cursor.fetchall()
-
-    for row in rows:
-        repository.update_resolution_report(*row)
-
-    # Deltas
-    cursor.execute("""
-        select * from delta
-    """)
-    rows = cursor.fetchall()
-
-    for row in rows:
-        repository.update_delta_report(*row)
-
 
 if __name__ == '__main__':
 
