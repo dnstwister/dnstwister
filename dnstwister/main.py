@@ -4,7 +4,6 @@ import datetime
 import flask
 import flask.ext.cache
 import sys
-import urllib
 import werkzeug.contrib.atom
 
 import storage.pg_database
@@ -163,63 +162,16 @@ def atom(b64domain):
     return feed.get_response()
 
 
-@app.route('/report', methods=['GET', 'POST'])
-def report():
-    """Handle reports."""
-    def render_report(qry_domains):
-        """ Render and return the report.
-        """
-        reports = dict(filter(None, map(tools.analyse, qry_domains)))
+@app.route('/report')
+def report_old():
+    """Redirect old bookmarked reports to the new path format."""
+    try:
+        path = flask.request.args['q']
+    except:
+        app.logger.error('Unable to decode valid domains from q GET param')
+        return flask.redirect('/error/1')
 
-        # Handle no valid domains by redirecting to GET page.
-        if len(reports) == 0:
-            app.logger.error(
-                'No valid domains found in {}'.format(qry_domains)
-            )
-            return flask.redirect('/error/0')
-
-        return flask.render_template(
-            'report.html', reports=reports,
-            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
-        )
-
-    if flask.request.method == 'GET':
-        ### Handle redirect from form submit.
-        # Try to parse out the list of domains
-        try:
-            qry_domains = map(
-                base64.b64decode,
-                flask.request.args['q'].split(',')
-            )
-        except:
-            app.logger.error('Unable to decode valid domains from q GET param')
-            return flask.redirect('/error/1')
-
-        return render_report(qry_domains)
-
-    else:
-        # Handle form submit.
-        qry_domains = tools.query_domains(flask.request.form)
-
-        # Handle malformed domains data by redirecting to GET page.
-        if qry_domains is None:
-            app.logger.error(
-                'No valid domains in POST dict {}'.format(flask.request.args)
-            )
-            return flask.redirect('/error/2')
-
-        # Attempt to create a <= 200 character GET parameter from the domains
-        # so we can redirect to that (allows bookmarking). As in '/ip' we use
-        # b64 to hide the domains from firewalls that already block some of
-        # them.
-        params = urllib.urlencode({
-            'q': ','.join(map(base64.b64encode, qry_domains))
-        })
-        if len(params) <= 200:
-            return flask.redirect('/report?{}'.format(params))
-
-        # If there's a ton of domains, just to the report.
-        return render_report(qry_domains)
+    return flask.redirect('/search/{}'.format(path))
 
 
 @app.route(r'/')
@@ -240,6 +192,84 @@ def index(error_arg=None):
         pass
 
     return flask.render_template('index.html', error=error)
+
+
+@app.route('/search', methods=['POST'])
+@app.route('/search/<report_domains>')
+@app.route('/search/<report_domains>/<format>')
+def report(report_domains=None, format=None):
+    """Handle reports."""
+
+    def html_render(qry_domains):
+        """Render and return the html report."""
+        reports = dict(filter(None, map(tools.analyse, qry_domains)))
+
+        # Handle no valid domains by redirecting to GET page.
+        if len(reports) == 0:
+            app.logger.error(
+                'No valid domains found in {}'.format(qry_domains)
+            )
+            return flask.redirect('/error/0')
+
+        return flask.render_template(
+            'report.html', reports=reports,
+            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
+        )
+
+    def json_render(qry_domains):
+        """Render and return the json-formatted report."""
+        reports = dict(filter(None, map(tools.analyse, qry_domains)))
+
+        for report in reports.values():
+            for entry in report['fuzzy_domains']:
+                ip, error = tools.resolve(entry['domain-name'])
+                entry['resolution'] = {
+                    'ip': ip,
+                    'error': error,
+                }
+
+        return flask.json.jsonify(reports)
+
+    if flask.request.method == 'GET':
+        ### Handle redirect from form submit.
+        # Try to parse out the list of domains
+        try:
+            qry_domains = map(
+                base64.b64decode,
+                report_domains.split(',')
+            )
+        except:
+            app.logger.error('Unable to decode valid domains from path')
+            return flask.redirect('/error/1')
+
+        if format is None:
+            return html_render(qry_domains)
+        elif format == 'json':
+            return json_render(qry_domains)
+        else:
+            flask.abort(500)
+
+    else:
+        # Handle form submit.
+        qry_domains = tools.query_domains(flask.request.form)
+
+        # Handle malformed domains data by redirecting to GET page.
+        if qry_domains is None:
+            app.logger.error(
+                'No valid domains in POST dict {}'.format(flask.request.args)
+            )
+            return flask.redirect('/error/2')
+
+        # Attempt to create a <= 200 character GET parameter from the domains
+        # so we can redirect to that (allows bookmarking). As in '/ip' we use
+        # b64 to hide the domains from firewalls that already block some of
+        # them.
+        path = ','.join(map(base64.b64encode, qry_domains))
+        if len(path) <= 200:
+            return flask.redirect('/search/{}'.format(path))
+
+        # If there's a ton of domains, just to the report.
+        return html_render(qry_domains)
 
 
 if __name__ == '__main__':
