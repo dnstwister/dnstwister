@@ -68,13 +68,13 @@ class TestMain(unittest.TestCase):
         ))))
 
         self.assertEqual(
-            'http://localhost:80/YS5jb20=,Yi5jb20=',
+            'http://localhost:80/search/YS5jb20=,Yi5jb20=',
             res.location
         )
 
-        res = self.app.post('/', { 'domains': 'b.com c.com' })
+        res = self.app.post('/search', { 'domains': 'b.com c.com' })
 
         self.assertEqual(
-            'http://localhost:80/Yi5jb20=,Yy5jb20=',
+            'http://localhost:80/search/Yi5jb20=,Yy5jb20=',
             res.location
         )

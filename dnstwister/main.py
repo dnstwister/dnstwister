@@ -171,7 +171,7 @@ def report_old():
         app.logger.error('Unable to decode valid domains from q GET param')
         return flask.redirect('/error/1')
 
-    return flask.redirect('/{}'.format(path))
+    return flask.redirect('/search/{}'.format(path))
 
 
 @app.route(r'/')
@@ -194,8 +194,8 @@ def index(error_arg=None):
     return flask.render_template('index.html', error=error)
 
 
-@app.route('/', methods=['POST'])
-@app.route('/<report_domains>')
+@app.route('/search', methods=['POST'])
+@app.route('/search/<report_domains>')
 def report(report_domains=None):
     """Handle reports."""
     def render_report(qry_domains):
@@ -246,7 +246,7 @@ def report(report_domains=None):
         # them.
         path = ','.join(map(base64.b64encode, qry_domains))
         if len(path) <= 200:
-            return flask.redirect('/{}'.format(path))
+            return flask.redirect('/search/{}'.format(path))
 
         # If there's a ton of domains, just to the report.
         return render_report(qry_domains)
