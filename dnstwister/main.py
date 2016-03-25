@@ -50,6 +50,24 @@ def resolve(b64domain):
     return flask.json.jsonify({'ip': ip, 'error': error})
 
 
+@app.route('/whois/<b64domain>')
+@cache.cached(timeout=86400)
+def whois_query(b64domain):
+    """Does a whois.
+
+    Cached to 24 hours.
+    """
+    # Firstly, try and parse a valid domain (base64-encoded) from the
+    # 'b64' GET parameter.
+    domain = tools.parse_domain(b64domain)
+    if domain is None:
+        flask.abort(500)
+
+    whois_data = tools.whois_query(domain)
+
+    return flask.render_template('whois.html', whois_data=whois_data)
+
+
 @app.route('/atom/<b64domain>')
 @cache.cached(timeout=86400)
 def atom(b64domain):

@@ -105,7 +105,6 @@ def resolve(domain):
 def whois_query(domain):
     """Returns the whois info for a domain or None."""
     try:
-        result = whois.lookup(domain)
-        print result
+        return whois.lookup(domain)
     except:
-        pass
+        return {'error': 'whois lookup failed'}
