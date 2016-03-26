@@ -7,13 +7,12 @@ import sys
 import werkzeug.contrib.atom
 
 import storage.pg_database
-import tools
 
 
 # Any implementation of storage.interfaces.IKeyValueDB.
 db = storage.pg_database.PGDatabase()
 
-# Set up the repository. Will import main.db.
+# Import modules using main.db here.
 import repository
 
 
@@ -26,17 +25,15 @@ ERRORS = (
 
 
 app = flask.Flask(__name__)
-
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
+
+# Import modules using main.cache here
+import tools
 
 
 @app.route('/ip/<b64domain>')
-@cache.cached(timeout=86400)
 def resolve(b64domain):
-    """Resolves Domains to IPs.
-
-    Cached to 24 hours.
-    """
+    """Resolves Domains to IPs."""
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
     domain = tools.parse_domain(b64domain)
@@ -50,12 +47,8 @@ def resolve(b64domain):
 
 
 @app.route('/whois/<b64domain>')
-@cache.cached(timeout=86400)
 def whois_query(b64domain):
-    """Does a whois.
-
-    Cached to 24 hours.
-    """
+    """Does a whois."""
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
     domain = tools.parse_domain(b64domain)
@@ -68,12 +61,8 @@ def whois_query(b64domain):
 
 
 @app.route('/atom/<b64domain>')
-@cache.cached(timeout=86400)
 def atom(b64domain):
-    """Return new atom items for changes in resolved domains.
-
-    Cached for 24 hours.
-    """
+    """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
     domain = tools.parse_domain(b64domain)
     if domain is None:
@@ -181,9 +170,8 @@ def report_old():
 
 @app.route(r'/')
 @app.route(r'/error/<error_arg>')
-@cache.cached(timeout=3600)
 def index(error_arg=None):
-    """Main page, cached to 2 hours."""
+    """Main page."""
     error = None
     try:
         error_idx = int(error_arg)
@@ -217,16 +205,19 @@ def report(report_domains=None, format=None):
             return flask.redirect('/error/0')
 
         return flask.render_template(
-            'report.html', reports=reports,
-            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
+            'report.html',
+            reports=reports,
+            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains))),
+            exports={'json':'json'},
+            search=report_domains,
         )
 
     def json_render(qry_domains):
         """Render and return the json-formatted report."""
         reports = dict(filter(None, map(tools.analyse, qry_domains)))
 
-        for report in reports.values():
-            for entry in report['fuzzy_domains']:
+        for rept in reports.values():
+            for entry in rept['fuzzy_domains']:
                 ip, error = tools.resolve(entry['domain-name'])
                 entry['resolution'] = {
                     'ip': ip,
