@@ -208,7 +208,7 @@ def report(report_domains=None, format=None):
             'report.html',
             reports=reports,
             atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains))),
-            exports={'json':'json'},
+            exports={'json':'json', 'csv': 'csv'},
             search=report_domains,
         )
 
@@ -226,6 +226,26 @@ def report(report_domains=None, format=None):
 
         return flask.json.jsonify(reports)
 
+    def csv_render(qry_domains):
+        """Render and return the csv-formatted report."""
+        reports = dict(filter(None, map(tools.analyse, qry_domains)))
+
+        def generate():
+            """Streaming download generator."""
+            for (domain, rept) in reports.items():
+                for entry in rept['fuzzy_domains']:
+                    ip, error = tools.resolve(entry['domain-name'])
+                    row = map(str, (
+                        domain,
+                        entry['fuzzer'],
+                        entry['domain-name'],
+                        ip,
+                        error,
+                    ))
+                    yield ','.join(row) + '\n'
+
+        return flask.Response(generate())#, mimetype='text/csv')
+
     if flask.request.method == 'GET':
         ### Handle redirect from form submit.
         # Try to parse out the list of domains
@@ -242,6 +262,8 @@ def report(report_domains=None, format=None):
             return html_render(qry_domains)
         elif format == 'json':
             return json_render(qry_domains)
+        elif format == 'csv':
+            return csv_render(qry_domains)
         else:
             flask.abort(500)
 
