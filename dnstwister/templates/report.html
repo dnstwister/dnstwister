@@ -23,7 +23,15 @@
             </p>
         </section>
         <section>
-            <button id="show_all">Toggle unresolved domains</button>
+            <button id="show_all">Show/hide unresolved domains</button>
+            {% if search %}
+                <section class="exports">
+                    export:
+                    {% for title, path in exports.items() %}
+                        <a href="/search/{{ search }}/{{ path }}">{{ title }}</a>
+                    {% endfor %}
+                </section>
+            {% endif %}
         </section>
         <section>
             <table class="report u-full-width">

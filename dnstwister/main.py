@@ -205,8 +205,11 @@ def report(report_domains=None, format=None):
             return flask.redirect('/error/0')
 
         return flask.render_template(
-            'report.html', reports=reports,
-            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains)))
+            'report.html',
+            reports=reports,
+            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains))),
+            exports={'json':'json'},
+            search=report_domains,
         )
 
     def json_render(qry_domains):

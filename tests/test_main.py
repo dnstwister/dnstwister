@@ -2,9 +2,11 @@
 """
 import base64
 import flask.ext.webtest
+import mock
 import unittest
 
 import dnstwister.main
+import patches
 
 
 class TestMain(unittest.TestCase):
@@ -19,10 +21,7 @@ class TestMain(unittest.TestCase):
     def test_index(self):
         """ Test the index page
         """
-        # Load index page. We have to include an invalid error here to get the
-        # page to load as the non-error index is static and not supported via
-        # webtest.
-        res = self.app.get('/error/9')
+        res = self.app.get('/')
 
         self.assertEqual(res.status_int, 200)
         self.assertTrue(
@@ -30,6 +29,7 @@ class TestMain(unittest.TestCase):
             'Page loaded HTML AOK'
         )
 
+    @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
     def test_report_lists_valid_domains(self):
         """ Test that the report page lists (only) valid domains.
         """
@@ -59,6 +59,7 @@ class TestMain(unittest.TestCase):
         self.assertTrue('www.example1.com' in domains)
         self.assertFalse('www/example2/.com' in domains)
 
+    @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
     def test_report_redirect(self):
         """Test the /report?q= urls redirect to the new urls."""
 
@@ -78,3 +79,32 @@ class TestMain(unittest.TestCase):
             'http://localhost:80/search/Yi5jb20=,Yy5jb20=',
             res.location
         )
+
+    @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
+    def test_max_url_length(self):
+        """If too many domains are entered to make a nice GET URL, the report
+        is done without the URL.
+        """
+        domains = ' '.join(['www.example{}.com'.format(i)
+                            for i
+                            in range(9)])
+
+        res = self.app.post('/search', { 'domains': domains })
+
+        # We don't change location.
+        assert res.location is None
+
+        # And we have all the domains listed.
+        assert all([domain in res.body
+                    for domain
+                    in domains])
+
+        # We don't show exports when we have no url
+        assert 'json' not in res.body
+
+    @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
+    def test_exports(self):
+        """We have export links."""
+        res = self.app.get('/search/{}'.format(base64.b64encode('a.com')))
+
+        assert 'json' in res.body

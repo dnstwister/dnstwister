@@ -33,3 +33,16 @@ class SimpleKVDatabase(object):
             del self._data[key]
         except KeyError:
             pass
+
+
+class SimpleFuzzer(object):
+    """Replace the fuzzer with something that returns not much."""
+    def __init__(self, domain):
+        self._domain = domain
+
+    def fuzz(self):
+        pass
+
+    @property
+    def domains(self):
+        return [{'domain-name': self._domain, 'fuzzer': 'Original*'},]
