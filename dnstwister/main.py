@@ -7,7 +7,6 @@ import sys
 import werkzeug.contrib.atom
 
 import storage.pg_database
-import tools
 
 
 # Any implementation of storage.interfaces.IKeyValueDB.
@@ -26,14 +25,10 @@ ERRORS = (
 
 
 app = flask.Flask(__name__)
-
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
-
-@cache.cached(timeout=3600)
-def cached_resolve(domain):
-    """Call to do cached resolves, cached to the hour."""
-    return tools.resolve(domain)
+# Import modules using main.cache here
+import tools
 
 
 @app.route('/ip/<b64domain>')
@@ -45,7 +40,7 @@ def resolve(b64domain):
     if domain is None:
         flask.abort(500)
 
-    ip, error = cached_resolve(domain)
+    ip, error = tools.resolve(domain)
 
     # Response IP is now an IP address, or False.
     return flask.json.jsonify({'ip': ip, 'error': error})
@@ -220,7 +215,7 @@ def report(report_domains=None, format=None):
 
         for rept in reports.values():
             for entry in rept['fuzzy_domains']:
-                ip, error = cached_resolve(entry['domain-name'])
+                ip, error = tools.resolve(entry['domain-name'])
                 entry['resolution'] = {
                     'ip': ip,
                     'error': error,

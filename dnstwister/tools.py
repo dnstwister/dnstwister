@@ -7,6 +7,7 @@ import re
 import socket
 
 import dnstwist
+import main
 import whois
 
 
@@ -76,12 +77,15 @@ def query_domains(data_dict):
     return list(set(domains)) if len(domains) > 0 else None
 
 
+@main.cache.memoize(3600)
 def resolve(domain):
     """Resolves a domain to an IP.
 
     Returns and (IP, False) on successful resolution, (False, False) on
     successful failure to resolve and (None, True) on error in attempting to
     resolve.
+
+    Cached to 1 hour.
     """
     # Try for an 'A' record.
     try:
