@@ -30,32 +30,30 @@ app = flask.Flask(__name__)
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
 
-@app.route('/ip/<b64domain>')
-@cache.cached(timeout=86400)
-def resolve(b64domain):
-    """Resolves Domains to IPs.
+@cache.cached(timeout=3600)
+def cached_resolve(domain):
+    """Call to do cached resolves, cached to the hour."""
+    return tools.resolve(domain)
 
-    Cached to 24 hours.
-    """
+
+@app.route('/ip/<b64domain>')
+def resolve(b64domain):
+    """Resolves Domains to IPs."""
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
     domain = tools.parse_domain(b64domain)
     if domain is None:
         flask.abort(500)
 
-    ip, error = tools.resolve(domain)
+    ip, error = cached_resolve(domain)
 
     # Response IP is now an IP address, or False.
     return flask.json.jsonify({'ip': ip, 'error': error})
 
 
 @app.route('/whois/<b64domain>')
-@cache.cached(timeout=86400)
 def whois_query(b64domain):
-    """Does a whois.
-
-    Cached to 24 hours.
-    """
+    """Does a whois."""
     # Firstly, try and parse a valid domain (base64-encoded) from the
     # 'b64' GET parameter.
     domain = tools.parse_domain(b64domain)
@@ -68,12 +66,8 @@ def whois_query(b64domain):
 
 
 @app.route('/atom/<b64domain>')
-@cache.cached(timeout=86400)
 def atom(b64domain):
-    """Return new atom items for changes in resolved domains.
-
-    Cached for 24 hours.
-    """
+    """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
     domain = tools.parse_domain(b64domain)
     if domain is None:
@@ -181,9 +175,8 @@ def report_old():
 
 @app.route(r'/')
 @app.route(r'/error/<error_arg>')
-@cache.cached(timeout=3600)
 def index(error_arg=None):
-    """Main page, cached to 2 hours."""
+    """Main page."""
     error = None
     try:
         error_idx = int(error_arg)
@@ -225,9 +218,9 @@ def report(report_domains=None, format=None):
         """Render and return the json-formatted report."""
         reports = dict(filter(None, map(tools.analyse, qry_domains)))
 
-        for report in reports.values():
-            for entry in report['fuzzy_domains']:
-                ip, error = tools.resolve(entry['domain-name'])
+        for rept in reports.values():
+            for entry in rept['fuzzy_domains']:
+                ip, error = cached_resolve(entry['domain-name'])
                 entry['resolution'] = {
                     'ip': ip,
                     'error': error,
