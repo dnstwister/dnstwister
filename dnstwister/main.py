@@ -12,7 +12,7 @@ import storage.pg_database
 # Any implementation of storage.interfaces.IKeyValueDB.
 db = storage.pg_database.PGDatabase()
 
-# Set up the repository. Will import main.db.
+# Import modules using main.db here.
 import repository
 
 
