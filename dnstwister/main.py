@@ -68,7 +68,7 @@ def atom(hexdomain):
     feed = werkzeug.contrib.atom.AtomFeed(
         title='dnstwister report for {}'.format(domain),
         feed_url='https://dnstwister.report/atom/{}'.format(hexdomain),
-        url='https://dnstwister.report/report?q={}'.format(hexdomain),
+        url='https://dnstwister.report/search/{}'.format(hexdomain),
     )
 
     # The publish/update date for the placeholder is locked to 00:00:00.000
