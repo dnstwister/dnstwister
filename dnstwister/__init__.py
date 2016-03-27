@@ -1,1 +1,0 @@
-"""Heroku app dnstwister."""
