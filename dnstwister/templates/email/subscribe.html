@@ -8,7 +8,7 @@
 {% endblock %}
 {% block body %}
         <section>
-            <form action="/email/subscribe/{{ b64domain }}" method="post">
+            <form action="/email/subscribe/{{ hexdomain }}" method="post">
                 <input type="hidden" name="domain" value="{{ domain }}"/>
                 <input type="text" name="address"/>
             </form>

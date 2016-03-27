@@ -286,24 +286,24 @@ def report(report_domains=None, format=None):
         return html_render(qry_domains)
 
 
-@app.route('/email/subscribe/<b64domain>')
-def email_subscribe_get_email(b64domain):
+@app.route('/email/subscribe/<hexdomain>')
+def email_subscribe_get_email(hexdomain):
     """Handle subscriptions."""
-    domain = tools.parse_domain(b64domain)
+    domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
     return flask.render_template(
         'email/subscribe.html',
         domain=domain,
-        b64domain=b64domain,
+        hexdomain=hexdomain,
     )
 
 
-@app.route('/email/subscribe/<b64domain>', methods=['POST'])
-def email_subscribe_pending_confirm(b64domain):
+@app.route('/email/subscribe/<hexdomain>', methods=['POST'])
+def email_subscribe_pending_confirm(hexdomain):
     """Send email for verification of subscription."""
-    domain = tools.parse_domain(b64domain)
+    domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
