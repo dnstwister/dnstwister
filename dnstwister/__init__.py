@@ -12,7 +12,6 @@ import storage.pg_database
 db = storage.pg_database.PGDatabase()
 
 # Import modules using main.db here.
-import repository
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -25,8 +24,10 @@ ERRORS = (
 app = flask.Flask(__name__)
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
-# Import modules using main.cache here
+# Import modules using dnstwister.app/cache/db here
+import repository
 import tools
+import views.syndication.atom
 
 
 @app.route('/ip/<hexdomain>')
@@ -234,7 +235,3 @@ def email_subscribe_confirm_email(hexdomain, verify_code):
     repository.subscribe_email(verify_code, domain)
 
     return flask.render_template('email/subscribed.html', domain=domain)
-
-
-app.add_url_rule('/atom/<hexdomain>', 'atom', views.syndication.atom.view)
-

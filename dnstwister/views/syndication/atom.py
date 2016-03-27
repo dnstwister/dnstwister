@@ -1,11 +1,17 @@
 """Atom syndication."""
+import datetime
+import flask
 import werkzeug.contrib.atom
 
+from dnstwister import app, repository
+import dnstwister.tools
 
+
+@app.route('/atom/<hexdomain>')
 def view(hexdomain):
     """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
-    domain = tools.parse_domain(hexdomain)
+    domain = dnstwister.tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
@@ -35,7 +41,7 @@ def view(hexdomain):
             title='No report yet for {}'.format(domain),
             title_type='text',
             content=flask.render_template(
-                'atom_placeholder.html', domain=domain
+                'syndication/atom/placeholder.html', domain=domain
             ),
             content_type='html',
             author='dnstwister',

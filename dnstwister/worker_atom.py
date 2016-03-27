@@ -2,9 +2,8 @@
 import datetime
 import time
 
-import dnstwist
-import repository
-import tools
+from dnstwister import repository
+import dnstwister.tools as tools
 
 
 # Time in seconds between re-processing a domain.
