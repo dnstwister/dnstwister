@@ -9,10 +9,10 @@
 {% endblock %}
 {% block body %}
         <section class="domains">
-            {% for domain, b64 in atoms.items() %}
+            {% for domain, hex in atoms.items() %}
                 {{ domain }}
-                <a href="/atom/{{ b64 }}"><img class="feed_ico" src="/static/feed.png"/></a>
-                <a href="/email/subscribe/{{ b64 }}">email</a>
+                <a href="/atom/{{ hex }}"><img class="feed_ico" src="/static/feed.png"/></a>
+                <a href="/email/subscribe/{{ hex }}">email</a>
             {% endfor %}
             <br />
             <a href="/">new report</a>
@@ -51,7 +51,7 @@
                                 <td>{{ domain }}</td>
                                 <td>{{ entry['domain-name'] }}</td>
                                 <td>{{ entry.fuzzer }}</td>
-                                <td class="resolvable" data-b64="{{ entry.b64 }}" data-ip="{{ entry.ip }}">...</td>
+                                <td class="resolvable" data-hex="{{ entry.hex }}" data-ip="{{ entry.ip }}">...</td>
                             </tr>
                         {% endfor %}
                     {% endfor %}

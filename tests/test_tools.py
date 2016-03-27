@@ -1,5 +1,6 @@
 """ Tests of the tools module.
 """
+import binascii
 import base64
 import dnstwister.dnstwist as dnstwist
 import dnstwister.tools as tools
@@ -93,16 +94,16 @@ class TestTools(unittest.TestCase):
         """
         self.assertIs(
             None, tools.parse_domain(''),
-            'Missing b64 data should return None'
+            'Missing hex data should return None'
         )
 
         self.assertIs(
             None, tools.parse_domain(None),
-            'Non-b64-decodable data should return None'
+            'Non-hex-decodable data should return None'
         )
         self.assertIs(
             None, tools.parse_domain('he378a -- ?'),
-            'Non-b64-decodable data should return None'
+            'Non-hex-decodable data should return None'
         )
 
         bad_domain = '\\www.z.comasfff'
@@ -111,10 +112,10 @@ class TestTools(unittest.TestCase):
             'Bad domain should be invalid'
         )
 
-        bad_domain_data = base64.b64encode(bad_domain)
+        bad_domain_data = binascii.hexlify(bad_domain)
         self.assertIs(
             None, tools.parse_domain(bad_domain_data),
-            'b64-decodable (but invalid) domain data should return None'
+            'hex-decodable (but invalid) domain data should return None'
         )
 
         domain = 'www.example.com'
@@ -123,11 +124,18 @@ class TestTools(unittest.TestCase):
             'Good domain should be valid'
         )
 
+        domain_data = binascii.hexlify(domain)
+        self.assertEqual(
+            'www.example.com',
+            tools.parse_domain(domain_data),
+            'hex-decodable valid domain data should be returned'
+        )
+
         domain_data = base64.b64encode(domain)
         self.assertEqual(
             'www.example.com',
             tools.parse_domain(domain_data),
-            'b64-decodable valid domain data should be returned'
+            'Old b64-style domain data is also processable.'
         )
 
 
@@ -149,7 +157,7 @@ class TestTools(unittest.TestCase):
         )
 
         self.assertItemsEqual(
-            {'domain-name': 'a.com', 'fuzzer': 'Original*', 'b64': 'YS5jb20='},
+            {'domain-name': 'a.com', 'fuzzer': 'Original*', 'hex': 'YS5jb20='},
             results[1]['fuzzy_domains'][0],
             'First result is the original domain'
         )
