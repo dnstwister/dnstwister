@@ -42,7 +42,7 @@ class TestAtom(unittest.TestCase):
               <title type="text">dnstwister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
-              <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
               <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
               <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
@@ -50,7 +50,7 @@ class TestAtom(unittest.TestCase):
                 <id>waiting:www.example.com</id>
                 <updated>{date_today}</updated>
                 <published>{date_today}</published>
-                <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
+                <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
                 <author>
                   <name>dnstwister</name>
                 </author>
@@ -87,7 +87,7 @@ class TestAtom(unittest.TestCase):
               <title type="text">dnstwister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
-              <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
               <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
               <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
@@ -95,7 +95,7 @@ class TestAtom(unittest.TestCase):
                 <id>waiting:www.example.com</id>
                 <updated>{date_today}</updated>
                 <published>{date_today}</published>
-                <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
+                <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
                 <author>
                   <name>dnstwister</name>
                 </author>
@@ -142,7 +142,7 @@ class TestAtom(unittest.TestCase):
               <title type="text">dnstwister report for www.example.com</title>
               <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>2016-02-28T11:10:34Z</updated>
-              <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
+              <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
               <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
               <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
@@ -150,7 +150,7 @@ class TestAtom(unittest.TestCase):
                 <id>new:www.examp1e.com:127.0.0.1:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="https://dnstwister.report/report?q=d3d3LmV4YW1wbGUuY29t" />
+                <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
                 <author>
                   <name>dnstwister</name>
                 </author>
