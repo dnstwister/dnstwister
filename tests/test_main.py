@@ -1,6 +1,6 @@
 """ Tests of the main module.
 """
-import base64
+import binascii
 import flask.ext.webtest
 import mock
 import unittest
@@ -33,9 +33,6 @@ class TestMain(unittest.TestCase):
     def test_report_lists_valid_domains(self):
         """ Test that the report page lists (only) valid domains.
         """
-        # Load index page. We have to include an invalid error here to get the
-        # page to load as the non-error index is static and not supported via
-        # webtest.
         res = self.app.get('/error/9')
 
         # Fill out 2 URLs (one valid, one not) and submit to the report
@@ -64,19 +61,19 @@ class TestMain(unittest.TestCase):
         """Test the /report?q= urls redirect to the new urls."""
 
         res = self.app.get('/report?q={}'.format(','.join((
-            base64.b64encode('a.com'),
-            base64.b64encode('b.com'),
+            binascii.hexlify('a.com'),
+            binascii.hexlify('b.com'),
         ))))
 
         self.assertEqual(
-            'http://localhost:80/search/YS5jb20=,Yi5jb20=',
+            'http://localhost:80/search/612e636f6d,622e636f6d',
             res.location
         )
 
         res = self.app.post('/search', { 'domains': 'b.com c.com' })
 
         self.assertEqual(
-            'http://localhost:80/search/Yi5jb20=,Yy5jb20=',
+            'http://localhost:80/search/622e636f6d,632e636f6d',
             res.location
         )
 
@@ -105,6 +102,6 @@ class TestMain(unittest.TestCase):
     @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
     def test_exports(self):
         """We have export links."""
-        res = self.app.get('/search/{}'.format(base64.b64encode('a.com')))
+        res = self.app.get('/search/{}'.format(binascii.hexlify('a.com')))
 
         assert 'json' in res.body
