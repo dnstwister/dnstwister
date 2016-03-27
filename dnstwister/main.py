@@ -247,7 +247,7 @@ def report(report_domains=None, format=None):
         # Try to parse out the list of domains
         try:
             qry_domains = map(
-                binascii.unhexlify,
+                tools.parse_domain,
                 report_domains.split(',')
             )
         except:
