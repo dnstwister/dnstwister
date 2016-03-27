@@ -1,5 +1,5 @@
 """dnstwister web app."""
-import base64
+import binascii
 import datetime
 import flask
 import flask.ext.cache
@@ -31,12 +31,10 @@ cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 import tools
 
 
-@app.route('/ip/<b64domain>')
-def resolve(b64domain):
+@app.route('/ip/<hexdomain>')
+def resolve(hexdomain):
     """Resolves Domains to IPs."""
-    # Firstly, try and parse a valid domain (base64-encoded) from the
-    # 'b64' GET parameter.
-    domain = tools.parse_domain(b64domain)
+    domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
@@ -46,12 +44,10 @@ def resolve(b64domain):
     return flask.json.jsonify({'ip': ip, 'error': error})
 
 
-@app.route('/whois/<b64domain>')
-def whois_query(b64domain):
+@app.route('/whois/<hexdomain>')
+def whois_query(hexdomain):
     """Does a whois."""
-    # Firstly, try and parse a valid domain (base64-encoded) from the
-    # 'b64' GET parameter.
-    domain = tools.parse_domain(b64domain)
+    domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
@@ -60,19 +56,19 @@ def whois_query(b64domain):
     return flask.render_template('whois.html', whois_data=whois_data)
 
 
-@app.route('/atom/<b64domain>')
-def atom(b64domain):
+@app.route('/atom/<hexdomain>')
+def atom(hexdomain):
     """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
-    domain = tools.parse_domain(b64domain)
+    domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
         title='dnstwister report for {}'.format(domain),
-        feed_url='https://dnstwister.report/atom/{}'.format(b64domain),
-        url='https://dnstwister.report/report?q={}'.format(b64domain),
+        feed_url='https://dnstwister.report/atom/{}'.format(hexdomain),
+        url='https://dnstwister.report/search/{}'.format(hexdomain),
     )
 
     # The publish/update date for the placeholder is locked to 00:00:00.000
@@ -207,8 +203,8 @@ def report(report_domains=None, format=None):
         return flask.render_template(
             'report.html',
             reports=reports,
-            atoms=dict(zip(qry_domains, map(base64.b64encode, qry_domains))),
-            exports={'json':'json'},
+            atoms=dict(zip(qry_domains, map(binascii.hexlify, qry_domains))),
+            exports={'json':'json', 'csv': 'csv'},
             search=report_domains,
         )
 
@@ -226,12 +222,32 @@ def report(report_domains=None, format=None):
 
         return flask.json.jsonify(reports)
 
+    def csv_render(qry_domains):
+        """Render and return the csv-formatted report."""
+        reports = dict(filter(None, map(tools.analyse, qry_domains)))
+
+        def generate():
+            """Streaming download generator."""
+            for (domain, rept) in reports.items():
+                for entry in rept['fuzzy_domains']:
+                    ip, error = tools.resolve(entry['domain-name'])
+                    row = map(str, (
+                        domain,
+                        entry['fuzzer'],
+                        entry['domain-name'],
+                        ip,
+                        error,
+                    ))
+                    yield ','.join(row) + '\n'
+
+        return flask.Response(generate())#, mimetype='text/csv')
+
     if flask.request.method == 'GET':
         ### Handle redirect from form submit.
         # Try to parse out the list of domains
         try:
             qry_domains = map(
-                base64.b64decode,
+                tools.parse_domain,
                 report_domains.split(',')
             )
         except:
@@ -242,6 +258,8 @@ def report(report_domains=None, format=None):
             return html_render(qry_domains)
         elif format == 'json':
             return json_render(qry_domains)
+        elif format == 'csv':
+            return csv_render(qry_domains)
         else:
             flask.abort(500)
 
@@ -258,9 +276,9 @@ def report(report_domains=None, format=None):
 
         # Attempt to create a <= 200 character GET parameter from the domains
         # so we can redirect to that (allows bookmarking). As in '/ip' we use
-        # b64 to hide the domains from firewalls that already block some of
+        # hex to hide the domains from firewalls that already block some of
         # them.
-        path = ','.join(map(base64.b64encode, qry_domains))
+        path = ','.join(map(binascii.hexlify, qry_domains))
         if len(path) <= 200:
             return flask.redirect('/search/{}'.format(path))
 
