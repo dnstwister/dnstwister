@@ -320,7 +320,7 @@ def email_subscribe_pending_confirm(hexdomain):
 
 
 @app.route('/email/verify/<hexdomain>/<verify_code>')
-def email_subscribe_confirm_email(verify_code):
+def email_subscribe_confirm_email(hexdomain, verify_code):
     """Handle email verification."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:

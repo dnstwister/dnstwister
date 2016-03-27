@@ -9,8 +9,7 @@
 {% block body %}
         <section>
             <form action="/email/subscribe/{{ hexdomain }}" method="post">
-                <input type="hidden" name="domain" value="{{ domain }}"/>
-                <input type="text" name="address"/>
+                <input type="text" name="email"/>
             </form>
         </section>
 {% endblock %}
