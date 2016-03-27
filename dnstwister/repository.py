@@ -129,3 +129,5 @@ def subscribe_email(verify_code, domain):
         subscription['subs'].append(domain)
 
     main.db.set('email_id_{}'.format(verify_code), subscription)
+
+    register_domain(domain)
