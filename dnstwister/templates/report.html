@@ -12,6 +12,7 @@
             {% for domain, b64 in atoms.items() %}
                 {{ domain }}
                 <a href="/atom/{{ b64 }}"><img class="feed_ico" src="/static/feed.png"/></a>
+                <a href="/email/subscribe/{{ b64 }}">email</a>
             {% endfor %}
             <br />
             <a href="/">new report</a>

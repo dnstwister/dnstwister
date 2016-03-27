@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Subscribed{% endblock %}
+{% block head %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>You are now <strong>unsubscribed</strong> to updates for {{ domain }}</h1>
+{% endblock %}
+{% block body %}
+{% endblock %}

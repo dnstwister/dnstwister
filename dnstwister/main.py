@@ -290,6 +290,42 @@ def report(report_domains=None, format=None):
         return html_render(qry_domains)
 
 
+@app.route('/email/subscribe/<b64domain>')
+def email_subscribe_get_email(b64domain):
+    """Handle subscriptions."""
+    domain = tools.parse_domain(b64domain)
+    if domain is None:
+        flask.abort(500)
+
+    return flask.render_template(
+        'email/subscribe.html',
+        domain=domain,
+        b64domain=b64domain,
+    )
+
+
+@app.route('/email/subscribe/<b64domain>', methods=['POST'])
+def email_subscribe_pending_confirm(b64domain):
+    """Send email for verification of subscription."""
+    domain = tools.parse_domain(b64domain)
+    if domain is None:
+        flask.abort(500)
+
+    verify_code = tools.verify_code()
+    print verify_code
+
+    #TODO: err, send email? :)
+
+    return flask.render_template('email/pending_verify.html', domain=domain)
+
+
+@app.route('/email/verify/<verify_code>')
+def email_subscribe_confirm_email(verify_code):
+    """Handle email verification."""
+    domain = 'www.example.com'
+    return flask.render_template('email/subscribed.html', domain=domain)
+
+
 if __name__ == '__main__':
 
     app.run(debug=(sys.argv[-1] == '-d'))

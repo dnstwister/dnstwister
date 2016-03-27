@@ -1,8 +1,10 @@
 """ Non-GAE tools.
 """
 import base64
+import binascii
 import dns.resolver
 import operator
+import os
 import re
 import socket
 
@@ -112,3 +114,8 @@ def whois_query(domain):
         return whois.lookup(domain)
     except:
         return 'Error: whois lookup failed'
+
+
+def verify_code(bytes=32):
+    """Generate a random verification code for an email subscription."""
+    return binascii.hexlify(os.urandom(bytes))

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Subscribe{% endblock %}
+{% block head %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>Subscribe to email updates for {{ domain }}</h1>
+{% endblock %}
+{% block body %}
+        <section>
+            <form action="/email/subscribe/{{ b64domain }}" method="post">
+                <input type="hidden" name="domain" value="{{ domain }}"/>
+                <input type="text" name="address"/>
+            </form>
+        </section>
+{% endblock %}

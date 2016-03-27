@@ -12,6 +12,10 @@ maps = {
         'normalize.css',
         'skeleton.css',
     ),
+    'email.min.css': (
+        'normalize.css',
+        'skeleton.css',
+    ),
     'report.min.css': (
         'normalize.css',
         'skeleton.css',
