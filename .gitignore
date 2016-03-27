@@ -1,3 +1,4 @@
 *.pyc
 resolvers/dnsresolve*
 .cache/
+brand/*.psd
