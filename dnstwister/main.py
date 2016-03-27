@@ -307,18 +307,30 @@ def email_subscribe_pending_confirm(hexdomain):
     if domain is None:
         flask.abort(500)
 
+    email = flask.request.form['email']
+
     verify_code = tools.verify_code()
     print verify_code
+
+    repository.stage_email_subscription(email, verify_code)
 
     #TODO: err, send email? :)
 
     return flask.render_template('email/pending_verify.html', domain=domain)
 
 
-@app.route('/email/verify/<verify_code>')
+@app.route('/email/verify/<hexdomain>/<verify_code>')
 def email_subscribe_confirm_email(verify_code):
     """Handle email verification."""
-    domain = 'www.example.com'
+    domain = tools.parse_domain(hexdomain)
+    if domain is None:
+        flask.abort(500)
+
+    if not repository.verify_code_valid(verify_code):
+        flask.abort(500)
+
+    repository.subscribe_email(verify_code, domain)
+
     return flask.render_template('email/subscribed.html', domain=domain)
 
 
