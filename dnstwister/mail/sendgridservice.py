@@ -1,3 +1,4 @@
+"""SendGrid-based email sender."""
 import os
 import sendgrid
 

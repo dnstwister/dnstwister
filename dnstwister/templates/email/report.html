@@ -1,7 +1,6 @@
 <h1>dnstwister report for {{ domain }}</h1>
 <p>Here's your dnstwister report, updated {{ updated_date }}.</p>
-{% if new %}
-<h2>New registrations</h2>
+{% if new %}<h2>New registrations</h2>
 <table>
     <thead>
         <tr>
@@ -10,17 +9,13 @@
         </tr>
     </thead>
     <tbody>
-        {% for (dom, ip) in new %}
-        <tr>
+        {% for (dom, ip) in new %}<tr>
             <td>{{ dom }}</td>
             <td>{{ ip }}</td>
         </tr>
-        {% endfor %}
-    </tbody>
+    {% endfor %}</tbody>
 </table>
-{% endif %}
-{% if updated %}
-<h2>Updated registrations</h2>
+{% endif %}{% if updated %}<h2>Updated registrations</h2>
 <table>
     <thead>
         <tr>
@@ -30,18 +25,14 @@
         </tr>
     </thead>
     <tbody>
-        {% for (dom, old_ip, new_ip) in updated %}
-        <tr>
+        {% for (dom, old_ip, new_ip) in updated %}<tr>
             <td>{{ dom }}</td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
         </tr>
-        {% endfor %}
-    </tbody>
+    {% endfor %}</tbody>
 </table>
-{% endif %}
-{% if deleted %}
-<h2>Deleted registrations</h2>
+{% endif %}{% if deleted %}<h2>Deleted registrations</h2>
 <table>
     <thead>
         <tr>
@@ -50,12 +41,10 @@
         </tr>
     </thead>
     <tbody>
-        {% for (dom, old_ip) in deleted %}
-        <tr>
+        {% for (dom, old_ip) in deleted %}<tr>
             <td>{{ dom }}</td>
             <td>{{ old_ip }}</td>
         </tr>
-        {% endfor %}
-    </tbody>
+    {% endfor %}</tbody>
 </table>
 {% endif %}
