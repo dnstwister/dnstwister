@@ -1,7 +1,7 @@
 """Email pages."""
 import flask
 
-from dnstwister import app, repository
+from dnstwister import app, emailer, repository
 import dnstwister.tools as tools
 
 
@@ -29,11 +29,15 @@ def email_subscribe_pending_confirm(hexdomain):
     email = flask.request.form['email']
 
     verify_code = tools.verify_code()
-    print verify_code
 
     repository.stage_email_subscription(email, verify_code)
 
-    #TODO: err, send email? :)
+    emailer.send(
+        email, 'Please verify your subscription',
+        flask.request.url_root + 'email/verify/{}/{}'.format(
+            hexdomain, verify_code,
+        )
+    )
 
     return flask.render_template('www/email/pending_verify.html', domain=domain)
 
