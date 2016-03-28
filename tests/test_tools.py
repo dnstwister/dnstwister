@@ -86,7 +86,6 @@ class TestTools(unittest.TestCase):
             'Unicode and Windows newlines not handled',
         )
 
-
     def test_parse_domain(self):
         """ Tests of the helper that decodes and validates a domain.
 
@@ -137,7 +136,6 @@ class TestTools(unittest.TestCase):
             tools.parse_domain(domain_data),
             'Old b64-style domain data is also processable.'
         )
-
 
     def test_analyse(self):
         """ Test the tool that generates the reports.
