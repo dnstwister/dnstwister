@@ -1,6 +1,12 @@
 """Mocks."""
 
 
+class NoEmailer(object):
+    """Silent emailer."""
+    def send(*args):
+        pass
+
+
 class SimpleKVDatabase(object):
     """Replace the main storage with a lightweight in-memory shim."""
 
