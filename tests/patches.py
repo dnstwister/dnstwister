@@ -1,4 +1,6 @@
 """Mocks."""
+
+
 class SimpleKVDatabase(object):
     """Replace the main storage with a lightweight in-memory shim."""
 
@@ -45,4 +47,4 @@ class SimpleFuzzer(object):
 
     @property
     def domains(self):
-        return [{'domain-name': self._domain, 'fuzzer': 'Original*'},]
+        return [{'domain-name': self._domain, 'fuzzer': 'Original*'}]
