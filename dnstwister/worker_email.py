@@ -43,9 +43,7 @@ if __name__ == '__main__':
                         email, domain
                     )
                 else:
-                    print 'Skipping {} + {}, not verified yet'.format(
-                        email, domain
-                    )
+                    print 'Skipping a sub for {}, not verified yet'.format(email)
                 continue
 
             # Don't send more than once every 24 hours
