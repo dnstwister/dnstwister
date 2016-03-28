@@ -40,17 +40,17 @@ class TestAtom(unittest.TestCase):
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
               <title type="text">dnstwister report for www.example.com</title>
-              <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
+              <id>http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
-              <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
-              <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
+              <link href="http://localhost:80/search/d3d3LmV4YW1wbGUuY29t" />
+              <link href="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
+              <entry xml:base="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t">
                 <title type="text">No report yet for www.example.com</title>
                 <id>waiting:www.example.com</id>
                 <updated>{date_today}</updated>
                 <published>{date_today}</published>
-                <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
+                <link href="http://localhost:80/search/d3d3LmV4YW1wbGUuY29t" />
                 <author>
                   <name>dnstwister</name>
                 </author>
@@ -85,17 +85,17 @@ class TestAtom(unittest.TestCase):
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
               <title type="text">dnstwister report for www.example.com</title>
-              <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
+              <id>http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>{date_today}</updated>
-              <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
-              <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
+              <link href="http://localhost:80/search/d3d3LmV4YW1wbGUuY29t" />
+              <link href="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
+              <entry xml:base="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t">
                 <title type="text">No report yet for www.example.com</title>
                 <id>waiting:www.example.com</id>
                 <updated>{date_today}</updated>
                 <published>{date_today}</published>
-                <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
+                <link href="http://localhost:80/search/d3d3LmV4YW1wbGUuY29t" />
                 <author>
                   <name>dnstwister</name>
                 </author>
@@ -140,17 +140,17 @@ class TestAtom(unittest.TestCase):
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
               <title type="text">dnstwister report for www.example.com</title>
-              <id>https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t</id>
+              <id>http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t</id>
               <updated>2016-02-28T11:10:34Z</updated>
-              <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
-              <link href="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
+              <link href="http://localhost:80/search/d3d3LmV4YW1wbGUuY29t" />
+              <link href="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="https://dnstwister.report/atom/d3d3LmV4YW1wbGUuY29t">
+              <entry xml:base="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t">
                 <title type="text">NEW: www.examp1e.com</title>
                 <id>new:www.examp1e.com:127.0.0.1:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="https://dnstwister.report/search/d3d3LmV4YW1wbGUuY29t" />
+                <link href="http://localhost:80/search/d3d3LmV4YW1wbGUuY29t" />
                 <author>
                   <name>dnstwister</name>
                 </author>

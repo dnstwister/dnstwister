@@ -18,8 +18,8 @@ def view(hexdomain):
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
         title='dnstwister report for {}'.format(domain),
-        feed_url='https://dnstwister.report/atom/{}'.format(hexdomain),
-        url='https://dnstwister.report/search/{}'.format(hexdomain),
+        feed_url='{}atom/{}'.format(flask.request.url_root, hexdomain),
+        url='{}search/{}'.format(flask.request.url_root, hexdomain),
     )
 
     # The publish/update date for the placeholder is locked to 00:00:00.000

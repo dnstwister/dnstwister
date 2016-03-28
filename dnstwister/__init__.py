@@ -2,14 +2,16 @@
 import flask
 import flask.ext.cache
 
+import mail.sendgridservice
 import storage.pg_database
 
-# Set up app/cache/db here
+# Set up app/cache/db/emailer here
 app = flask.Flask(__name__)
-db = storage.pg_database.PGDatabase()
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
+db = storage.pg_database.PGDatabase()
+emailer = mail.sendgridservice.SGSender()
 
-# Import modules using dnstwister.app/cache/db here
+# Import modules using dnstwister.app/cache/db/emailer here
 import repository
 import tools
 import views.syndication.atom
