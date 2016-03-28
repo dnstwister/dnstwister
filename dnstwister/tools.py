@@ -8,8 +8,8 @@ import os
 import re
 import socket
 
+from dnstwister import cache
 import dnstwist
-import main
 import whois
 
 
@@ -85,7 +85,7 @@ def query_domains(data_dict):
     return list(set(domains)) if len(domains) > 0 else None
 
 
-@main.cache.memoize(3600)
+@cache.memoize(3600)
 def resolve(domain):
     """Resolves a domain to an IP.
 
