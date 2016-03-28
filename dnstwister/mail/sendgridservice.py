@@ -32,6 +32,7 @@ class SGSender(object):
 
         message.add_to(to)
         message.set_subject(subject)
+        message.set_html(body)
         message.set_text(body)
         message.set_from(self._sender)
 

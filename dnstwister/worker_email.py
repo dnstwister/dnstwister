@@ -7,6 +7,7 @@ import datetime
 import time
 
 from dnstwister import emailer, repository
+import dnstwister.tools.email as email_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
@@ -68,9 +69,16 @@ if __name__ == '__main__':
 
             # Email
             print 'Emailing delta for {} to {}'.format(domain, email)
+            body = email_tools.render_email(
+                'report.html',
+                domain=domain,
+                updated_date='now-ish',
+                new=delta['new'] if len(delta['new']) > 0 else None,
+                updated=delta['updated'] if len(delta['updated']) > 0 else None,
+                deleted=delta['deleted'] if len(delta['deleted']) > 0 else None,
+            )
             emailer.send(
-                email, 'dnstwister report for {}'.format(domain),
-                str(delta),
+                email, 'dnstwister report for {}'.format(domain), body
             )
 
             # Mark as emailed
