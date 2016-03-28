@@ -5,19 +5,29 @@ import sendgrid
 class SGSender(object):
     """Simple mail sender, using SendGrid."""
     def __init__(self, sender=None, username=None, password=None):
-        if sender is None:
-            sender = os.environ['EMAIL_FROM_ADDRESS']
-
-        if username is None:
-            username = os.environ['SENDGRID_USERNAME']
-
-        if password is None:
-            password = os.environ['SENDGRID_PASSWORD']
-
         self._sender = sender
-        self._client = sendgrid.SendGridClient(username, password)
+        self._username = username
+        self._password = password
+        self._client = None
+        self._setup_ran = False
+
+    def _setup(self):
+        if self._sender is None:
+            self._sender = os.environ['EMAIL_FROM_ADDRESS']
+
+        if self._username is None:
+            self._username = os.environ['SENDGRID_USERNAME']
+
+        if self._password is None:
+            self._password = os.environ['SENDGRID_PASSWORD']
+
+        self._client = sendgrid.SendGridClient(self._username, self._password)
 
     def send(self, to, subject, body):
+        if not self._setup_ran:
+            self._setup()
+            self._setup_ran = True
+
         message = sendgrid.Mail()
 
         message.add_to(to)
