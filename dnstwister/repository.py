@@ -110,24 +110,25 @@ def update_resolution_report(domain, report=None, updated=None):
 
 def stage_email_subscription(email, verify_code):
     """Prepare an email subscription."""
-    db.set('email_id_{}'.format(verify_code), {
+    db.set('email_sub_{}'.format(verify_code), {
         'email': email,
-        'subs': [],
+        'created': datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'last_sent': None,
+        'domain': None,
     })
 
 
 def verify_code_valid(verify_code):
     """Returns whether a verify code is valid or not."""
-    return db.get('email_id_{}'.format(verify_code)) is not None
+    return db.get('email_sub_{}'.format(verify_code)) is not None
 
 
 def subscribe_email(verify_code, domain):
     """Add a subscription for an email to a domain."""
-    subscription = db.get('email_id_{}'.format(verify_code))
+    subscription = db.get('email_sub_{}'.format(verify_code))
 
-    if domain not in subscription['subs']:
-        subscription['subs'].append(domain)
+    subscription['domain'] = domain
 
-    db.set('email_id_{}'.format(verify_code), subscription)
+    db.set('email_sub_{}'.format(verify_code), subscription)
 
     register_domain(domain)
