@@ -108,6 +108,17 @@ def update_resolution_report(domain, report=None, updated=None):
     )
 
 
+def isubscriptions(list_all=False):
+    """Return an iterator of verified subscriptions for domains."""
+    keys_iter = db.ikeys('email_sub_')
+    while True:
+        key = keys_iter.next()
+        if key is not None:
+            sub = db.get(key)
+            if sub is not None and (list_all or sub['domain'] is not None):
+                yield key.split('email_sub_')[1], sub
+
+
 def stage_email_subscription(email, verify_code):
     """Prepare an email subscription."""
     db.set('email_sub_{}'.format(verify_code), {
@@ -127,7 +138,8 @@ def subscribe_email(verify_code, domain):
     """Add a subscription for an email to a domain."""
     subscription = db.get('email_sub_{}'.format(verify_code))
 
-    subscription['domain'] = domain
+    if subscription['domain'] is None:
+        subscription['domain'] = domain
 
     db.set('email_sub_{}'.format(verify_code), subscription)
 

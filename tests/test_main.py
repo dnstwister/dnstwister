@@ -33,7 +33,7 @@ class TestMain(unittest.TestCase):
     def test_report_lists_valid_domains(self):
         """ Test that the report page lists (only) valid domains.
         """
-        res = self.app.get('/error/9')
+        res = self.app.get('/')
 
         # Fill out 2 URLs (one valid, one not) and submit to the report
         # endpoint.
