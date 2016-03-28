@@ -47,15 +47,16 @@ if __name__ == '__main__':
                 continue
 
             # Don't send more than once every 24 hours
-            last_sent = datetime.datetime.strptime(
-                sub_detail['last_sent'], '%Y-%m-%dT%H:%M:%SZ'
-            )
-            age_last_sent = datetime.datetime.now() - last_sent
-            if age_last_sent < datetime.timedelta(seconds=PERIOD):
-                print 'Skipping {} + {}, < 24h hours'.format(
-                    email, domain
+            if sub_detail['last_sent'] is not None:
+                last_sent = datetime.datetime.strptime(
+                    sub_detail['last_sent'], '%Y-%m-%dT%H:%M:%SZ'
                 )
-                continue
+                age_last_sent = datetime.datetime.now() - last_sent
+                if age_last_sent < datetime.timedelta(seconds=PERIOD):
+                    print 'Skipping {} + {}, < 24h hours'.format(
+                        email, domain
+                    )
+                    continue
 
             # Grab the delta
             delta = repository.get_delta_report(domain)
