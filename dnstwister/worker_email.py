@@ -40,6 +40,10 @@ if __name__ == '__main__':
                     print 'Unsubscribing {} + {}, never verified'.format(
                         email, domain
                     )
+                else:
+                    print 'Skipping {} + {}, not verified yet'.format(
+                        email, domain
+                    )
                 continue
 
             # Don't send more than once every 24 hours
