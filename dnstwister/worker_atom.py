@@ -1,11 +1,14 @@
 """Updates atom feeds."""
+import os
+import sys
+sys.path.insert(0, os.getcwd())
+
 import datetime
 import time
 
-import dnstwist
-import repository
-import tools
-
+from dnstwister import repository
+import dnstwister.tools as tools
+import dnstwister.dnstwist as dnstwist
 
 # Time in seconds between re-processing a domain.
 PERIOD = 86400

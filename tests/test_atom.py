@@ -6,7 +6,7 @@ import mock
 import textwrap
 import unittest
 
-import dnstwister.main
+import dnstwister
 import patches
 
 
@@ -16,15 +16,15 @@ class TestAtom(unittest.TestCase):
     def setUp(self):
         """Set up the mock memcache."""
         # Create a webtest Test App for use
-        self.app = flask.ext.webtest.TestApp(dnstwister.main.app)
+        self.app = flask.ext.webtest.TestApp(dnstwister.app)
 
         # Clear the webapp cache
-        dnstwister.main.cache.clear()
+        dnstwister.cache.clear()
 
-    @mock.patch('dnstwister.main.db', patches.SimpleKVDatabase())
+    @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
     def test_new_feed(self):
         """Tests the registration of a new feed."""
-        repository = dnstwister.main.repository
+        repository = dnstwister.repository
 
         # We need a domain to get the feed for.
         domain = 'www.example.com'
@@ -75,7 +75,7 @@ class TestAtom(unittest.TestCase):
         )
 
         # Clear the webapp cache
-        dnstwister.main.cache.clear()
+        dnstwister.cache.clear()
 
         # Until the first delta is actually created, this placeholder remains.
         res = self.app.get('/atom/{}'.format(base64.b64encode(domain)))
@@ -131,7 +131,7 @@ class TestAtom(unittest.TestCase):
         )
 
         # Clear the webapp cache
-        dnstwister.main.cache.clear()
+        dnstwister.cache.clear()
 
         res = self.app.get('/atom/{}'.format(base64.b64encode(domain)))
         assert str(res) == textwrap.dedent("""
@@ -159,10 +159,10 @@ class TestAtom(unittest.TestCase):
             </feed>
         """).strip()
 
-    @mock.patch('dnstwister.main.db', patches.SimpleKVDatabase())
+    @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
     def test_feed_reading_is_tracked(self):
         """Tests that reading a feed is logged."""
-        repository = dnstwister.main.repository
+        repository = dnstwister.repository
 
         domain = 'www.example.com'
         b64domain = base64.b64encode(domain)
@@ -183,7 +183,7 @@ class TestAtom(unittest.TestCase):
         )
 
         # Clear the webapp cache
-        dnstwister.main.cache.clear()
+        dnstwister.cache.clear()
 
         # Reading a feed will update the read date
         read_date = repository.delta_report_last_read(domain)
@@ -192,16 +192,16 @@ class TestAtom(unittest.TestCase):
 
         assert read_date2 > read_date
 
-    @mock.patch('dnstwister.main.db', patches.SimpleKVDatabase())
+    @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
     def test_unregister_tidies_database(self):
         """Tests that you can unregister domains."""
-        repository = dnstwister.main.repository
+        repository = dnstwister.repository
 
         domain = 'www.example.com'
         b64domain = base64.b64encode(domain)
 
         assert repository.is_domain_registered(domain) == False
-        assert dnstwister.main.db.data == {}
+        assert repository.db.data == {}
 
         self.app.get('/atom/{}'.format(b64domain))
         repository.update_delta_report(
@@ -213,9 +213,9 @@ class TestAtom(unittest.TestCase):
         )
 
         assert repository.is_domain_registered(domain) == True
-        assert dnstwister.main.db.data != {}
+        assert repository.db.data != {}
 
         repository.unregister_domain(domain)
 
         assert repository.is_domain_registered(domain) == False
-        assert dnstwister.main.db.data == {}
+        assert repository.db.data == {}

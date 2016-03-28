@@ -5,7 +5,7 @@ import flask.ext.webtest
 import mock
 import unittest
 
-import dnstwister.main
+import dnstwister
 import patches
 
 
@@ -16,7 +16,7 @@ class TestMain(unittest.TestCase):
         """ Set up the mock memcache.
         """
         # Create a webtest Test App for use
-        self.app = flask.ext.webtest.TestApp(dnstwister.main.app)
+        self.app = flask.ext.webtest.TestApp(dnstwister.app)
 
     def test_index(self):
         """ Test the index page
