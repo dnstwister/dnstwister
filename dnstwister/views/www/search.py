@@ -1,4 +1,4 @@
-"""Index page."""
+"""Search/report page."""
 import binascii
 import flask
 

@@ -1,10 +1,13 @@
-{% extends "layout.html" %}
+{% extends "www/layout.html" %}
 {% block title %}Subscribed{% endblock %}
 {% block head %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
 {% endblock %}
 {% block header %}
-        <h1>You are now <strong>unsubscribed</strong> to updates for {{ domain }}</h1>
+        <h1>Thank you!</h1></h1>
 {% endblock %}
 {% block body %}
+        <section>
+            <p>Please click the link in your verification email to confirm your subscription for {{ domain }}.</p>
+        </section>
 {% endblock %}

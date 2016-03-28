@@ -1,4 +1,4 @@
-"""Index page."""
+"""Whois lookups."""
 import flask
 
 from dnstwister import app
