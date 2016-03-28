@@ -33,7 +33,9 @@ if __name__ == '__main__':
 
             # Clear up long-time unverified subscriptions
             if domain is None:
-                created = sub_detail['created']
+                created = datetime.datetime.strptime(
+                    sub_detail['created'], '%Y-%m-%dT%H:%M:%SZ'
+                )
                 staged_age = datetime.datetime.now() - created
                 if staged_age > datetime.timedelta(seconds=PERIOD*UNVERIFIED_THRESH):
                     repository.unsubscribe(sub_id)
