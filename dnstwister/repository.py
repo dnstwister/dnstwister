@@ -144,3 +144,17 @@ def subscribe_email(verify_code, domain):
     db.set('email_sub_{}'.format(verify_code), subscription)
 
     register_domain(domain)
+
+
+def email_sent(verify_code):
+    """Note that an email has been sent."""
+    subscription = db.get('email_sub_{}'.format(verify_code))
+
+    subscription['last_sent'] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    db.set('email_sub_{}'.format(verify_code), subscription)
+
+
+def unsubscribe(verify_code):
+    """Unsubscribe a user."""
+    db.delete('email_sub_{}'.format(verify_code))
