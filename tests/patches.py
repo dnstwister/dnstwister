@@ -3,8 +3,15 @@
 
 class NoEmailer(object):
     """Silent emailer."""
-    def send(*args):
-        pass
+    def __init__(self, *args, **kwargs):
+        self._emails = []
+
+    @property
+    def sent_emails(self):
+        return list(self._emails)
+
+    def send(self, *args):
+        self._emails.append(args)
 
 
 class SimpleKVDatabase(object):
