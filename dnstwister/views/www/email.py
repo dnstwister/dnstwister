@@ -1,7 +1,7 @@
 """Email pages."""
 import flask
 
-from dnstwister import app, emailer, repository
+from dnstwister import app, emailer, gateway, repository
 import dnstwister.tools as tools
 
 
@@ -16,42 +16,24 @@ def email_subscribe_get_email(hexdomain):
         'www/email/subscribe.html',
         domain=domain,
         hexdomain=hexdomain,
+        public_key=gateway.widget_public_key,
     )
 
 
 @app.route('/email/subscribe/<hexdomain>', methods=['POST'])
 def email_subscribe_pending_confirm(hexdomain):
-    """Send email for verification of subscription."""
+    """Attach user to plan."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
-    email = flask.request.form['email']
+    token = flask.request.form['stripeToken']
+    email = flask.request.form['stripeEmail']
 
-    verify_code = tools.verify_code()
+    payment_customer_id = gateway.charge(token, email)
 
-    repository.stage_email_subscription(email, verify_code)
+    sub_id = tools.subscription_id()
 
-    emailer.send(
-        email, 'Please verify your subscription',
-        flask.request.url_root + 'email/verify/{}/{}'.format(
-            hexdomain, verify_code,
-        )
-    )
-
-    return flask.render_template('www/email/pending_verify.html', domain=domain)
-
-
-@app.route('/email/verify/<hexdomain>/<verify_code>')
-def email_subscribe_confirm_email(hexdomain, verify_code):
-    """Handle email verification."""
-    domain = tools.parse_domain(hexdomain)
-    if domain is None:
-        flask.abort(500)
-
-    if not repository.verify_code_valid(verify_code):
-        flask.abort(500)
-
-    repository.subscribe_email(verify_code, domain)
+    repository.subscribe_email(sub_id, email, domain, payment_customer_id)
 
     return flask.render_template('www/email/subscribed.html', domain=domain)

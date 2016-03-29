@@ -121,27 +121,16 @@ def isubscriptions(list_all=False):
 
 def stage_email_subscription(email, verify_code):
     """Prepare an email subscription."""
-    db.set('email_sub_{}'.format(verify_code), {
-        'email': email,
-        'created': datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-        'last_sent': None,
-        'domain': None,
-    })
 
 
-def verify_code_valid(verify_code):
-    """Returns whether a verify code is valid or not."""
-    return db.get('email_sub_{}'.format(verify_code)) is not None
-
-
-def subscribe_email(verify_code, domain):
+def subscribe_email(sub_id, email, domain, payment_customer_id):
     """Add a subscription for an email to a domain."""
-    subscription = db.get('email_sub_{}'.format(verify_code))
-
-    if subscription['domain'] is None:
-        subscription['domain'] = domain
-
-    db.set('email_sub_{}'.format(verify_code), subscription)
+    db.set('email_sub_{}'.format(sub_id), {
+        'email': email,
+        'domain': domain,
+        'payment_customer_id': payment_customer_id,
+        'last_sent': None,
+    })
 
     register_domain(domain)
 

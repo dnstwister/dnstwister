@@ -9,8 +9,8 @@ import re
 import socket
 
 from dnstwister import cache
-import dnstwist
-import whois
+import dnstwister.dnstwist as dnstwist
+import dnstwister.whois as whois
 
 
 RESOLVER = dns.resolver.Resolver()
@@ -122,6 +122,6 @@ def whois_query(domain):
         return 'Error: whois lookup failed'
 
 
-def verify_code(bytes=32):
-    """Generate a random verification code for an email subscription."""
+def subscription_id(bytes=32):
+    """Generate a random subscription id for an email subscription."""
     return binascii.hexlify(os.urandom(bytes))
