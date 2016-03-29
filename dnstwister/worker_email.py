@@ -12,9 +12,6 @@ import dnstwister.tools.email as email_tools
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
 
-# Multiplier on period to remove unverified links.
-UNVERIFIED_THRESH = 7
-
 
 if __name__ == '__main__':
     while True:
@@ -31,21 +28,6 @@ if __name__ == '__main__':
 
             domain = sub_detail['domain']
             email = sub_detail['email']
-
-            # Clear up long-time unverified subscriptions
-            if domain is None:
-                created = datetime.datetime.strptime(
-                    sub_detail['created'], '%Y-%m-%dT%H:%M:%SZ'
-                )
-                staged_age = datetime.datetime.now() - created
-                if staged_age > datetime.timedelta(seconds=PERIOD*UNVERIFIED_THRESH):
-                    repository.unsubscribe(sub_id)
-                    print 'Unsubscribing {} + {}, never verified'.format(
-                        email, domain
-                    )
-                else:
-                    print 'Skipping a sub for {}, not verified yet'.format(email)
-                continue
 
             # Don't send more than once every 24 hours
             if sub_detail['last_sent'] is not None:
