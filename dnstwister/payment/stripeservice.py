@@ -18,6 +18,9 @@ class StripeService(object):
 
     @property
     def widget_public_key(self):
+        if not self._keys_setup:
+            self._setup_keys()
+            self._keys_setup = True
         return self._widget_public_key
 
     def charge(self, token, email, plan='dnstwister-alerts'):
