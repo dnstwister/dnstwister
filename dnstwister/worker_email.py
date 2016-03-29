@@ -16,7 +16,7 @@ PERIOD = 86400
 if __name__ == '__main__':
     while True:
 
-        subs_iter = repository.isubscriptions(list_all=True)
+        subs_iter = repository.isubscriptions()
 
         while True:
             try:

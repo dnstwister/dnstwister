@@ -108,19 +108,15 @@ def update_resolution_report(domain, report=None, updated=None):
     )
 
 
-def isubscriptions(list_all=False):
-    """Return an iterator of verified subscriptions for domains."""
+def isubscriptions():
+    """Return an iterator of subscriptions."""
     keys_iter = db.ikeys('email_sub_')
     while True:
         key = keys_iter.next()
         if key is not None:
             sub = db.get(key)
-            if sub is not None and (list_all or sub['domain'] is not None):
+            if sub is not None:
                 yield key.split('email_sub_')[1], sub
-
-
-def stage_email_subscription(email, verify_code):
-    """Prepare an email subscription."""
 
 
 def subscribe_email(sub_id, email, domain, payment_customer_id):
