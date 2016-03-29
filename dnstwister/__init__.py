@@ -12,8 +12,7 @@ app = flask.Flask(__name__)
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
-gateway = payment.stripeservice.StripeService(
-)
+gateway = payment.stripeservice.StripeService()
 
 
 # Import modules using dnstwister.app/cache/db/emailer here

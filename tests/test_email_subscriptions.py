@@ -1,6 +1,4 @@
 """Tests of the email subscription mechanism."""
-import binascii
-import flask.ext.webtest
 import mock
 
 import dnstwister
