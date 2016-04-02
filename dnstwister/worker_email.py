@@ -19,6 +19,9 @@ def process_sub(sub_id, detail):
     domain = detail['domain']
     email = detail['email']
 
+    # Ensure the domain is registered for reporting, register if not.
+    repository.register_domain(domain)
+
     # Mark delta report as "read" so it's not unsubscribed.
     repository.mark_delta_report_as_read(domain)
 

@@ -128,8 +128,6 @@ def subscribe_email(sub_id, email, domain, payment_customer_id):
         'last_sent': None,
     })
 
-    register_domain(domain)
-
 
 def email_sent(verify_code):
     """Note that an email has been sent."""
