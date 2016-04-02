@@ -19,6 +19,9 @@ def process_sub(sub_id, detail):
     domain = detail['domain']
     email = detail['email']
 
+    # Mark delta report as "read" so it's not unsubscribed.
+    repository.mark_delta_report_as_read(domain)
+
     # Don't send more than once every 24 hours
     if detail['last_sent'] is not None:
         last_sent = datetime.datetime.strptime(
@@ -55,9 +58,6 @@ def process_sub(sub_id, detail):
 
     # Mark as emailed
     repository.email_sent(sub_id)
-
-    # Mark delta report as "read" so it's not unsubscribed.
-    repository.mark_delta_report_as_read(domain)
 
 
 if __name__ == '__main__':
