@@ -16,25 +16,42 @@ def email_subscribe_get_email(hexdomain):
         'www/email/subscribe.html',
         domain=domain,
         hexdomain=hexdomain,
-        public_key=gateway.widget_public_key,
     )
 
 
-@app.route('/email/subscribe/<hexdomain>', methods=['POST'])
+@app.route('/email/pending_verify/<hexdomain>', methods=['POST'])
 def email_subscribe_pending_confirm(hexdomain):
-    """Attach user to paid subscription for a domain."""
+    """Send a confirmation email for a user."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
 
-    token = flask.request.form['stripeToken']
-    email = flask.request.form['stripeEmail']
+    email_address = flask.request.form['email_address']
+    verify_code = tools.random_id()
 
-    payment_customer_id = gateway.charge(token, email)
+    repository.propose_subscription(verify_code, email_address, domain)
+    emailer.send(
+        email_address, 'Please verify your subscription',
+        flask.request.url_root + 'email/verify/{}'.format(verify_code)
+    )
 
-    sub_id = tools.subscription_id()
+    return flask.render_template('www/email/pending_verify.html', domain=domain)
 
-    repository.subscribe_email(sub_id, email, domain, payment_customer_id)
+
+@app.route('/email/verify/<verify_code>')
+def email_subscribe_confirm_email(verify_code):
+    """Handle email verification."""
+    pending_verify = repository.get_proposition(verify_code)
+
+    if pending_verify is None:
+        flask.abort(500)
+
+    email_address = pending_verify['email_address']
+    domain = pending_verify['domain']
+    sub_id = tools.random_id()
+
+    repository.subscribe_email(sub_id, email_address, domain)
+    repository.remove_proposition(verify_code)
 
     return flask.render_template('www/email/subscribed.html', domain=domain)
 
@@ -42,17 +59,5 @@ def email_subscribe_pending_confirm(hexdomain):
 @app.route('/email/unsubscribe/<sub_id>', methods=['POST'])
 def unsubscribe_user(sub_id):
     """Unsubscribe a user from a domain."""
-    sub = repository.subscription(sub_id)
-
-    if sub is None:
-        flask.abort(500)
-
-    customer_id = sub['payment_customer_id']
-
-    gateway.cancel(customer_id)
-
     repository.unsubscribe(sub_id)
-
-    domain = sub['domain']
-
-    return flask.render_template('www/email/unsubscribed.html', domain=domain)
+    return flask.render_template('www/email/unsubscribed.html')

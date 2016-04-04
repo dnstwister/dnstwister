@@ -122,6 +122,6 @@ def whois_query(domain):
         return 'Error: whois lookup failed'
 
 
-def subscription_id(bytes=32):
-    """Generate a random subscription id for an email subscription."""
-    return binascii.hexlify(os.urandom(bytes))
+def random_id(n_bytes=32):
+    """Generate a random id for an email subscription (for instance)."""
+    return binascii.hexlify(os.urandom(n_bytes))

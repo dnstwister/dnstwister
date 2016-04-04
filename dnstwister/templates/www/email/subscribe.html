@@ -8,8 +8,8 @@
 {% endblock %}
 {% block body %}
         <section>
-            <form action="/email/subscribe/{{ hexdomain }}" method="post">
-                <input type="text" name="email"/>
+            <form action="/email/pending_verify/{{ hexdomain }}" method="post">
+                <input type="text" name="email_address"/>
             </form>
         </section>
 {% endblock %}

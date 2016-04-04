@@ -119,10 +119,11 @@ def isubscriptions():
                 yield key.split('email_sub_')[1], sub
 
 
-def propose_subscription(sub_id, domain):
+def propose_subscription(verify_code, email_address, domain):
     """Store that a sub has been proposed (pending email verification)."""
     db.set(
-        'email_sub_pending_{}'.format(sub_id), {
+        'email_sub_pending_{}'.format(verify_code), {
+            'email_address': email_address,
             'domain': domain,
             'since': datetime.datetime.now().strftime(
                 '%Y-%m-%dT%H:%M:%SZ'
@@ -131,15 +132,25 @@ def propose_subscription(sub_id, domain):
     )
 
 
-def subscribe_email(sub_id, address, domain):
+def get_proposition(verify_code):
+    """Retrieve the proposition for a verify code (or None)."""
+    return db.get('email_sub_pending_{}'.format(verify_code))
+
+
+def remove_proposition(verify_code):
+    """Remove an existing proposition."""
+    db.delete('email_sub_pending_{}'.format(verify_code))
+
+
+def subscribe_email(sub_id, email_address, domain):
     """Add a subscription for an email to a domain."""
     db.set('email_sub_{}'.format(sub_id), {
-        'address': address,
+        'email_address': email_address,
         'domain': domain,
     })
 
 
-def updated_email_sub_sent(sub_id):
+def update_last_email_sub_sent_date(sub_id):
     """Note that an email has been sent for a subscription."""
     db.set(
         'email_sub_last_sent_{}'.format(sub_id),
@@ -147,6 +158,13 @@ def updated_email_sub_sent(sub_id):
             '%Y-%m-%dT%H:%M:%SZ'
         )
     )
+
+
+def email_last_send_for_sub(sub_id):
+    """Return when an email was last sent for a subscription, or None."""
+    last_sent = db.get('email_sub_last_sent_{}'.format(sub_id))
+    if last_sent is not None:
+        return datetime.datetime.strptime(last_sent, '%Y-%m-%dT%H:%M:%SZ')
 
 
 def unsubscribe(sub_id):
