@@ -26,8 +26,8 @@ def process_sub(sub_id, detail):
     repository.mark_delta_report_as_read(domain)
 
     # Don't send more than once every 24 hours
-    if detail['last_sent'] is not None:
-        last_sent = repository.email_last_send_for_sub(sub_id)
+    last_sent = repository.email_last_send_for_sub(sub_id)
+    if last_sent is not None:
         age_last_sent = datetime.datetime.now() - last_sent
         if age_last_sent < datetime.timedelta(seconds=PERIOD):
             print 'Skipping {} + {}, < 24h hours'.format(
