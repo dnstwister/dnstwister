@@ -7,6 +7,7 @@ import operator
 import os
 import re
 import socket
+import string
 
 from dnstwister import cache
 import dnstwister.dnstwist as dnstwist
@@ -74,15 +75,23 @@ def query_domains(data_dict):
 
     # Filter out blank lines, leading/trailing whitespace
     domains = filter(
-        None, map(operator.methodcaller('strip'), domains.split('\n'))
+        None, map(string.strip, domains.split('\n'))
     )
+
+    # Remove HTTP(s) schemes and trailing slashes.
+    domains = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
+               for domain
+               in domains]
+
+    # Strip leading/trailing whitespace again.
+    domains = filter(None, map(string.strip, domains))
 
     # Filter for only valid domains
     domains = filter(
         dnstwist.validate_domain, domains
     )
 
-    return list(set(domains)) if len(domains) > 0 else None
+    return sorted(list(set(domains))) if len(domains) > 0 else None
 
 
 @cache.memoize(3600)
