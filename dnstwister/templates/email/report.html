@@ -40,13 +40,11 @@
     <thead>
         <tr>
             <th>Previously Registered Domain</th>
-            <th>Previously Resolved IP</th>
         </tr>
     </thead>
     <tbody>
-        {% for (dom, old_ip) in deleted %}<tr>
+        {% for dom in deleted %}<tr>
             <td>{{ dom }}</td>
-            <td>{{ old_ip }}</td>
         </tr>
     {% endfor %}</tbody>
 </table>
