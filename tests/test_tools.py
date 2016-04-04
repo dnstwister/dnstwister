@@ -86,6 +86,12 @@ class TestTools(unittest.TestCase):
             'Unicode and Windows newlines not handled',
         )
 
+        # If a URL is entered, an attempt is made to tidy it up.
+        inp = ' https://www.example1.com/  https:// https://www.example2.com/ '
+        assert tools.query_domains({'domains': inp}) == [
+            'www.example1.com', 'www.example2.com'
+        ]
+
 
     def test_parse_domain(self):
         """ Tests of the helper that decodes and validates a domain.
