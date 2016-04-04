@@ -5,6 +5,7 @@ sys.path.insert(0, os.getcwd())
 
 import datetime
 import time
+import traceback
 
 from dnstwister import emailer, repository
 import dnstwister.tools.email as email_tools
@@ -94,8 +95,8 @@ if __name__ == '__main__':
                 process_sub(sub_id, sub_detail)
                 time.sleep(1)
             except:
-                print 'Skipping {}, exception: {}'.format(
-                    sub_id, sys.exc_info()
+                print 'Skipping {}, exception:\n {}'.format(
+                    sub_id, traceback.format_exc()
                 )
 
                 time.sleep(10)
