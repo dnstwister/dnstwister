@@ -56,7 +56,7 @@ def email_subscribe_confirm_email(verify_code):
     return flask.render_template('www/email/subscribed.html', domain=domain)
 
 
-@app.route('/email/unsubscribe/<sub_id>', methods=['POST'])
+@app.route('/email/unsubscribe/<sub_id>')
 def unsubscribe_user(sub_id):
     """Unsubscribe a user from a domain."""
     repository.unsubscribe(sub_id)

@@ -62,6 +62,7 @@ def process_sub(sub_id, detail):
         new=new,
         updated=updated,
         deleted=deleted,
+        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
     )
     emailer.send(
         email_address, 'dnstwister report for {}'.format(domain), body
