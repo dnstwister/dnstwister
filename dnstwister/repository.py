@@ -109,7 +109,7 @@ def update_resolution_report(domain, report=None, updated=None):
 
 
 def isubscriptions():
-    """Return an iterator of subscriptions."""
+    """Return an iterator of subscription information."""
     keys_iter = db.ikeys('email_sub_')
     while True:
         key = keys_iter.next()
@@ -119,32 +119,36 @@ def isubscriptions():
                 yield key.split('email_sub_')[1], sub
 
 
-def subscribe_email(sub_id, email, domain, payment_customer_id):
+def propose_subscription(sub_id, domain):
+    """Store that a sub has been proposed (pending email verification)."""
+    db.set(
+        'email_sub_pending_{}'.format(sub_id), {
+            'domain': domain,
+            'since': datetime.datetime.now().strftime(
+                '%Y-%m-%dT%H:%M:%SZ'
+            ),
+        }
+    )
+
+
+def subscribe_email(sub_id, address, domain):
     """Add a subscription for an email to a domain."""
     db.set('email_sub_{}'.format(sub_id), {
-        'email': email,
+        'address': address,
         'domain': domain,
-        'payment_customer_id': payment_customer_id,
-        'last_sent': None,
     })
 
 
-def email_sent(sub_id):
-    """Note that an email has been sent."""
-    subscription = db.get('email_sub_{}'.format(sub_id))
-
-    subscription['last_sent'] = datetime.datetime.now().strftime(
-        '%Y-%m-%dT%H:%M:%SZ'
+def updated_email_sub_sent(sub_id):
+    """Note that an email has been sent for a subscription."""
+    db.set(
+        'email_sub_last_sent_{}'.format(sub_id),
+        datetime.datetime.now().strftime(
+            '%Y-%m-%dT%H:%M:%SZ'
+        )
     )
-
-    db.set('email_sub_{}'.format(sub_id), subscription)
 
 
 def unsubscribe(sub_id):
     """Unsubscribe a user."""
     db.delete('email_sub_{}'.format(sub_id))
-
-
-def subscription(sub_id):
-    """Return the subscription's detail."""
-    return db.get('email_sub_{}'.format(sub_id))
