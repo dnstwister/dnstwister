@@ -9,16 +9,7 @@
 {% block body %}
         <section>
             <form action="/email/subscribe/{{ hexdomain }}" method="post">
-                <script
-                    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                    data-label="Subscribe to alerts for {{ domain }}"
-                    data-key="{{ public_key }}"
-                    data-name="Subscription for {{ domain }}"
-                    data-description="Charged monthly, cancel at any time."
-                    data-currency="usd"
-                    data-amount="100"
-                    data-locale="auto">
-                </script>
+                <input type="text" name="email"/>
             </form>
         </section>
 {% endblock %}
