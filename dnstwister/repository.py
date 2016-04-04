@@ -129,15 +129,22 @@ def subscribe_email(sub_id, email, domain, payment_customer_id):
     })
 
 
-def email_sent(verify_code):
+def email_sent(sub_id):
     """Note that an email has been sent."""
-    subscription = db.get('email_sub_{}'.format(verify_code))
+    subscription = db.get('email_sub_{}'.format(sub_id))
 
-    subscription['last_sent'] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    subscription['last_sent'] = datetime.datetime.now().strftime(
+        '%Y-%m-%dT%H:%M:%SZ'
+    )
 
-    db.set('email_sub_{}'.format(verify_code), subscription)
+    db.set('email_sub_{}'.format(sub_id), subscription)
 
 
-def unsubscribe(verify_code):
+def unsubscribe(sub_id):
     """Unsubscribe a user."""
-    db.delete('email_sub_{}'.format(verify_code))
+    db.delete('email_sub_{}'.format(sub_id))
+
+
+def subscription(sub_id):
+    """Return the subscription's detail."""
+    return db.get('email_sub_{}'.format(sub_id))

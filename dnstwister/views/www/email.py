@@ -22,7 +22,7 @@ def email_subscribe_get_email(hexdomain):
 
 @app.route('/email/subscribe/<hexdomain>', methods=['POST'])
 def email_subscribe_pending_confirm(hexdomain):
-    """Attach user to plan."""
+    """Attach user to paid subscription for a domain."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(500)
@@ -37,3 +37,22 @@ def email_subscribe_pending_confirm(hexdomain):
     repository.subscribe_email(sub_id, email, domain, payment_customer_id)
 
     return flask.render_template('www/email/subscribed.html', domain=domain)
+
+
+@app.route('/email/unsubscribe/<sub_id>', methods=['POST'])
+def unsubscribe_user(sub_id):
+    """Unsubscribe a user from a domain."""
+    sub = repository.subscription(sub_id)
+
+    if sub is None:
+        flask.abort(500)
+
+    customer_id = sub['payment_customer_id']
+
+    gateway.cancel(customer_id)
+
+    repository.unsubscribe(sub_id)
+
+    domain = sub['domain']
+
+    return flask.render_template('www/email/unsubscribed.html', domain=domain)

@@ -1,4 +1,7 @@
 <h1>dnstwister report for {{ domain }}</h1>
+<p>
+    <a href="{{ unsubscribe_link }}">Unsubscribe</a>
+</p>
 <p>Here's your dnstwister report, updated {{ updated_date }}.</p>
 {% if new %}<h2>New registrations</h2>
 <table>
@@ -48,3 +51,6 @@
     {% endfor %}</tbody>
 </table>
 {% endif %}
+<p>
+    <a href="{{ unsubscribe_link }}">Unsubscribe</a>
+</p>

@@ -36,3 +36,12 @@ class StripeService(object):
         )
 
         return customer.id
+
+    def cancel(self, customer_id):
+        """Cancel a subscription."""
+
+        # TODO: need to fix subscriptions and to separate customer from sub.
+        customer = stripe.Customer.retrieve(customer_id)
+        customer.subscriptions.retrieve('sub_3R3PlB2YlJe84a').delete(
+            at_period_end=True
+        )
