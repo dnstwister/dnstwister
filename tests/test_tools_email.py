@@ -12,11 +12,15 @@ def test_email_renderer():
         updated_date='yesterday',
         new=(('www.examp1e.com', '127.0.0.1'),),
         updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2'),),
-        deleted=(('www.examplle.com', '127.0.0.3'),),
+        deleted=('www.examplle.com',),
+        unsubscribe_link='https://dnstwister.report/...',
     )
 
     assert template.strip() == textwrap.dedent("""
         <h1>dnstwister report for www.example.com</h1>
+        <p>
+            <a href="https://dnstwister.report/...">Unsubscribe</a>
+        </p>
         <p>Here's your dnstwister report, updated yesterday.</p>
         <h2>New registrations</h2>
         <table>
@@ -55,14 +59,16 @@ def test_email_renderer():
             <thead>
                 <tr>
                     <th>Previously Registered Domain</th>
-                    <th>Previously Resolved IP</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>www.examplle.com</td>
-                    <td>127.0.0.3</td>
                 </tr>
             </tbody>
         </table>
+
+        <p>
+            <a href="https://dnstwister.report/...">Unsubscribe</a>
+        </p>
     """).strip()

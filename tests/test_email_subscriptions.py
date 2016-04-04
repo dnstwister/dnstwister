@@ -1,6 +1,10 @@
 """Tests of the email subscription mechanism."""
+import flask
 import mock
+import pytest
+import webtest
 
+import binascii
 import dnstwister
 import patches
 
@@ -20,19 +24,18 @@ def test_isubscriptions_during_subscription():
     sub_id = '1234'
     payment_cust_id = 'cus_0000'
 
-    repository.subscribe_email(sub_id, email, domain, payment_cust_id)
+    repository.subscribe_email(sub_id, email, domain)
 
     subs = list(repository.isubscriptions())
 
     assert len(subs) == 1
 
     assert sorted(subs[0][1].keys()) == [
-        'domain', 'email', 'last_sent', 'payment_customer_id'
+        'domain', 'email_address'
     ]
     assert subs[0][1]['domain'] == domain
-    assert subs[0][1]['email'] == email
-    assert subs[0][1]['payment_customer_id'] == payment_cust_id
-    assert subs[0][1]['last_sent'] is None
+    assert subs[0][1]['email_address'] == email
+
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
@@ -53,15 +56,16 @@ def test_isubscriptions_link():
 
     subscribe_page = app.get(subscribe_path)
 
-    subscribe_page.form['email'] = 'a@b.com'
+    subscribe_page.form['email_address'] = 'a@b.com'
     subscribe_page.form.submit()
 
     assert list(repository.isubscriptions()) == []
 
-    staged_subscription = list(repository.isubscriptions(list_all=True))[0]
-    verify_code = staged_subscription[0]
-    verify_path = '/email/verify/{}/{}'.format(
-        hexdomain, verify_code
+    verify_code = repository.db.data.items()[0][0].split(
+        'email_sub_pending_'
+    )[1]
+    verify_path = '/email/verify/{}'.format(
+        verify_code
     )
     verify_url = 'http://localhost:80{}'.format(verify_path)
 
@@ -80,10 +84,11 @@ def test_isubscriptions_link():
     assert len(list(repository.isubscriptions())) == 1
 
     # Check cannot overwrite an existing verification with a new domain.
-    verify_path = '/email/verify/{}/{}'.format(
+    verify_path = '/email/verify/{}'.format(
         binascii.hexlify('b.com'), verify_code
     )
-    app.get(verify_path)
+    with pytest.raises(webtest.app.AppError):
+        app.get(verify_path)
 
     assert len(list(repository.isubscriptions())) == 1
     assert repository.isubscriptions().next()[1]['domain'] == 'a.com'
