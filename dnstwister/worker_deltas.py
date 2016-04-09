@@ -87,4 +87,6 @@ if __name__ == '__main__':
                 domain, time.time() - start
             )
 
+        print 'All deltas processed'
+
         time.sleep(60)
