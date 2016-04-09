@@ -39,7 +39,7 @@ class SimpleKVDatabase(object):
     def ikeys(self, prefix=''):
         """Return an iterator of all keys, optionally filtered on prefix."""
         for key in self._data.keys():
-            if key.startswith(prefix):
+            if key.startswith(prefix + ':'):
                 yield key
 
     def delete(self, key):

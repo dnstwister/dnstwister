@@ -62,7 +62,7 @@ def test_isubscriptions_link():
     assert list(repository.isubscriptions()) == []
 
     verify_code = repository.db.data.items()[0][0].split(
-        'email_sub_pending_'
+        'email_sub_pending:'
     )[1]
     verify_path = '/email/verify/{}'.format(
         verify_code
