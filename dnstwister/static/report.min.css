@@ -844,6 +844,21 @@ there.
 /* Larger than Desktop HD */
 @media (min-width: 1200px) {}
 
+header {
+    margin-top: 2rem;
+}
+
+footer {
+    margin-top: 6rem;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+.ico {
+    margin-bottom: -2px;
+    height: 14px;
+}
+
 .report,
 .report tr.domain-row {
     display: none;
@@ -857,20 +872,6 @@ there.
 
 .domains {
     margin-bottom: 3rem;
-}
-
-.feed_ico {
-    margin-bottom: -2px;
-}
-
-header {
-    margin-top: 2rem;
-}
-
-footer {
-    text-align: center;
-    margin-top: 6rem;
-    font-size: 1.25rem;
 }
 
 .exports {

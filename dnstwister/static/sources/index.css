@@ -20,18 +20,14 @@ textarea {
     max-width: 720px;
 }
 
-header,
-footer {
-    text-align: center;
-}
-
 header {
+    text-align: center;
     margin-top: 30%;
 }
 
 footer {
-    font-size: 1.25rem;
     padding-top: 15%;
+    margin-top: 0;
 }
 
 footer p {

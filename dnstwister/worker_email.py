@@ -59,19 +59,21 @@ def process_sub(sub_id, detail):
     body = email_tools.render_email(
         'report.html',
         domain=domain,
-        updated_date='now-ish',
         new=new,
         updated=updated,
         deleted=deleted,
         unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
     )
+
+    # Mark as emailed to ensure we don't flood if there's an error after the
+    # actual email has been sent.
+    repository.update_last_email_sub_sent_date(sub_id)
+
     emailer.send(
         email_address, 'dnstwister report for {}'.format(domain), body
     )
     print 'Emailed delta for {} to {}'.format(domain, email_address)
 
-    # Mark as emailed
-    repository.update_last_email_sub_sent_date(sub_id)
 
 
 if __name__ == '__main__':
@@ -84,6 +86,7 @@ if __name__ == '__main__':
             try:
                 sub = subs_iter.next()
             except StopIteration:
+                print 'All subs processed'
                 break
 
             if sub is None:
@@ -93,12 +96,11 @@ if __name__ == '__main__':
 
             try:
                 process_sub(sub_id, sub_detail)
-                time.sleep(1)
             except:
                 print 'Skipping {}, exception:\n {}'.format(
                     sub_id, traceback.format_exc()
                 )
 
-                time.sleep(10)
+            time.sleep(1)
 
         time.sleep(60)

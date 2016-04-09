@@ -1,10 +1,14 @@
 {% extends "www/layout.html" %}
-{% block title %}Subscribed{% endblock %}
+{% block title %}You are unsubscribed{% endblock %}
 {% block head %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
 {% endblock %}
 {% block header %}
-        <h1>You are now <strong>unsubscribed</strong>.</h1>
+
+        <h1>Unsubscribed</h1>
 {% endblock %}
 {% block body %}
+        <section>
+            <p>You are no longer subscribed to dnstwister updates for this domain.</p>
+        </section>
 {% endblock %}

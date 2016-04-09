@@ -1,5 +1,5 @@
 {% extends "www/layout.html" %}
-{% block title %}Subscribed{% endblock %}
+{% block title %}You have successfully subscribed{% endblock %}
 {% block head %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
 {% endblock %}
@@ -8,6 +8,6 @@
 {% endblock %}
 {% block body %}
         <section>
-            <p>You are now subscribed to updates for {{ domain }}.</p>
+            <p>You are now subscribed to updates for '{{ domain }}'.</p>
         </section>
 {% endblock %}
