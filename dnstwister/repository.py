@@ -170,3 +170,4 @@ def email_last_send_for_sub(sub_id):
 def unsubscribe(sub_id):
     """Unsubscribe a user."""
     db.delete('email_sub:{}'.format(sub_id))
+    db.delete('email_sub_last_sent:{}'.format(sub_id))
