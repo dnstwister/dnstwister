@@ -6,19 +6,23 @@ maps = {
     'index.min.css': (
         'normalize.css',
         'skeleton.css',
+        'common.css',
         'index.css',
     ),
     'whois.min.css': (
         'normalize.css',
         'skeleton.css',
+        'common.css',
     ),
     'email.min.css': (
         'normalize.css',
         'skeleton.css',
+        'common.css',
     ),
     'report.min.css': (
         'normalize.css',
         'skeleton.css',
+        'common.css',
         'report.css',
     ),
     'report.min.js': (

@@ -844,6 +844,16 @@ there.
 /* Larger than Desktop HD */
 @media (min-width: 1200px) {}
 
+header {
+    margin-top: 2rem;
+}
+
+footer {
+    margin-top: 6rem;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
 .error {
     font-weight: bold;
     color: red;
@@ -866,18 +876,14 @@ textarea {
     max-width: 720px;
 }
 
-header,
-footer {
-    text-align: center;
-}
-
 header {
+    text-align: center;
     margin-top: 30%;
 }
 
 footer {
-    font-size: 1.25rem;
     padding-top: 15%;
+    margin-top: 0;
 }
 
 footer p {
