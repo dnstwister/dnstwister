@@ -19,11 +19,16 @@ def bump(new_conn, cursor):
                  in v1_4_keys]
 
     for (old, new) in zip(v1_4_keys, v1_5_keys):
-        cursor.execute("""
-            UPDATE data
-            SET (key) = (%s)
-            WHERE key = (%s);
-        """, (new, old))
+        try:
+            cursor.execute("""
+                UPDATE data
+                SET (key) = (%s)
+                WHERE key = (%s);
+            """, (new, old))
+            new_conn.commit()
+        except Exception as ex:
+            new_conn.rollback()
+            print 'skipped ', old, new, ex
 
 
 if __name__ == '__main__':
