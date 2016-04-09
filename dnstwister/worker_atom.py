@@ -40,7 +40,7 @@ if __name__ == '__main__':
             else:
                 age = datetime.datetime.now() - last_read
                 if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
-                    print 'Unregistering {}'.format(domain)
+                    print 'Unregistering (not read > 7 days) {}'.format(domain)
                     repository.unregister_domain(domain)
                     continue
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             if delta_last_updated is not None:
                 age = datetime.datetime.now() - delta_last_updated
                 if age < datetime.timedelta(seconds=PERIOD):
-                    print 'Skipping {}'.format(domain)
+                    print 'Skipping (recently updated) {}'.format(domain)
                     continue
 
             start = time.time()
