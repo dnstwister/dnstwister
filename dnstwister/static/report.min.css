@@ -854,6 +854,11 @@ footer {
     text-align: center;
 }
 
+.ico {
+    margin-bottom: -2px;
+    height: 14px;
+}
+
 .report,
 .report tr.domain-row {
     display: none;
@@ -867,10 +872,6 @@ footer {
 
 .domains {
     margin-bottom: 3rem;
-}
-
-.feed_ico {
-    margin-bottom: -2px;
 }
 
 .exports {

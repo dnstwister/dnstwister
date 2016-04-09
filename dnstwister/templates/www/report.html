@@ -11,8 +11,8 @@
         <section class="domains">
             {% for domain, hex in atoms.items() %}
                 {{ domain }}
-                <a href="/atom/{{ hex }}"><img class="feed_ico" src="/static/feed.png"/></a>
-                <a href="/email/subscribe/{{ hex }}">email</a>
+                <a href="/email/subscribe/{{ hex }}"><img class="ico" src="/static/email.png"/></a>
+                <a href="/atom/{{ hex }}"><img class="ico" src="/static/feed.png"/></a>
             {% endfor %}
             <br />
             <a href="/">new report</a>

@@ -7,3 +7,8 @@ footer {
     font-size: 1.25rem;
     text-align: center;
 }
+
+.ico {
+    margin-bottom: -2px;
+    height: 14px;
+}

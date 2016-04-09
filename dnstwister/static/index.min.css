@@ -854,6 +854,11 @@ footer {
     text-align: center;
 }
 
+.ico {
+    margin-bottom: -2px;
+    height: 14px;
+}
+
 .error {
     font-weight: bold;
     color: red;
