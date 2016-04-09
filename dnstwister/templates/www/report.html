@@ -12,7 +12,6 @@
             {% for domain, hex in atoms.items() %}
                 {{ domain }}
                 <a href="/atom/{{ hex }}"><img class="feed_ico" src="/static/feed.png"/></a>
-                <a href="/email/subscribe/{{ hex }}">email</a>
             {% endfor %}
             <br />
             <a href="/">new report</a>
