@@ -65,13 +65,16 @@ def process_sub(sub_id, detail):
         deleted=deleted,
         unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
     )
+
+    # Mark as emailed to ensure we don't flood if there's an error after the
+    # actual email has been sent.
+    repository.update_last_email_sub_sent_date(sub_id)
+
     emailer.send(
         email_address, 'dnstwister report for {}'.format(domain), body
     )
     print 'Emailed delta for {} to {}'.format(domain, email_address)
 
-    # Mark as emailed
-    repository.update_last_email_sub_sent_date(sub_id)
 
 
 if __name__ == '__main__':
