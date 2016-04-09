@@ -102,9 +102,6 @@ if __name__ == '__main__':
                     sub_id, traceback.format_exc()
                 )
 
-                # Temporary to tidy up test DB
-                repository.unsubscribe(sub_id)
-
                 time.sleep(1)
 
         time.sleep(60)
