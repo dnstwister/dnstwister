@@ -79,7 +79,7 @@ class PGDatabase(object):
                 row = cur.fetchone()
                 if row is None:
                     break
-                if row[0].startswith(prefix):
+                if row[0].startswith(prefix + ':'):
                     yield row[0]
 
     @resetonfail
