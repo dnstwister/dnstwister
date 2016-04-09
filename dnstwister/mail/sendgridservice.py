@@ -2,6 +2,14 @@
 
 The SendGrid service is attached to the Production web worker, but is
 available to all workers.
+
+All email-managing workers need the following environ keys:
+
+    SENDGRID_PASSWORD
+    SENDGRID_USERNAME
+    EMAIL_FROM_NAME
+    EMAIL_FROM_ADDRESS
+
 """
 import os
 import sendgrid
