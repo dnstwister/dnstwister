@@ -9,8 +9,10 @@ import sendgrid
 
 class SGSender(object):
     """Simple mail sender, using SendGrid."""
-    def __init__(self, sender=None, username=None, password=None):
+    def __init__(self, sender=None, sender_name=None, username=None,
+                 password=None):
         self._sender = sender
+        self._sender_name = sender_name
         self._username = username
         self._password = password
         self._client = None
@@ -19,6 +21,9 @@ class SGSender(object):
     def _setup(self):
         if self._sender is None:
             self._sender = os.environ['EMAIL_FROM_ADDRESS']
+
+        if self._sender_name is None:
+            self._sender_name = os.environ['EMAIL_FROM_NAME']
 
         if self._username is None:
             self._username = os.environ['SENDGRID_USERNAME']
@@ -40,5 +45,6 @@ class SGSender(object):
         message.set_html(body)
         message.set_text(body)
         message.set_from(self._sender)
+        message.set_from_name(self._sender_name)
 
         return self._client.send(message)
