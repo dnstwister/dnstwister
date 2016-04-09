@@ -113,7 +113,7 @@ def isubscriptions():
     keys_iter = db.ikeys('email_sub')
     while True:
         key = keys_iter.next()
-        if key is not None and not key.startswith('email_sub_pending_'):
+        if key is not None:
             sub = db.get(key)
             if sub is not None:
                 yield key.split('email_sub:')[1], sub
