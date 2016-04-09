@@ -1,4 +1,8 @@
-"""SendGrid-based email sender."""
+"""SendGrid-based email sender.
+
+The SendGrid service is attached to the Production web worker, but is
+available to all workers.
+"""
 import os
 import sendgrid
 

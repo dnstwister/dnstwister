@@ -1,5 +1,5 @@
 {% extends "www/layout.html" %}
-{% block title %}Subscribed{% endblock %}
+{% block title %}Pending verification{% endblock %}
 {% block head %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
 {% endblock %}
@@ -8,6 +8,7 @@
 {% endblock %}
 {% block body %}
         <section>
-            <p>Please click the link in your verification email to confirm your subscription for '{{ domain }}'.</p>
+            <p>Click the link in your verification email to confirm your subscription for '{{ domain }}'.</p>
+            <p>Please ensure you can receive emails from <strong>alerts@dnstwister.report</strong>.</p>
         </section>
 {% endblock %}
