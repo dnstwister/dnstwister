@@ -4,12 +4,27 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
 {% endblock %}
 {% block header %}
-        <h1>Subscribe to email updates for {{ domain }}</h1>
+        <h1>Subscribe</h1>
 {% endblock %}
 {% block body %}
         <section>
+            <p>Subscribe to email updates for '{{ domain }}'</p>
+        </section>
+        <section>
             <form action="/email/pending_verify/{{ hexdomain }}" method="post">
-                <input type="text" name="email_address"/>
+                <input type="text" name="email_address" placeholder="Email Address" />
+                <input type="submit" value="subscribe" />
             </form>
+        </section>
+        <section>
+            <p>
+                Emails will sent every 24 hours if there is are new, updated
+                or deleted registrations. You can unsubscribe at any time via
+                the link in the email.
+            </p>
+            <p>
+                Subscriptions are per-domain, if you subscribe to multiple
+                domains you will receive multiple emails.
+            </p>
         </section>
 {% endblock %}
