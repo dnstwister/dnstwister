@@ -9,7 +9,6 @@ def test_email_renderer():
     template = email_tools.render_email(
         'report.html',
         domain='www.example.com',
-        updated_date='yesterday',
         new=(('www.examp1e.com', '127.0.0.1'),),
         updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2'),),
         deleted=('www.examplle.com',),
@@ -21,7 +20,6 @@ def test_email_renderer():
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
-        <p>Here's your dnstwister report, updated yesterday.</p>
         <h2>New registrations</h2>
         <table>
             <thead>

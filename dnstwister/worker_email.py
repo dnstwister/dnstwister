@@ -59,7 +59,6 @@ def process_sub(sub_id, detail):
     body = email_tools.render_email(
         'report.html',
         domain=domain,
-        updated_date='now-ish',
         new=new,
         updated=updated,
         deleted=deleted,
