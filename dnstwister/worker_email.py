@@ -87,6 +87,7 @@ if __name__ == '__main__':
             try:
                 sub = subs_iter.next()
             except StopIteration:
+                print 'All subs processed'
                 break
 
             if sub is None:
@@ -96,12 +97,11 @@ if __name__ == '__main__':
 
             try:
                 process_sub(sub_id, sub_detail)
-                time.sleep(1)
             except:
                 print 'Skipping {}, exception:\n {}'.format(
                     sub_id, traceback.format_exc()
                 )
 
-                time.sleep(1)
+            time.sleep(1)
 
         time.sleep(60)
