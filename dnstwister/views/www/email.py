@@ -3,6 +3,7 @@ import flask
 
 from dnstwister import app, emailer, gateway, repository
 import dnstwister.tools as tools
+import dnstwister.tools.email as email_tools
 
 
 @app.route('/email/subscribe/<hexdomain>')
@@ -28,11 +29,16 @@ def email_subscribe_pending_confirm(hexdomain):
 
     email_address = flask.request.form['email_address']
     verify_code = tools.random_id()
+    verify_url = flask.request.url_root + 'email/verify/{}'.format(verify_code)
+    email_body = email_tools.render_email(
+        'confirm.html',
+        domain=domain,
+        verify_url=verify_url
+    )
 
     repository.propose_subscription(verify_code, email_address, domain)
     emailer.send(
-        email_address, 'Please verify your subscription',
-        flask.request.url_root + 'email/verify/{}'.format(verify_code)
+        email_address, 'Please verify your subscription', email_body
     )
 
     return flask.render_template('www/email/pending_verify.html', domain=domain)

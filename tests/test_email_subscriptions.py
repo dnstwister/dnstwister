@@ -71,11 +71,13 @@ def test_isubscriptions_link():
 
     assert len(emailer.sent_emails) == 1
 
-    sent_email = emailer.sent_emails[0]
+    sent_email = emailer.sent_emails[0][:2]
 
     assert sent_email == (
-        'a@b.com', 'Please verify your subscription', verify_url
+        'a@b.com', 'Please verify your subscription'
     )
+
+    assert verify_url in emailer.sent_emails[0][2]
 
     subscribed_page = app.get(verify_path)
 
