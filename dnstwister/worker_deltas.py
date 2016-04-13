@@ -64,20 +64,39 @@ if __name__ == '__main__':
                 ip, error = tools.resolve(entry['domain-name'])
                 if error or not ip or ip is None:
                     continue
-                new_report[entry['domain-name']] = ip
+                new_report[entry['domain-name']] = {
+                    'ip':ip,
+                    'tweak': entry['fuzzer'],
+                }
 
             repository.update_resolution_report(domain, new_report)
 
             delta_report = {'new': [], 'updated': [], 'deleted': []}
-            for (dom, ip) in new_report.items():
+            for (dom, data) in new_report.items():
+
+                try:
+                    new_ip = data['ip']
+                except TypeError:
+                    # handle old-style ip-only reports
+                    new_ip = data
+
                 if dom in existing_report.keys():
-                    if ip != existing_report[dom]:
+
+                    try:
+                        existing_ip = existing_report[dom]['ip']
+                    except TypeError:
+                        # handle old-style ip-only reports
+                        existing_ip = existing_report[dom]
+
+                    if new_ip != existing_ip:
                         delta_report['updated'].append(
-                            (dom, existing_report[dom], ip)
+                            (dom, existing_ip, new_ip)
                         )
                 else:
-                    delta_report['new'].append((dom, ip))
-            for (dom, ip) in existing_report.items():
+
+                    delta_report['new'].append((dom, new_ip))
+
+            for dom in existing_report.keys():
                 if dom not in new_report.keys():
                     delta_report['deleted'].append(dom)
 
