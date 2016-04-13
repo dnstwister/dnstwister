@@ -60,4 +60,7 @@ class SimpleFuzzer(object):
 
     @property
     def domains(self):
-        return [{'domain-name': self._domain, 'fuzzer': 'Original*'}]
+        return [
+            {'domain-name': self._domain, 'fuzzer': 'Original*'},
+            {'domain-name': self._domain[:-1], 'fuzzer': 'Pretend'},
+        ]
