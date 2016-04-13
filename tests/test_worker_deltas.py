@@ -187,4 +187,3 @@ def test_old_style_resolution_reports_are_updated(capsys, monkeypatch):
         'updated': [('www.example.co', '127.0.0.1', '999.999.999.999')],
         'new': []
     }
-
