@@ -160,3 +160,31 @@ def test_deleted_domain_is_noted_in_delta(capsys, monkeypatch):
         'updated': [],
         'new': []
     }
+
+
+def test_old_style_resolution_reports_are_updated(capsys, monkeypatch):
+    """Test the migration to the more feature-rich reports works."""
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+    repository = dnstwister.repository
+
+    domain = 'www.example.com'
+
+    # Pre-load an old-style resolution report
+    db_key = 'resolution_report:{}'.format(domain)
+    repository.db._data[db_key] = {'www.example.co': '127.0.0.1'}
+
+    worker_deltas.process_domain(domain)
+
+    delta_report = repository.get_delta_report(domain)
+    assert delta_report == {
+        'deleted': [],
+        'updated': [('www.example.co', '127.0.0.1', '999.999.999.999')],
+        'new': []
+    }
+
