@@ -11,5 +11,5 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
-   Online help page <web/index>
-   Building the docs <meta/docs>
+   Online help page <web>
+   Building the docs <build_docs>

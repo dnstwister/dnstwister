@@ -32,7 +32,7 @@ record <https://en.wikipedia.org/wiki/List_of_DNS_record_types#A>`_ - the
 mapping between a domain name and an IP address. This will look something
 like: 
 
-..  image:: search.png
+..  image:: _static/search.png
 
 Successfully resolving a domain to an IP address indicates someone has
 registered it.
