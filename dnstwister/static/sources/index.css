@@ -38,17 +38,24 @@ header h1 {
     margin-bottom: 0;
 }
 
-a.home_help {
-    position: relative;
-    top: 0.1rem;
-    left: 70px;
-    margin-left: -75px;
-    width: 70px;
-    display: inline-table;
-    text-decoration: none;
+header p {
+    font-size: 1.8rem;
+    margin-top: 0.2em;
 }
 
-a.home_help:hover,
-a.home_help:active {
-    text-decoration: underline;
+.searchbox div.submit {
+    margin-left: 0;
+}
+
+.searchbox div.submit input {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.searchbox div.input_field {
+    padding-right: 1rem;
+}
+
+.help {
+    color: darkgrey;
 }

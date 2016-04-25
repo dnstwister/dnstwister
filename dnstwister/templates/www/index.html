@@ -11,15 +11,21 @@
         <section class="searchbox">
             <form action="/search" method="post">
                 <div class="row">
-                    <div class="ten columns offset-by-one">
-                        <input type="text" name="domains" placeholder="Enter domains like: www.example.com www.dnstwister.report" class="u-full-width" />
+                    <div class="ten columns offset-by-one input_field">
+                        <input type="text" name="domains" placeholder="Enter one or more space-separated domains" class="u-full-width" />
+                    </div>
+                    <div class="one columns submit">
+                        <input type="submit" value="&#128270;" class="button-primary" alt="search" />
+                    </div>
+                    <div class="twelve columns">
                         {% if error is not none %}
                             <section class="error">
                                 {{ error }}
                             </section>
                         {% endif %}
-                        <input type="submit" value="Search" class="button-primary" />
-                        <a class="home_help" href="/help">help</a>
+                        <div class="help">
+                            Would you like some <a href="/help">help</a>?
+                        </div>
                     </div>
                 </div>
             </form>
