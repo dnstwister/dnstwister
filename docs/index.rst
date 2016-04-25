@@ -12,3 +12,4 @@ Contents:
    :maxdepth: 1
 
    Online help page <web/index>
+   Building the docs <meta/docs>
