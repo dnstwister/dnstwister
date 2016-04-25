@@ -24,7 +24,7 @@ like:
     www.axample.com
     ...
 
-(you can `thank dnstwist <https://github.com/elceef/dnstwist>`_ for the
+(you can `thank dnstwist <https://github.com/elceef/dnstwist>`_ for that
 awesome algorithm)
 
 For each of these domains, **dnstwister** will attempt to resolve a `DNS A
