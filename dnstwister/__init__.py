@@ -19,6 +19,7 @@ gateway = payment.stripeservice.StripeService()
 import repository
 import tools
 import views.syndication.atom
+import views.www.help
 import views.www.index
 import views.www.search
 import views.www.whois
