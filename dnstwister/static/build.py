@@ -29,6 +29,12 @@ maps = {
         'jquery-1.11.3.min.js',
         'report.js',
     ),
+    'status.min.css': (
+        'normalize.css',
+        'skeleton.css',
+        'common.css',
+        'status.css',
+    ),
 }
 
 

@@ -22,6 +22,7 @@ import views.syndication.atom
 import views.www.help
 import views.www.index
 import views.www.search
+import views.www.status
 import views.www.whois
 import views.www.email
 import views.api.ip
