@@ -8,7 +8,7 @@ from dnstwister import cache
 
 
 @app.route(r'/status')
-@cache.memoize(60)
+@cache.memoize(300) # 5 minutes
 def status():
     """Status page."""
     try:
