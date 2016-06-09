@@ -1,4 +1,4 @@
-""" Non-GAE tools.
+""" Generic tools.
 """
 import base64
 import binascii
@@ -18,12 +18,17 @@ RESOLVER.lifetime = 0.1
 RESOLVER.timeout = 0.1
 
 
+def fuzzy_domains(domain):
+    """Return the fuzzy domains."""
+    fuzzer = dnstwist.DomainFuzzer(domain)
+    fuzzer.fuzz()
+    return list(fuzzer.domains)
+
+
 def analyse(domain):
     """Analyse a domain."""
     data = {'fuzzy_domains': []}
-    fuzzer = dnstwist.DomainFuzzer(domain)
-    fuzzer.fuzz()
-    results = list(fuzzer.domains)
+    results = fuzzy_domains(domain)
 
     if len(results) == 0:
         return None

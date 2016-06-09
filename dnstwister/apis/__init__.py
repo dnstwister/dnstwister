@@ -8,9 +8,13 @@ app = flask.Blueprint('api_entry', __name__)
 
 @app.route('/')
 def api_definition():
+    """API definition."""
     return flask.jsonify({
         'url': flask.request.base_url,
-        'domain_analysis_url': urlparse.urljoin(
+        'dnstwist_api_url': urlparse.urljoin(
+            flask.request.url_root, flask.url_for('dnstwist_api.api_definition')
+        ),
+        'domain_analysis_api_url': urlparse.urljoin(
             flask.request.url_root, flask.url_for('analysis_api.api_definition')
         ),
     })
