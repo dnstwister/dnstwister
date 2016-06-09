@@ -69,3 +69,23 @@ like:
 
 Successfully resolving a domain to an IP address indicates someone has
 registered it.
+
+FAQ
+---
+
+1. Why do you use `hexadecimal <https://en.wikipedia.org/wiki/Hexadecimal>`_
+for all the domain references?
+
+Corporate firewalls and proxies will often block malicious domains even if
+they are only part of a query string in the URL- eg
+`https://dnstwister.report/search/[malicious domain]
+<#faq>`_.
+
+By encoding the domain as hexidecimal you can still perform your searches and
+analysis.
+
+API
+---
+
+We have a fast-evolving JSON `API available <https://dnstwister.report/api/>`_
+for you to play with, if you're keen.
