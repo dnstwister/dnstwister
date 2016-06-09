@@ -31,5 +31,5 @@ def api_definition():
 def parked_score(hexdomain):
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(400)
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
     return flask.jsonify({'score': parked.get_score(domain)})
