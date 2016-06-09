@@ -3,7 +3,6 @@
 import base64
 import binascii
 import dns.resolver
-import operator
 import os
 import re
 import socket
