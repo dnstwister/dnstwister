@@ -33,7 +33,7 @@ $(document).ready(function() {
 
         // (Attempt to) resolve unresolved IPs.
         var hex = elem.data('hex');
-        $.getJSON('/ip/' + hex, function(result) {
+        $.getJSON('/api/analysis/ip/' + hex, function(result) {
             if (result.ip !== false) {
                 elem.text(result.ip);
                 elem.parent().addClass('resolved');

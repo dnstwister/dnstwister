@@ -25,16 +25,36 @@ def api_definition():
     return flask.jsonify({
         'url': flask.request.base_url,
         'parked_check_url': api_url(parked_score, 'domain_as_hex'),
+        'ip_resolution_url': api_url(ip, 'domain_as_hex'),
     })
 
 
 @app.route('/parked/<hexdomain>')
 def parked_score(hexdomain):
+    """Calculates "parked" scores from 0-1."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
     return flask.jsonify({
         'url': flask.request.base_url,
         'domain': domain,
-        'score': parked.get_score(domain)
+        'score': parked.get_score(domain),
+    })
+
+
+@app.route('/ip/<hexdomain>')
+def ip(hexdomain):
+    """Resolves Domains to IPs."""
+    domain = tools.parse_domain(hexdomain)
+    if domain is None:
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
+
+    ip, error = tools.resolve(domain)
+
+    # Response IP is now an IP address, or False.
+    return flask.jsonify({
+        'url': flask.request.base_url,
+        'domain': domain,
+        'ip': ip,
+        'error': error,
     })
