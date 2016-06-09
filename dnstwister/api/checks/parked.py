@@ -22,13 +22,19 @@ def get_score(domain):
     """
     score = 0
 
-    redirects, landed_domain1 = _domain_redirects(domain)
-    if redirects:
-        score += 1
+    try:
+        redirects, landed_domain1 = _domain_redirects(domain)
+        if redirects:
+            score += 1
+    except requests.ConnectionError:
+        return 0
 
-    redirects, landed_domain2 = _domain_redirects(
-        domain, 'dnstwister_parked_check'
-    )
+    try:
+        redirects, landed_domain2 = _domain_redirects(
+            domain, 'dnstwister_parked_check'
+        )
+    except requests.ConnectionError:
+        return 0
 
     if redirects:
         score += 1
