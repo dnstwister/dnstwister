@@ -107,7 +107,7 @@ def search(search_domains=None, format=None):
     elif format == 'csv':
         return csv_render(qry_domains)
     else:
-        flask.abort(500)
+        flask.abort(400, 'Unknown export format')
 
 
 @app.route('/report')

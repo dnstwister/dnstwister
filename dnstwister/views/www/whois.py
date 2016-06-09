@@ -10,7 +10,7 @@ def whois_query(hexdomain):
     """Does a whois."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(500)
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
     whois_data = tools.whois_query(domain)
 

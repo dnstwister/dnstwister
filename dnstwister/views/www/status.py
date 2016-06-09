@@ -8,7 +8,7 @@ from dnstwister import cache
 
 
 @app.route(r'/status')
-@cache.memoize(300) # 5 minutes
+@cache.memoize(300)  # 5 minutes
 def status():
     """Status page."""
     try:
@@ -19,7 +19,8 @@ def status():
         )
         flask.abort(500)
 
-    return flask.render_template('www/status.html',
-        summary= all(status_data['values'][0]),
+    return flask.render_template(
+        'www/status.html',
+        summary=all(status_data['values'][0]),
         statuses=zip(status_data['fields'], status_data['values'][0])
     )

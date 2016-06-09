@@ -10,7 +10,7 @@ def resolve(hexdomain):
     """Resolves Domains to IPs."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(500)
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
     ip, error = tools.resolve(domain)
 

@@ -13,7 +13,7 @@ def view(hexdomain):
     # Parse out the requested domain
     domain = dnstwister.tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(500)
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(

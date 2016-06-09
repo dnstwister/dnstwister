@@ -11,7 +11,7 @@ def email_subscribe_get_email(hexdomain):
     """Handle subscriptions."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(500)
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
     return flask.render_template(
         'www/email/subscribe.html',
@@ -25,7 +25,7 @@ def email_subscribe_pending_confirm(hexdomain):
     """Send a confirmation email for a user."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(500)
+        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
     email_address = flask.request.form['email_address']
     verify_code = tools.random_id()
