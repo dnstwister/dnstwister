@@ -4,11 +4,9 @@ import os
 import requests
 
 from dnstwister import app
-from dnstwister import cache
 
 
 @app.route(r'/status')
-@cache.memoize(300)  # 5 minutes
 def status():
     """Status page."""
     try:
