@@ -23,6 +23,7 @@ def api_url(view, var_pretty_name):
 @app.route('/')
 def api_definition():
     return flask.jsonify({
+        'url': flask.request.base_url,
         'parked_check_url': api_url(parked_score, 'domain_as_hex'),
     })
 
@@ -32,4 +33,8 @@ def parked_score(hexdomain):
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
-    return flask.jsonify({'score': parked.get_score(domain)})
+    return flask.jsonify({
+        'url': flask.request.base_url,
+        'domain': domain,
+        'score': parked.get_score(domain)
+    })
