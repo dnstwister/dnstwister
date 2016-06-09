@@ -1,12 +1,14 @@
-""" Non-GAE tools.
+""" Generic tools.
 """
 import base64
 import binascii
 import dns.resolver
+import flask
 import os
 import re
 import socket
 import string
+import urlparse
 
 from dnstwister import cache
 import dnstwister.dnstwist as dnstwist
@@ -18,12 +20,17 @@ RESOLVER.lifetime = 0.1
 RESOLVER.timeout = 0.1
 
 
+def fuzzy_domains(domain):
+    """Return the fuzzy domains."""
+    fuzzer = dnstwist.DomainFuzzer(domain)
+    fuzzer.fuzz()
+    return list(fuzzer.domains)
+
+
 def analyse(domain):
     """Analyse a domain."""
     data = {'fuzzy_domains': []}
-    fuzzer = dnstwist.DomainFuzzer(domain)
-    fuzzer.fuzz()
-    results = list(fuzzer.domains)
+    results = fuzzy_domains(domain)
 
     if len(results) == 0:
         return None
@@ -133,3 +140,15 @@ def whois_query(domain):
 def random_id(n_bytes=32):
     """Generate a random id for an email subscription (for instance)."""
     return binascii.hexlify(os.urandom(n_bytes))
+
+
+def api_url(view, var_pretty_name):
+    """Create nice API urls with placeholders."""
+    view_path = '.{}'.format(view.func_name)
+    route_var = view.func_code.co_varnames[:view.func_code.co_argcount][0]
+    path = flask.url_for(view_path, **{route_var: ''})
+    path += '{' + var_pretty_name + '}'
+    return urlparse.urljoin(
+        flask.request.url_root,
+        path
+    )

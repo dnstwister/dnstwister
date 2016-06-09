@@ -74,9 +74,9 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
-    # Attempt to create a <= 200 character GET parameter from the domains
-    # so we can redirect to that (allows bookmarking). As in '/ip' we use
-    # hex to hide the domains from firewalls that already block some of
+    # Attempt to create a <= 200 character GET parameter from the domains so
+    # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
+    # we use hex to hide the domains from firewalls that already block some of
     # them.
     path = ','.join(map(binascii.hexlify, qry_domains))
     if len(path) <= 200:
