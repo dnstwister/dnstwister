@@ -14,6 +14,9 @@ db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
 gateway = payment.stripeservice.StripeService()
 
+# Blueprints
+import apis.analysis
+app.register_blueprint(apis.analysis.app, url_prefix='/api/analysis')
 
 # Import modules using dnstwister.app/cache/db/emailer here
 import repository

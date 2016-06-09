@@ -56,7 +56,7 @@ def process_domain(domain):
         if error or not ip or ip is None:
             continue
         new_report[entry['domain-name']] = {
-            'ip':ip,
+            'ip': ip,
             'tweak': entry['fuzzer'],
         }
 
