@@ -5,7 +5,7 @@ import urlparse
 import checks.parked as parked
 import dnstwister.tools as tools
 
-app = flask.Blueprint('api', __name__, template_folder='templates')
+app = flask.Blueprint('analysis_api', __name__)
 
 
 def api_url(view, var_pretty_name):
@@ -31,5 +31,5 @@ def api_definition():
 def parked_score(hexdomain):
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(500)
+        flask.abort(400)
     return flask.jsonify({'score': parked.get_score(domain)})
