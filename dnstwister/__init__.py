@@ -32,4 +32,3 @@ import views.www.search
 import views.www.status
 import views.www.whois
 import views.www.email
-import views.api.ip
