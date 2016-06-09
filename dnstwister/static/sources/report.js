@@ -13,7 +13,7 @@ $(document).ready(function() {
 
     $('.resolved_total').text(resolvable);
     $('.resolvable').each(function() {
-        var elem = $(this)
+        var elem = $(this);
 
         // Detect pre-resolved IPs.
         if (elem.data('ip') !== '') {
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
         // (Attempt to) resolve unresolved IPs.
         var hex = elem.data('hex');
-        $.getJSON('/api/analysis/ip/' + hex, function(result) {
+        $.getJSON('/api/ip/' + hex, function(result) {
             if (result.ip !== false) {
                 elem.text(result.ip);
                 elem.parent().addClass('resolved');

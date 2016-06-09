@@ -15,15 +15,8 @@ emailer = mail.sendgridservice.SGSender()
 gateway = payment.stripeservice.StripeService()
 
 # Blueprints
-import apis
-app.register_blueprint(apis.app, url_prefix='/api')
-
-import apis.analysis
-app.register_blueprint(apis.analysis.app, url_prefix='/api/analysis')
-
-import apis.dnstwist
-app.register_blueprint(apis.dnstwist.app, url_prefix='/api/dnstwist')
-
+import api
+app.register_blueprint(api.app, url_prefix='/api')
 
 # Import modules using dnstwister.app/cache/db/emailer here
 import repository

@@ -36,4 +36,4 @@ def get_score(domain):
     if landed_domain1 == landed_domain2:
         score += 1
 
-    return score / 3.0
+    return round(score / 3.0, 2)
