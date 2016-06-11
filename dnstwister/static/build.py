@@ -1,4 +1,10 @@
-"""Build the static files. Cloudflare minifies so this just concatenates."""
+"""Build the static files.
+
+Requires: pip install csscompressor
+
+Cloudflare compresses JS for us.
+"""
+import csscompressor
 import sys
 
 
@@ -46,9 +52,13 @@ def build():
             with open('sources/{}'.format(src), 'rb') as srcf:
                 dest_data.append(srcf.read())
 
-        with open(dest, 'wb') as destf:
-            destf.write('\n'.join(dest_data))
+        dest_data = '\n'.join(dest_data)
 
+        if dest.endswith('.css'):
+            dest_data = csscompressor.compress(dest_data)
+
+        with open(dest, 'wb') as destf:
+            destf.write(dest_data)
 
 
 if __name__ == '__main__':
