@@ -22,7 +22,6 @@ def test_isubscriptions_during_subscription():
     domain = 'www.example.com'
     email = 'a@b.com'
     sub_id = '1234'
-    payment_cust_id = 'cus_0000'
 
     repository.subscribe_email(sub_id, email, domain)
 

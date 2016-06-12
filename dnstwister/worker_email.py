@@ -75,7 +75,6 @@ def process_sub(sub_id, detail):
     print 'Emailed delta for {} to {}'.format(domain, email_address)
 
 
-
 if __name__ == '__main__':
     while True:
 
