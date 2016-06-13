@@ -150,11 +150,13 @@ def subscribe_email(sub_id, email_address, domain):
     })
 
 
-def update_last_email_sub_sent_date(sub_id):
+def update_last_email_sub_sent_date(sub_id, when=None):
     """Note that an email has been sent for a subscription."""
+    if when is None:
+        when = datetime.datetime.now()
     db.set(
         'email_sub_last_sent:{}'.format(sub_id),
-        datetime.datetime.now().strftime(
+        when.strftime(
             '%Y-%m-%dT%H:%M:%SZ'
         )
     )
