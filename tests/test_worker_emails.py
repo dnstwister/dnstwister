@@ -74,3 +74,6 @@ def test_subscription_email_timing(capsys, monkeypatch):
     # And we've sent two emails, even though the delta report may not have
     # run.
     assert len(emailer.sent_emails) == 2
+
+    # And, worse, they are identical
+    assert emailer.sent_emails[0] == emailer.sent_emails[1]
