@@ -44,6 +44,20 @@ def process_sub(sub_id, detail):
         )
         return
 
+    # Grab the delta report update time.
+    delta_updated = repository.delta_report_updated(domain)
+
+    # If the delta report was updated > 23 hours ago, we're too close to the
+    # next delta report. This means we should hold off so we don't send the
+    # same delta report twice.
+    if delta_updated is not None:
+        age_delta_updated = datetime.datetime.now() - delta_updated
+        if age_delta_updated > datetime.timedelta(hours=23):
+            print 'Skipping {} + {}, delta > 23h hours old'.format(
+                email_address, domain
+            )
+            return
+
     # Don't email if no changes
     new = delta['new'] if len(delta['new']) > 0 else None
     updated = delta['updated'] if len(delta['updated']) > 0 else None

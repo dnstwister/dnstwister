@@ -62,18 +62,32 @@ def test_subscription_email_timing(capsys, monkeypatch):
     # And we've sent an email.
     assert len(emailer.sent_emails) == 1
 
-    # Now we "let" a bit over 24 hours pass since the email was sent.
+    # Now we "let" a bit over 24 hours pass since the email was sent and the
+    # report was updated.
+    passed_time = datetime.timedelta(hours=24, minutes=1)
     repository.update_last_email_sub_sent_date(
         sub_id,
-        datetime.datetime.now() - datetime.timedelta(hours=24, minutes=1)
+        datetime.datetime.now() - passed_time
+    )
+    delta_report = repository.get_delta_report(domain)
+    repository.update_delta_report(
+        domain, delta_report, datetime.datetime.now() - passed_time
     )
 
     # Now we run the email worker for the sub *before* the delta report.
     worker_email.process_sub(sub_id, sub_data)
 
-    # And we've sent two emails, even though the delta report may not have
-    # run.
+    # We've not sent an extra email because it's more than 23 hours since the
+    # last delta report.
+    assert len(emailer.sent_emails) == 1
+
+    # As soon as the delta report is ran again we can send another email.
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.222', False)
+    )
+    worker_deltas.process_domain(domain)
+    worker_email.process_sub(sub_id, sub_data)
     assert len(emailer.sent_emails) == 2
 
-    # And, worse, they are identical
-    assert emailer.sent_emails[0] == emailer.sent_emails[1]
+    # And the emails are different.
+    assert emailer.sent_emails[0] != emailer.sent_emails[1]
