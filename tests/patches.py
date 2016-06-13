@@ -22,7 +22,7 @@ class SimpleKVDatabase(object):
 
     @property
     def data(self):
-        """Return a dict representation of the data, for testing."""
+        """Return a read-only dict representation of the data, for testing."""
         return dict(self._data)
 
     def set(self, key, value):
