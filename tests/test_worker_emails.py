@@ -10,8 +10,9 @@ import worker_deltas
 def test_subscription_email_timing(capsys, monkeypatch):
     """Test that email subscriptions and delta reporting are in sync.
 
-    A bug was found where a delta report was being done before subscription,
-    causing two emails with the same data to be sent.
+    A bug was found where, because signing up registers for delta reporting
+    and the email is sent as soon as the report is generated, it is possible
+    to send 2 emails between delta reports.
     """
 
     # Patch away
@@ -32,26 +33,44 @@ def test_subscription_email_timing(capsys, monkeypatch):
     sub_id = '1234'
     email = 'a@b.zzzzzzzzzzz'
 
-    # Perform a delta report - for instance someone might have read an RSS
-    # feed for the domain in the last 7 days.
-    repository.register_domain(domain)
-    worker_deltas.process_domain(domain)
+    # We start with an unregistered domain.
+    assert not repository.is_domain_registered(domain)
 
-    # Set the time to be a little while ago
-    key = 'delta_report_updated:{}'.format(domain)
-    updated = datetime.datetime.strptime(
-        repository.db.data[key],
-        '%Y-%m-%dT%H:%M:%SZ'
-    )
-    updated -= datetime.timedelta(hours=1)
-    repository.db.data[key] = updated.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-    # Subscribe a new user
+    # Subscribe a new user.
     repository.subscribe_email(sub_id, email, domain)
 
-    # Process the subscription
+    # Subscribing a user does not register the domain.
+    assert not repository.is_domain_registered(domain)
+
+    # Process the subscription.
     sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
     worker_email.process_sub(sub_id, sub_data)
 
-    # We now have sent out an email
-    sent_results = emailer.sent_emails[0][2]
+    # We won't have sent any emails.
+    assert emailer.sent_emails == []
+
+    # But the domain is now registered for delta reporting.
+    assert repository.is_domain_registered(domain)
+
+    # So let's do a delta report.
+    worker_deltas.process_domain(domain)
+
+    # Process the subscription again.
+    sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
+    worker_email.process_sub(sub_id, sub_data)
+
+    # And we've sent an email.
+    assert len(emailer.sent_emails) == 1
+
+    # Now we "let" a bit over 24 hours pass since the email was sent.
+    repository.update_last_email_sub_sent_date(
+        sub_id,
+        datetime.datetime.now() - datetime.timedelta(hours=24, minutes=1)
+    )
+
+    # Now we run the email worker for the sub *before* the delta report.
+    worker_email.process_sub(sub_id, sub_data)
+
+    # And we've sent two emails, even though the delta report may not have
+    # run.
+    assert len(emailer.sent_emails) == 2
