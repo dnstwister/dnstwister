@@ -35,6 +35,8 @@ $(document).ready(function() {
 
         $.getJSON('/api/ip/' + hex, function(result) {
 
+            resolveNext(queue);
+
             var elem = $('.resolvable[data-hex=' + hex + ']');
 
             if (result.ip !== false) {
@@ -54,8 +56,6 @@ $(document).ready(function() {
             }
             to_resolve -= 1;
             $('.resolved_count').text(resolvable - to_resolve);
-
-            resolveNext(queue);
 
         });
     };
