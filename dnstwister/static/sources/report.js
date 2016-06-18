@@ -22,20 +22,10 @@ $(document).ready(function() {
         var hex = queue.pop();
 
         if (hex === undefined) {
-
-            if (found === 0) {
-                $('.progress p').text('No domains resolved');
-            }
-            else {
-                $('.progress').hide();
-            }
-
             return;
         }
 
         $.getJSON('/api/ip/' + hex, function(result) {
-
-            resolveNext(queue);
 
             var elem = $('.resolvable[data-hex=' + hex + ']');
 
@@ -57,9 +47,29 @@ $(document).ready(function() {
             to_resolve -= 1;
             $('.resolved_count').text(resolvable - to_resolve);
 
+            resolveNext(queue);
+
         });
     };
 
-    resolveNext(resolveQueue);
+    // 5 "threads"
+    $.map([0, 1, 2, 3, 4], function() {
+        setTimeout(function() {
+            resolveNext(resolveQueue);
+        });
+    });
+
+    var timer = null;
+    timer = setInterval(function() {
+        if (to_resolve === 0) {
+            clearInterval(timer);
+            if (found === 0) {
+                $('.progress p').text('No domains resolved');
+            }
+            else {
+                $('.progress').hide();
+            }
+        }
+    }, 100);
 
 });
