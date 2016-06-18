@@ -59,7 +59,9 @@ def parked_score(hexdomain):
             'Malformed domain or domain not represented in hexadecimal format.'
         )
     payload = standard_api_values(domain, skip='parked_score')
-    payload['score'] = parked.get_score(domain)
+    score = parked.get_score(domain)
+    payload['score'] = score
+    payload['score_text'] = parked.get_text(score)
     return flask.jsonify(payload)
 
 

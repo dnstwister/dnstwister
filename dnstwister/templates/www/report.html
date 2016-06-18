@@ -42,6 +42,7 @@
                         <th>Tweak</th>
                         <th>Type</th>
                         <th>IP</th>
+                        <th>Tools</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,6 +53,9 @@
                                 <td>{{ entry['domain-name'] }}</td>
                                 <td>{{ entry.fuzzer }}</td>
                                 <td class="resolvable" data-hex="{{ entry.hex }}" data-ip="{{ entry.ip }}">...</td>
+                                <td>
+                                    <a href="/analyse/{{ entry.hex }}">analyse</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     {% endfor %}

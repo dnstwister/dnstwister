@@ -20,6 +20,12 @@ maps = {
         'skeleton.css',
         'common.css',
     ),
+    'analyse.min.css': (
+        'normalize.css',
+        'skeleton.css',
+        'common.css',
+        'analyse.css',
+    ),
     'email.min.css': (
         'normalize.css',
         'skeleton.css',
@@ -34,6 +40,10 @@ maps = {
     'report.min.js': (
         'jquery-1.11.3.min.js',
         'report.js',
+    ),
+    'analyse.min.js': (
+        'jquery-1.11.3.min.js',
+        'analyse.js',
     ),
     'status.min.css': (
         'normalize.css',
