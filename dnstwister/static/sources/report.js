@@ -12,28 +12,31 @@ $(document).ready(function() {
     var found = 0;
 
     $('.resolved_total').text(resolvable);
-    $('.resolvable').each(function() {
-        var elem = $(this);
 
-        // Detect pre-resolved IPs.
-        if (elem.data('ip') !== '') {
-            if (elem.data('ip') !== 'False') {
-                elem.text(elem.data('ip'));
-                elem.parent().addClass('resolved');
-                $('.report').show();
-                found += 1;
+    var resolveQueue = $.map($('.resolvable'), function(elem) {
+        return $(elem).data('hex');
+    }).reverse();
+
+    var resolveNext = function(queue) {
+
+        var hex = queue.pop();
+
+        if (hex === undefined) {
+
+            if (found === 0) {
+                $('.progress p').text('No domains resolved');
             }
             else {
-                elem.text('None');
+                $('.progress').hide();
             }
-            to_resolve -= 1;
-            $('.resolved_count').text(resolvable - to_resolve);
+
             return;
         }
 
-        // (Attempt to) resolve unresolved IPs.
-        var hex = elem.data('hex');
         $.getJSON('/api/ip/' + hex, function(result) {
+
+            var elem = $('.resolvable[data-hex=' + hex + ']');
+
             if (result.ip !== false) {
                 elem.text(result.ip);
                 elem.parent().addClass('resolved');
@@ -51,19 +54,12 @@ $(document).ready(function() {
             }
             to_resolve -= 1;
             $('.resolved_count').text(resolvable - to_resolve);
-        });
-    });
 
-    var timer = null;
-    timer = setInterval(function() {
-        if (to_resolve === 0) {
-            clearInterval(timer);
-            if (found === 0) {
-                $('.progress p').text('No domains resolved');
-            }
-            else {
-                $('.progress').hide();
-            }
-        }
-    }, 100);
+            resolveNext(queue);
+
+        });
+    };
+
+    resolveNext(resolveQueue);
+
 });
