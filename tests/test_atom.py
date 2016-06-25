@@ -281,7 +281,7 @@ class TestAtom(unittest.TestCase):
         domain = 'www.example.com'
         b64domain = base64.b64encode(domain)
 
-        assert repository.is_domain_registered(domain) == False
+        assert not repository.is_domain_registered(domain)
         assert repository.db.data == {}
 
         self.app.get('/atom/{}'.format(b64domain))
@@ -293,10 +293,10 @@ class TestAtom(unittest.TestCase):
             },
         )
 
-        assert repository.is_domain_registered(domain) == True
+        assert repository.is_domain_registered(domain)
         assert repository.db.data != {}
 
         repository.unregister_domain(domain)
 
-        assert repository.is_domain_registered(domain) == False
+        assert not repository.is_domain_registered(domain)
         assert repository.db.data == {}
