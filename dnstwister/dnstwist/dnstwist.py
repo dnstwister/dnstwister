@@ -8,7 +8,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -19,8 +19,8 @@
 
 #
 # dnstwist 1.02 modified by Robert Wallhead (robert@thisismyrobot.com) for use
-# in https://dnstwist.herokuapp.com - all functionality except fuzzing removed
-# and various changes made to allow usage in Google App Engine.
+# in https://dnstwister.report - all functionality except fuzzing removed and
+# various changes made to allow usage in Heroku.
 #
 
 __author__ = 'Marcin Ulikowski'
@@ -28,11 +28,15 @@ __version__ = '1.02'
 __email__ = 'marcin@ulikowski.pl'
 
 import re
-import sys
 import os.path
 
 
-FILE_TLD = os.path.join('dnstwist', 'database', 'effective_tld_names.dat')
+FILE_TLD = os.path.join(
+    'dnstwister',
+    'dnstwist',
+    'database',
+    'effective_tld_names.dat'
+)
 DB_TLD = os.path.exists(FILE_TLD)
 
 
