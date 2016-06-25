@@ -7,4 +7,4 @@ install:
 script: py.test --cov=dnstwister
 after_success:
     - pip install python-coveralls
-    - coveralls
+    - coveralls -i
