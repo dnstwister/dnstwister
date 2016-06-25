@@ -3,7 +3,6 @@ import flask
 import flask.ext.cache
 
 import mail.sendgridservice
-import payment.stripeservice
 import storage.pg_database
 
 
@@ -12,7 +11,6 @@ app = flask.Flask(__name__)
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
-gateway = payment.stripeservice.StripeService()
 
 # Blueprints
 import api
@@ -28,4 +26,3 @@ import views.www.help
 import views.www.index
 import views.www.search
 import views.www.status
-import views.www.whois

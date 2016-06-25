@@ -3,3 +3,4 @@ resolvers/dnsresolve*
 .cache/
 brand/*.psd
 _build*
+.coverage

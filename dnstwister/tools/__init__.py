@@ -12,7 +12,6 @@ import urlparse
 
 from dnstwister import cache
 import dnstwister.dnstwist as dnstwist
-import dnstwister.whois as whois
 
 
 RESOLVER = dns.resolver.Resolver()
@@ -127,14 +126,6 @@ def resolve(domain):
         return False, False
     except:
         return False, True
-
-
-def whois_query(domain):
-    """Returns the whois info for a domain or None."""
-    try:
-        return whois.lookup(domain)
-    except:
-        return 'Error: whois lookup failed'
 
 
 def random_id(n_bytes=32):

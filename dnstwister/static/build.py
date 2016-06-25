@@ -15,11 +15,6 @@ maps = {
         'common.css',
         'index.css',
     ),
-    'whois.min.css': (
-        'normalize.css',
-        'skeleton.css',
-        'common.css',
-    ),
     'analyse.min.css': (
         'normalize.css',
         'skeleton.css',
