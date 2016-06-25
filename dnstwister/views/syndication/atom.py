@@ -88,11 +88,11 @@ def view(hexdomain):
                 **common_kwargs
             )
 
-        for (dom, ip) in delta_report['deleted']:
+        for dom in delta_report['deleted']:
             feed.add(
                 title='DELETED: {}'.format(dom),
-                content='IP: {}'.format(ip),
-                id='deleted:{}:{}:{}'.format(dom, ip, id_24hr),
+                content='',
+                id='deleted:{}:{}'.format(dom, id_24hr),
                 **common_kwargs
             )
 
