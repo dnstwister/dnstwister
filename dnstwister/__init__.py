@@ -22,10 +22,9 @@ app.register_blueprint(api.app, url_prefix='/api')
 import repository
 import tools
 import views.syndication.atom
-import views.www.analyse
-import views.www.email
 import views.www.help
 import views.www.index
 import views.www.search
 import views.www.status
 import views.www.whois
+import views.www.email
