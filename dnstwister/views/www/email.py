@@ -1,7 +1,7 @@
 """Email pages."""
 import flask
 
-from dnstwister import app, emailer, gateway, repository
+from dnstwister import app, emailer, repository
 import dnstwister.tools as tools
 import dnstwister.tools.email as email_tools
 
