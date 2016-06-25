@@ -12,28 +12,23 @@ $(document).ready(function() {
     var found = 0;
 
     $('.resolved_total').text(resolvable);
-    $('.resolvable').each(function() {
-        var elem = $(this);
 
-        // Detect pre-resolved IPs.
-        if (elem.data('ip') !== '') {
-            if (elem.data('ip') !== 'False') {
-                elem.text(elem.data('ip'));
-                elem.parent().addClass('resolved');
-                $('.report').show();
-                found += 1;
-            }
-            else {
-                elem.text('None');
-            }
-            to_resolve -= 1;
-            $('.resolved_count').text(resolvable - to_resolve);
+    var resolveQueue = $.map($('.resolvable'), function(elem) {
+        return $(elem).data('hex');
+    }).reverse();
+
+    var resolveNext = function(queue) {
+
+        var hex = queue.pop();
+
+        if (hex === undefined) {
             return;
         }
 
-        // (Attempt to) resolve unresolved IPs.
-        var hex = elem.data('hex');
         $.getJSON('/api/ip/' + hex, function(result) {
+
+            var elem = $('.resolvable[data-hex=' + hex + ']');
+
             if (result.ip !== false) {
                 elem.text(result.ip);
                 elem.parent().addClass('resolved');
@@ -51,6 +46,16 @@ $(document).ready(function() {
             }
             to_resolve -= 1;
             $('.resolved_count').text(resolvable - to_resolve);
+
+            resolveNext(queue);
+
+        });
+    };
+
+    // 5 "threads"
+    $.map([0, 1, 2, 3, 4], function() {
+        setTimeout(function() {
+            resolveNext(resolveQueue);
         });
     });
 
@@ -66,4 +71,5 @@ $(document).ready(function() {
             }
         }
     }, 100);
+
 });
