@@ -69,7 +69,7 @@ def get_score(domain):
     if redirects:
         score += 1
 
-    if landed_domain1 == landed_domain2:
+    if landed_domain1 == landed_domain2 and redirects:
         score += 1
 
     word_score = 0
