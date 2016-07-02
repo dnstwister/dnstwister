@@ -17,11 +17,14 @@ emailer = mail.sendgridservice.SGSender()
 # Logging
 @app.before_first_request
 def setup_logging():
-    """Enable info-level logging in waitress."""
+    """Enable info-level logging."""
     if not app.debug:
+        app.logger.handlers[0].setLevel(logging.INFO)
+        return
         #logger = logging.getLogger('waitress')
         #logger.setLevel(logging.INFO)
         print 'LOGGERS', app.logger.handlers
+        import pdb; pdb.set_trace()
         app.logger.addHandler(logging.StreamHandler())
         app.logger.setLevel(logging.INFO)
 
