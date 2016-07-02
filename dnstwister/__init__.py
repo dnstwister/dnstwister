@@ -13,15 +13,8 @@ cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
 
-
 # Logging
-@app.before_first_request
-def setup_logging():
-    """Enable info-level logging."""
-    if not app.debug:
-        #app.logger.addHandler(logging.StreamHandler())
-        app.logger.setLevel(logging.INFO)
-
+app.logger.setLevel(logging.INFO)
 
 # Blueprints
 import api
