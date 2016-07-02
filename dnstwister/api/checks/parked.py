@@ -53,23 +53,23 @@ def get_score(domain):
     score = 0
 
     try:
-        redirects, landed_domain1, content = _domain_redirects(domain)
-        if redirects:
+        redirects_domain, landed_domain1, content = _domain_redirects(domain)
+        if redirects_domain:
             score += 1
     except requests.ConnectionError:
         return 0
 
     try:
-        redirects, landed_domain2, _ = _domain_redirects(
+        redirects_paths, landed_domain2, _ = _domain_redirects(
             domain, 'dnstwister_parked_check'
         )
     except requests.ConnectionError:
         return 0
 
-    if redirects:
+    if redirects_paths:
         score += 1
 
-    if landed_domain1 == landed_domain2 and redirects:
+    if landed_domain1 == landed_domain2 and redirects_paths:
         score += 1
 
     word_score = 0
@@ -78,4 +78,11 @@ def get_score(domain):
             word_score += 1.0
     score += (word_score / len(PARKED_WORDS)) * 3
 
-    return round(score / 6.0, 2)
+    normalised_score = round(score / 6.0, 2)
+
+    return (
+        normalised_score,
+        get_text(normalised_score),
+        redirects_domain,
+        landed_domain1 if redirects_domain else '',
+    )

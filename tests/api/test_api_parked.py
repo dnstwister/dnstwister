@@ -22,6 +22,8 @@ def test_not_parked(f_httpretty, webapp):
 
     assert response['score'] == 0.0
     assert response['score_text'] == 'Unlikely'
+    assert not response['redirects']
+    assert response['redirects_to'] == ''
 
 
 def test_parked(f_httpretty, webapp):
@@ -59,3 +61,5 @@ def test_parked(f_httpretty, webapp):
 
     assert response['score'] == 0.58
     assert response['score_text'] == 'Fairly likely'
+    assert response['redirects']
+    assert response['redirects_to'] == 'forsale.com'
