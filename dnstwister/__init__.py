@@ -1,6 +1,7 @@
 """dnstwister web app."""
 import flask
 import flask.ext.cache
+import logging
 
 import mail.sendgridservice
 import storage.pg_database
@@ -11,6 +12,9 @@ app = flask.Flask(__name__)
 cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
+
+# Logging
+app.logger.setLevel(logging.INFO)
 
 # Blueprints
 import api

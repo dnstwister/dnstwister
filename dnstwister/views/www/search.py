@@ -12,7 +12,7 @@ def html_render(qry_domains, search_domains=None):
 
     # Handle no valid domains by redirecting to GET page.
     if len(reports) == 0:
-        app.logger.error(
+        app.logger.info(
             'No valid domains found in {}'.format(qry_domains)
         )
         return flask.redirect('/error/0')
@@ -69,7 +69,7 @@ def search_post():
 
     # Handle malformed domains data by redirecting to GET page.
     if qry_domains is None:
-        app.logger.error(
+        app.logger.info(
             'No valid domains in POST dict {}'.format(flask.request.args)
         )
         return flask.redirect('/error/2')
@@ -97,7 +97,7 @@ def search(search_domains=None, format=None):
             search_domains.split(',')
         )
     except:
-        app.logger.error('Unable to decode valid domains from path')
+        app.logger.info('Unable to decode valid domains from path')
         return flask.redirect('/error/1')
 
     if format is None:
@@ -116,7 +116,7 @@ def report_old():
     try:
         path = flask.request.args['q']
     except:
-        app.logger.error('Unable to decode valid domains from q GET param')
+        app.logger.info('Unable to decode valid domains from q GET param')
         return flask.redirect('/error/1')
 
     return flask.redirect('/search/{}'.format(path))
