@@ -1,4 +1,5 @@
 """Atom syndication."""
+import binascii
 import datetime
 import flask
 import werkzeug.contrib.atom
@@ -65,7 +66,7 @@ def view(hexdomain):
 
         common_kwargs = {
             'title_type': 'text',
-            'content_type': 'text',
+            'content_type': 'html',
             'author': 'dnstwister',
             'updated': updated,
             'published': updated,
@@ -77,7 +78,7 @@ def view(hexdomain):
                 title='NEW: {}'.format(dom),
                 content=flask.render_template(
                     'syndication/atom/new.html',
-                    ip=ip,
+                    ip=ip, hexdomain=binascii.hexlify(dom)
                 ),
                 id='new:{}:{}:{}'.format(dom, ip, id_24hr),
                 **common_kwargs
@@ -89,6 +90,7 @@ def view(hexdomain):
                 content=flask.render_template(
                     'syndication/atom/updated.html',
                     new_ip=new_ip, old_ip=old_ip,
+                    hexdomain=binascii.hexlify(dom),
                 ),
                 id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
                 **common_kwargs

@@ -154,7 +154,8 @@ class TestAtom(unittest.TestCase):
                 <author>
                   <name>dnstwister</name>
                 </author>
-                <content type="text">IP: 127.0.0.1</content>
+                <content type="html">&lt;h1&gt;IP: 127.0.0.1&lt;/h1&gt;
+            &lt;a href=&quot;https://dnstwister.report/analyse/7777772e6578616d7031652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
             </feed>
         """).strip()
@@ -203,7 +204,8 @@ class TestAtom(unittest.TestCase):
                 <author>
                   <name>dnstwister</name>
                 </author>
-                <content type="text">IP: 127.0.0.1</content>
+                <content type="html">&lt;h1&gt;IP: 127.0.0.1&lt;/h1&gt;
+            &lt;a href=&quot;https://dnstwister.report/analyse/7777772e6578616d7031652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
               <entry xml:base="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t">
                 <title type="text">UPDATED: wwwexa.mple.com</title>
@@ -214,7 +216,8 @@ class TestAtom(unittest.TestCase):
                 <author>
                   <name>dnstwister</name>
                 </author>
-                <content type="text">IP: 127.0.0.1 &gt; 127.0.0.2</content>
+                <content type="html">&lt;h1&gt;IP: 127.0.0.1 &amp;gt; 127.0.0.2&lt;/h1&gt;
+            &lt;a href=&quot;https://dnstwister.report/analyse/7777776578612e6d706c652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
               <entry xml:base="http://localhost:80/atom/d3d3LmV4YW1wbGUuY29t">
                 <title type="text">DELETED: www.eeexample.com</title>
