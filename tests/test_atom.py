@@ -14,7 +14,7 @@ class TestAtom(unittest.TestCase):
     """Tests of the atom feed behaviour."""
 
     def setUp(self):
-        """Set up the mock memcache."""
+        """Set up the app for testing."""
         # Create a webtest Test App for use
         self.app = flask.ext.webtest.TestApp(dnstwister.app)
 
@@ -238,7 +238,6 @@ class TestAtom(unittest.TestCase):
               </entry>
             </feed>
         """).strip()
-
 
     @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
     def test_feed_reading_is_tracked(self):
