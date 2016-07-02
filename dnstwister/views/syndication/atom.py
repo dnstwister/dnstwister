@@ -75,7 +75,10 @@ def view(hexdomain):
         for (dom, ip) in delta_report['new']:
             feed.add(
                 title='NEW: {}'.format(dom),
-                content='IP: {}'.format(ip),
+                content=flask.render_template(
+                    'syndication/atom/new.html',
+                    ip=ip,
+                ),
                 id='new:{}:{}:{}'.format(dom, ip, id_24hr),
                 **common_kwargs
             )
@@ -83,7 +86,10 @@ def view(hexdomain):
         for (dom, old_ip, new_ip) in delta_report['updated']:
             feed.add(
                 title='UPDATED: {}'.format(dom),
-                content='IP: {} > {}'.format(old_ip, new_ip),
+                content=flask.render_template(
+                    'syndication/atom/updated.html',
+                    new_ip=new_ip, old_ip=old_ip,
+                ),
                 id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
                 **common_kwargs
             )
@@ -91,7 +97,9 @@ def view(hexdomain):
         for dom in delta_report['deleted']:
             feed.add(
                 title='DELETED: {}'.format(dom),
-                content='',
+                content=flask.render_template(
+                    'syndication/atom/deleted.html',
+                ),
                 id='deleted:{}:{}'.format(dom, id_24hr),
                 **common_kwargs
             )
