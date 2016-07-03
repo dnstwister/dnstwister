@@ -13,6 +13,16 @@ PARKED_WORDS = (
     'hosted',
 )
 
+# In-browser redirect checks
+REDIRECT_HINTS = (
+    '.location',
+    'redirect',
+    'fwd',
+    'url=',
+    'forward',
+    'refresh',
+)
+
 CONTENT_MAX = 1024 * 100
 
 
@@ -47,6 +57,15 @@ def dressed(domain, redirected_domain):
     return redirected_domain.endswith(domain)
 
 
+def soft_redirects(content, threshold=0):
+    """Tries to guess if a page redirects in-browser."""
+    count = 0
+    for hint in REDIRECT_HINTS:
+        if hint in content.lower():
+            count += 1
+    return count > threshold
+
+
 def get_score(domain):
     """Takes a punt as to whether a domain is parked or not.
 
@@ -66,6 +85,9 @@ def get_score(domain):
         redirects_domain = False
         landed_domain1 = ''
         content = ''
+
+    if soft_redirects(content):
+        score += 1
 
     try:
         redirects_paths, landed_domain2, _ = _domain_redirects(
@@ -90,7 +112,7 @@ def get_score(domain):
             word_score += 1.0
     score += (word_score / len(PARKED_WORDS)) * 3
 
-    normalised_score = round(score / 6.0, 2)
+    normalised_score = round(score / 7.0, 2)
 
     return (
         normalised_score,
