@@ -15,13 +15,27 @@
                 use one or more as necessary.
             </p>
         </section>
-        <section class="analysis_tool" data-id="parked" data-hexdomain="{{ hexdomain }}">
-            <h5>Parked domains</h5>
-            <p>
-                Often domains are "registered" by domain registrars to drive
-                sales when users mistype URLs.
-            </p>
-            <input type="button" value="Check" />
-            <span class="result" style="display:none"></span>
+        <section class="local_tools">
+            <div class="row">
+                <div class="one-half column analysis_tool" data-id="parked" data-hexdomain="{{ hexdomain }}">
+                    <h5>Parked domains</h5>
+                    <p>
+                        Often domains are "registered" by domain registrars to drive
+                        sales when users mistype URLs.
+                    </p>
+                    <input type="button" value="Check" />
+                    <div class="result" style="display:none"></div>
+                </div>
+                <div class="one-half column analysis_tool" data-id="gsb" data-hexdomain="{{ hexdomain }}">
+                    <h5>Google Safe Browsing</h5>
+                    <p>
+                        Google Safe Browsing maintains a list of reported
+                        phishing sites and sites that host malware or unwanted
+                        software.
+                    </p>
+                    <input type="button" value="Check" />
+                    <div class="result" style="display:none"></div>
+                </div>
+            </div>
         </section>
 {% endblock %}

@@ -1,4 +1,10 @@
 .result {
-    margin-left: 1rem;
     font-weight: bold;
+}
+
+.analysis_tool {
+    border: 1px solid silver;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
 }
