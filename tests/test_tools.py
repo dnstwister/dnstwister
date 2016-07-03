@@ -23,12 +23,12 @@ class TestTools(unittest.TestCase):
             None, tools.query_domains({'blah': 'cat'}), 'Missing domains key'
         )
 
-        inp = 'www.example.com'
+        inp = 'www.examplE.COM'
 
         self.assertEqual(
             ['www.example.com'],
             tools.query_domains({'domains': inp}),
-            'One domain',
+            'One domain, made lower-case',
         )
 
         inp = '\n\n\n\n\n          www.example.com         \n\n\n\n\n'

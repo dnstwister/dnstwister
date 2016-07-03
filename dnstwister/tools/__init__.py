@@ -63,7 +63,7 @@ def parse_domain(hexdomain):
     if not dnstwist.validate_domain(domain):
         return
 
-    return domain
+    return domain.lower()
 
 
 def query_domains(data_dict):
@@ -95,6 +95,9 @@ def query_domains(data_dict):
     domains = filter(
         dnstwist.validate_domain, domains
     )
+
+    # Make all lower-case
+    domains = map(string.lower, domains)
 
     return sorted(list(set(domains))) if len(domains) > 0 else None
 
