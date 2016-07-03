@@ -14,8 +14,6 @@ def get_report(domain):
 
     Returns a count of matches.
     """
-    domain = 'malware.testing.google.test/testing/malware/'
-
     api_key = os.environ['SAFEBROWSING_KEY']
 
     payload = {
