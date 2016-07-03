@@ -74,7 +74,6 @@ def get_score(domain):
     except requests.ConnectionError:
         redirects_paths = False
         landed_domain2 = ''
-        content = ''
 
     if redirects_paths:
         if dressed(domain, landed_domain2):
