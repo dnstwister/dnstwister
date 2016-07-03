@@ -4,8 +4,11 @@ $(document).ready(function() {
         parked: function(hexDomain, callback) {
             $.get('/api/parked/' + hexDomain, function(result) {
                 var scorePercent = Math.round(result.score * 100);
-                var scoreText = result.score_text;
-                var text = scoreText + ' (' + scorePercent + ' %)';
+                var text = result.score_text + ' (' + scorePercent + ' %';
+                if (result.redirects === true) {
+                    text += ', redirects to: ' + result.redirects_to;
+                }
+                text += ')';
                 callback(text);
             });
         },
