@@ -45,10 +45,9 @@ def analyse(domain):
 
 
 def parse_domain(hexdomain):
-    """Given a plain, b64 or hex-encoded domain string, try to return the
-    domain.
+    """Given a plain, b64- or hex-encoded string, try to return a domain.
 
-    Return None on invalid domain..
+    Return None on invalid domain.
     """
     try:
         if dnstwist.validate_domain(hexdomain):
