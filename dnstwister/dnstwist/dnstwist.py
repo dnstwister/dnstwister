@@ -20,7 +20,7 @@
 #
 # dnstwist 1.02 modified by Robert Wallhead (robert@thisismyrobot.com) for use
 # in https://dnstwister.report - all functionality except fuzzing removed and
-# various changes made to allow usage in Heroku.
+# various changes made to support usage in Heroku.
 #
 
 __author__ = 'Marcin Ulikowski'
@@ -38,6 +38,7 @@ FILE_TLD = os.path.join(
     'effective_tld_names.dat'
 )
 DB_TLD = os.path.exists(FILE_TLD)
+assert DB_TLD, "TLD database is required!"
 
 
 class InvalidDomain(Exception):
@@ -189,7 +190,7 @@ class fuzz_domain(object):
         n = re.sub(r'(.)\1+', r'\1', self.domain)
 
         if n not in result and n != self.domain:
-            result.append(n) 
+            result.append(n)
 
         return list(set(result))
 
