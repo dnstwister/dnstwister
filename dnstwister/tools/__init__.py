@@ -45,12 +45,17 @@ def analyse(domain):
 
 
 def parse_domain(hexdomain):
-    """Given a hex-encoded string (hopefully), return a valid domain.
+    """Given a plain, b64 or hex-encoded domain string, try to return the
+    domain.
 
-    Try to handle old-style base64 domains.
-
-    Return None on invalid domain/data.
+    Return None on invalid domain..
     """
+    try:
+        if dnstwist.validate_domain(hexdomain):
+            return hexdomain
+    except:
+        pass
+
     try:
         domain = binascii.unhexlify(hexdomain)
     except TypeError:
@@ -69,7 +74,7 @@ def parse_domain(hexdomain):
 def query_domains(data_dict):
     """ Return the valid queried domains from a request data dict, or None.
 
-        Domains are newline separated in a textarea.
+        Domains are space-separated.
     """
     try:
         domains = data_dict['domains']
