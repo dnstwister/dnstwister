@@ -7,30 +7,63 @@
         <h1>Subscribe</h1>
 {% endblock %}
 {% block body %}
-        <section>
-            <p>Subscribe to email updates for '{{ domain }}'</p>
-        </section>
-        <section>
-            <form action="/email/pending_verify/{{ hexdomain }}" method="post">
-                <input type="email" name="email_address" placeholder="Email address" />
-                <input type="submit" value="subscribe" />
-            </form>
-        </section>
-        <section>
-            <p>
-                Emails will sent every 24 hours if there is are new, updated
-                or deleted registrations. You can unsubscribe at any time via
-                the link in the email.
-            </p>
-            <p>
-                Subscriptions are per-domain, if you subscribe to multiple
-                domains you will receive multiple emails.
-            </p>
-            <p>
-                Your email address will <strong>never</strong> be used for
-                anything other than sending you subscription verifications and
-                alerts for the domain(s) you subscribe to.
-                <a target="_blank" href="/static/privacy.html">Privacy statement</a>.
-            </p>
-        </section>
+        <div class="row">
+            <div class="six columns">
+                <section>
+                    <p>Subscribe to email updates for '{{ domain }}'</p>
+                </section>
+                <section>
+                    <form action="/email/pending_verify/{{ hexdomain }}" method="post">
+                        <input type="email" name="email_address" placeholder="Email address" />
+                        <input type="submit" value="subscribe" />
+                    </form>
+                </section>
+                <section>
+                    <p>
+
+                        Emails will sent as often as every 24 hours if there
+                        is one or more new, updated or deleted registrations
+                        for domains considered to be similar to
+                        '{{ domain }}'.
+
+                    </p>
+                    <p>
+
+                        You can immediately unsubscribe at any time via the
+                        link in the email.
+
+                    </p>
+                    <p>
+
+                        Subscriptions are per-domain so if you subscribe to
+                        multiple domains you will receive multiple emails.
+
+                    </p>
+                    <p>
+
+                        We've tried really hard to make our emails as clear
+                        and as free of noise as possible but if there's
+                        anything you think we could be doing better
+                        <a href="hello@dnstwister.report">please let us know</a>.
+
+                    </p>
+                </section>
+            </div>
+            <div class="six columns">
+                <section class="example_email">
+                    <img  src="{{ url_for('static', filename='media/example_email.png') }}" />
+                    <h6>Example email</h6>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <section>
+                <p>
+                    Your email address will <strong>never</strong> be used for
+                    anything other than sending you subscription verifications and
+                    alerts for the domain(s) you subscribe to.
+                    <a target="_blank" href="/static/privacy.html">Privacy statement</a>.
+                </p>
+            </section>
+        </div>
 {% endblock %}

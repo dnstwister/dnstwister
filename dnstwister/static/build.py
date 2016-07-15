@@ -25,6 +25,7 @@ maps = {
         'normalize.css',
         'skeleton.css',
         'common.css',
+        'email.css',
     ),
     'report.min.css': (
         'normalize.css',
