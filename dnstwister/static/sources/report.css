@@ -39,3 +39,11 @@
 .ico:hover {
     opacity: 1;
 }
+
+tr td.tools a {
+    display: none;
+}
+
+tr.resolved td.tools a {
+    display: inline;
+}
