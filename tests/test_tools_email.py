@@ -16,7 +16,7 @@ def test_email_renderer():
     )
 
     assert template.strip() == textwrap.dedent("""
-        <h1>dnstwister report for www.example.com</h1>
+        <h1>dnstwister report for <a>www.example.com</a></h1>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
