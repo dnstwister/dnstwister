@@ -3,6 +3,7 @@ import os
 import sys
 sys.path.insert(0, os.getcwd())
 
+import binascii
 import datetime
 import time
 import traceback
@@ -12,6 +13,7 @@ import dnstwister.tools.email as email_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
+ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
 
 
 def process_sub(sub_id, detail):
@@ -68,6 +70,15 @@ def process_sub(sub_id, detail):
             email_address, domain
         )
         return
+
+    # Add analysis links
+    new = [(dom, ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+           for (dom, ip)
+           in new]
+
+    updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+               for (dom, old_ip, new_ip)
+               in updated]
 
     # Email
     body = email_tools.render_email(
