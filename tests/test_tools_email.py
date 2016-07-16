@@ -9,8 +9,8 @@ def test_email_renderer():
     template = email_tools.render_email(
         'report.html',
         domain='www.example.com',
-        new=(('www.examp1e.com', '127.0.0.1'),),
-        updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2'),),
+        new=(('www.examp1e.com', '127.0.0.1', 'http://dnstwister.report/analyse/1234'),),
+        updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2', 'http://dnstwister.report/analyse/6789'),),
         deleted=('www.examplle.com',),
         unsubscribe_link='https://dnstwister.report/...',
     )
@@ -26,12 +26,14 @@ def test_email_renderer():
                 <tr>
                     <th>Registered Domain</th>
                     <th>Resolved IP</th>
+                    <th>Tools</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>www.examp1e.com</td>
+                    <td><a>www.examp1e.com</a></td>
                     <td>127.0.0.1</td>
+                    <td><a href="http://dnstwister.report/analyse/1234">analyse</a></td>
                 </tr>
             </tbody>
         </table>
@@ -42,13 +44,15 @@ def test_email_renderer():
                     <th>Registered Domain</th>
                     <th>Previously Resolved IP</th>
                     <th>Currently Resolved IP</th>
+                    <th>Tools</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>www.exampl3.com</td>
+                    <td><a>www.exampl3.com</a></td>
                     <td>127.0.0.1</td>
                     <td>127.0.0.2</td>
+                    <td><a href="http://dnstwister.report/analyse/6789">analyse</a></td>
                 </tr>
             </tbody>
         </table>
@@ -61,7 +65,7 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td>www.examplle.com</td>
+                    <td><a>www.examplle.com</a></td>
                 </tr>
             </tbody>
         </table>

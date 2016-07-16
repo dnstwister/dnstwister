@@ -15,7 +15,7 @@
         {% for (dom, ip, analysis_link) in new %}<tr>
             <td><a>{{ dom }}</a></td>
             <td>{{ ip }}</td>
-            <td><a href="{{ analysis_link }}">analyse</td>
+            <td><a href="{{ analysis_link }}">analyse</a></td>
         </tr>
     {% endfor %}</tbody>
 </table>
@@ -34,7 +34,7 @@
             <td><a>{{ dom }}</a></td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
-            <td><a href="{{ analysis_link }}">analyse</td>
+            <td><a href="{{ analysis_link }}">analyse</a></td>
         </tr>
     {% endfor %}</tbody>
 </table>
