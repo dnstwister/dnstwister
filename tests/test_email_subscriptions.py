@@ -1,8 +1,6 @@
 """Tests of the email subscription mechanism."""
 import flask
 import mock
-import pytest
-import webtest
 
 import binascii
 import dnstwister
@@ -88,8 +86,10 @@ def test_isubscriptions_link():
     verify_path = '/email/verify/{}'.format(
         binascii.hexlify('b.com'), verify_code
     )
-    with pytest.raises(webtest.app.AppError):
-        app.get(verify_path)
+    redir_page = app.get(verify_path)
+
+    assert redir_page.status_code == 302
+    assert redir_page.headers['location'] == 'http://localhost:80/'
 
     assert len(list(repository.isubscriptions())) == 1
     assert repository.isubscriptions().next()[1]['domain'] == 'a.com'
