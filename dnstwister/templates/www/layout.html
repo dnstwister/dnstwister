@@ -14,6 +14,9 @@
         <div class="section">
             <div class="container">
                 <header>
+                    {% if not hide_logo %}
+                        <a href="/"><img class="logo" src="{{ url_for('static', filename='logo.png') }}" /></a>
+                    {% endif %}
                     {% block header %}
                     {% endblock %}
                 </header>
