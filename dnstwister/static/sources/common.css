@@ -8,11 +8,6 @@ footer {
     text-align: center;
 }
 
-.ico {
-    margin-bottom: -2px;
-    height: 14px;
-}
-
 /* Fonts from https://fonts.googleapis.com/css?family=Raleway:300,400 */
 @font-face {
   font-family: 'Raleway';

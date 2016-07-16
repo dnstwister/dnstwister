@@ -10,12 +10,15 @@
 {% block body %}
         <section class="domains">
             {% for domain, hex in atoms.items() %}
-                {{ domain }}
-                <a href="/email/subscribe/{{ hex }}"><img class="ico" src="/static/email.png"/></a>
-                <a href="/atom/{{ hex }}"><img class="ico" src="/static/feed.png"/></a>
+                <div class="domain_nav">
+                    <a alt="rss subscription link" title="subscribe to rss alerts" href="/atom/{{ hex }}"><img class="ico" src="/static/feed.png"/></a>
+                    <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ hex }}"><img class="ico" src="/static/email.png"/></a>
+                    <h5>{{ domain }}</h5>
+                </div>
             {% endfor %}
-            <br />
-            <a href="/">new search</a>
+            <div style="clear: both">
+                <a href="/">new search</a>
+            </div>
         </section>
         <section class="progress">
             <p>

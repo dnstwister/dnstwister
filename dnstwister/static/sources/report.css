@@ -17,3 +17,24 @@
     float: right;
     padding-top: 0.7rem;
 }
+
+.domains h5 {
+    display: inline;
+    font-weight: bold;
+}
+
+.ico {
+    margin-bottom: -1px;
+    height: 22px;
+    margin-right: 2px;
+    opacity: 0.75;
+}
+
+.domain_nav {
+    float: left;
+    margin-right: 15px;
+}
+
+.ico:hover {
+    opacity: 1;
+}
