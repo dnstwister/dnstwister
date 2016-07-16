@@ -72,13 +72,15 @@ def process_sub(sub_id, detail):
         return
 
     # Add analysis links
-    new = [(dom, ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
-           for (dom, ip)
-           in new]
+    if new is not None:
+        new = [(dom, ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+               for (dom, ip)
+               in new]
 
-    updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
-               for (dom, old_ip, new_ip)
-               in updated]
+    if updated is not None:
+        updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+                   for (dom, old_ip, new_ip)
+                   in updated]
 
     # Email
     body = email_tools.render_email(
