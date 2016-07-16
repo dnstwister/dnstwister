@@ -31,7 +31,7 @@ def get_report(domain):
             'platformTypes': ['ANY_PLATFORM'],
             'threatEntryTypes': ['URL'],
             'threatEntries': [
-                {'url': 'http://{}'.format(domain)}
+                {'url': 'http://{}/'.format(domain)}
             ]
         }
     }
