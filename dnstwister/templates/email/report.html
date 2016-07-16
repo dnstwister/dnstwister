@@ -12,7 +12,7 @@
     </thead>
     <tbody>
         {% for (dom, ip) in new %}<tr>
-            <td>{{ dom }}</td>
+            <td><a>{{ dom }}</a></td>
             <td>{{ ip }}</td>
         </tr>
     {% endfor %}</tbody>
@@ -28,7 +28,7 @@
     </thead>
     <tbody>
         {% for (dom, old_ip, new_ip) in updated %}<tr>
-            <td>{{ dom }}</td>
+            <td><a>{{ dom }}</a></td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
         </tr>
@@ -43,7 +43,7 @@
     </thead>
     <tbody>
         {% for dom in deleted %}<tr>
-            <td>{{ dom }}</td>
+            <td><a>{{ dom }}</a></td>
         </tr>
     {% endfor %}</tbody>
 </table>
