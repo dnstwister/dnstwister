@@ -9,8 +9,9 @@
     display: table-row;
 }
 
-.domains {
-    margin-bottom: 3rem;
+.sub_nav {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 
 .exports {
