@@ -1,10 +1,10 @@
 """Google Safe Browsing API client."""
 import json
-import os
+import re
 import requests
 
 
-API_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find'
+API_URL = 'https://www.google.com/safebrowsing/diagnostic'
 
 
 def get_report(domain):
@@ -14,35 +14,18 @@ def get_report(domain):
 
     Returns a count of matches.
     """
-    api_key = os.environ['SAFEBROWSING_KEY']
-
-    payload = {
-        'client': {
-            'clientId': 'dnstwister',
-            'clientVersion': '1.8.2'
-        },
-        'threatInfo': {
-            'threatTypes': [
-                'MALWARE',
-                'SOCIAL_ENGINEERING',
-                'POTENTIALLY_HARMFUL_APPLICATION',
-                'UNWANTED_SOFTWARE'
-            ],
-            'platformTypes': ['ANY_PLATFORM'],
-            'threatEntryTypes': ['URL'],
-            'threatEntries': [
-                {'url': 'http://{}/'.format(domain)}
-            ]
-        }
+    data = {
+        'output': 'jsonp',
+        'site': domain
     }
 
-    result = requests.post(
-        API_URL,
-        params={'key': api_key},
-        data=json.dumps(payload),
-    ).json()
+    result = requests.get(API_URL, params=data)
 
-    try:
-        return len(result['matches'])
-    except KeyError:
+    json_result = json.loads(re.search(r'({.*})', result.text).groups()[0])
+
+    status = json_result['website']['malwareListStatus']
+
+    if status == 'unlisted':
         return 0
+
+    return 1
