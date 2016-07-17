@@ -36,6 +36,28 @@ def test_isubscriptions_during_subscription():
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
+def test_email_address_required():
+    app = flask.ext.webtest.TestApp(dnstwister.app)
+
+    domain = 'a.com'
+    hexdomain = binascii.hexlify(domain)
+    subscribe_path = '/email/subscribe/{}'.format(hexdomain)
+
+    subscribe_page = app.get(subscribe_path)
+
+    assert 'Email address is required' not in subscribe_page.body
+
+    subscribe_page.form['email_address'] = ' '
+    response = subscribe_page.form.submit()
+
+    assert response.status_code == 302
+    assert response.headers['location'] == 'http://localhost:80/email/subscribe/{}/0'.format(hexdomain)
+
+    assert 'Email address is required' in response.follow().body
+
+
+@mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
+@mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_isubscriptions_link():
     app = flask.ext.webtest.TestApp(dnstwister.app)
     emailer = dnstwister.views.www.email.emailer

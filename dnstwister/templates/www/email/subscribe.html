@@ -16,6 +16,11 @@
                     <form action="/email/pending_verify/{{ hexdomain }}" method="post">
                         <input type="email" name="email_address" placeholder="Email address" />
                         <input type="submit" value="subscribe" />
+                        {% if error is not none %}
+                            <section class="error">
+                                {{ error }}
+                            </section>
+                        {% endif %}
                     </form>
                 </section>
                 <section>

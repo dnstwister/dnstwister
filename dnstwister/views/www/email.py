@@ -6,17 +6,35 @@ import dnstwister.tools as tools
 import dnstwister.tools.email as email_tools
 
 
+ERRORS = (
+    'Email address is required',
+)
+
+
 @app.route('/email/subscribe/<hexdomain>')
-def email_subscribe_get_email(hexdomain):
+@app.route('/email/subscribe/<hexdomain>/<error>')
+def email_subscribe_get_email(hexdomain, error=None):
     """Handle subscriptions."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
+    # Attempt to parse out a validation error.
+    error_str = None
+    try:
+        error_idx = int(error)
+        assert error_idx >= 0
+        error_str = ERRORS[error_idx]
+    except:
+        app.logger.info(
+            'Invalid error index {}'.format(error)
+        )
+
     return flask.render_template(
         'www/email/subscribe.html',
         domain=domain,
         hexdomain=hexdomain,
+        error=error_str,
     )
 
 
@@ -28,6 +46,10 @@ def email_subscribe_pending_confirm(hexdomain):
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
     email_address = flask.request.form['email_address']
+
+    if email_address.strip() == '':
+        return flask.redirect('/email/subscribe/{}/0'.format(hexdomain))
+
     verify_code = tools.random_id()
     verify_url = flask.request.url_root + 'email/verify/{}'.format(verify_code)
     email_body = email_tools.render_email(

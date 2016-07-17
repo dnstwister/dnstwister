@@ -36,3 +36,9 @@ footer {
 a:hover .logo {
     opacity: 1;
 }
+
+.error {
+    font-weight: bold;
+    color: red;
+    padding-bottom: 1.5rem;
+}
