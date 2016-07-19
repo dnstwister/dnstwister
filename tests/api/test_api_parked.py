@@ -23,7 +23,7 @@ def test_not_parked(f_httpretty, webapp):
     assert response['score'] == 0.0
     assert response['score_text'] == 'Unlikely'
     assert not response['redirects']
-    assert response['redirects_to'] == ''
+    assert response['redirects_to'] is None
 
 
 def test_parked(f_httpretty, webapp):
