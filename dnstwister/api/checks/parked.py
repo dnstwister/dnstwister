@@ -118,5 +118,5 @@ def get_score(domain):
         normalised_score,
         get_text(normalised_score),
         redirects_domain,
-        landed_domain1 if redirects_domain else '',
+        landed_domain1 if redirects_domain else None,
     )

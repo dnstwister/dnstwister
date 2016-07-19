@@ -10,6 +10,7 @@ _CLIENT_HEADERS = {
 
 REQ_KWARGS = {
     'headers': _CLIENT_HEADERS,
+    'timeout': 5,  # seconds
 }
 
 
