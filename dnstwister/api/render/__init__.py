@@ -9,7 +9,7 @@ EXE = 'phantomjs'
 def render(domain):
     """Render a domain using PhantomJS."""
     run_path = [
-        os.path.join(os.path.dirname(__file__), EXE),
+        EXE,
         os.path.join(os.path.dirname(__file__), 'render.js'),
         'http://{}'.format(domain)
     ]
