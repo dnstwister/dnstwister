@@ -1,11 +1,15 @@
 """The analysis API endpoint."""
+import base64
 import binascii
+import contextlib
 import flask
+import StringIO
 import urlparse
 
 import checks.parked as parked
 import checks.safebrowsing
 import dnstwister.tools as tools
+import render
 
 app = flask.Blueprint('api', __name__)
 
@@ -23,6 +27,7 @@ def api_definition():
         'parked_check_url': tools.api_url(parked_score, 'domain_as_hexadecimal'),
         'google_safe_browsing_url': tools.api_url(safebrowsing, 'domain_as_hexadecimal'),
         'ip_resolution_url': tools.api_url(resolve_ip, 'domain_as_hexadecimal'),
+        'renderer_url': tools.api_url(renderer, 'domain_as_hexadecimal'),
     })
 
 
@@ -133,3 +138,16 @@ def fuzz(hexdomain):
     payload = standard_api_values(domain, skip='fuzz')
     payload['fuzzy_domains'] = fuzz_payload
     return flask.jsonify(payload)
+
+
+@app.route('/render/<hexdomain>')
+def renderer(hexdomain):
+    """Renders a page as an image."""
+    domain = tools.parse_domain(hexdomain)
+    if domain is None:
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
+    payload = base64.b64decode(render.render(domain))
+    return flask.send_file(StringIO.StringIO(payload), mimetype='image/png')

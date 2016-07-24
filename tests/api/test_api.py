@@ -10,6 +10,7 @@ def test_api_root(webapp):
         'parked_check_url': 'http://localhost:80/api/parked/{domain_as_hexadecimal}',
         'google_safe_browsing_url': 'http://localhost:80/api/safebrowsing/{domain_as_hexadecimal}',
         'url': 'http://localhost:80/api/',
+        'renderer_url': 'http://localhost:80/api/render/{domain_as_hexadecimal}',
     }
 
 
