@@ -152,7 +152,7 @@ def renderer(hexdomain):
 
     payload = render.render(domain)
     try:
-        image = base64.b64decode(content)
+        image = base64.b64decode(payload)
     except:
         print payload
     return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
