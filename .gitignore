@@ -4,3 +4,4 @@ resolvers/dnsresolve*
 brand/*.psd
 _build*
 .coverage
+*.exe
