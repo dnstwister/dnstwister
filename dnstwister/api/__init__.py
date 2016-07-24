@@ -153,6 +153,7 @@ def renderer(hexdomain):
     payload = render.render(domain)
     try:
         image = base64.b64decode(payload)
+        return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
     except:
-        print payload
-    return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
+        print 'response:', payload
+        flask.abort(500, 'Failed to retrieve image.')
