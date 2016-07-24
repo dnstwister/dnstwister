@@ -14,4 +14,4 @@ def render(domain):
         'http://{}'.format(domain)
     ]
     print run_path
-    return subprocess.check_output(run_path)
+    return subprocess.check_output(run_path, shell=True)
