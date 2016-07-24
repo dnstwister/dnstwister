@@ -149,8 +149,10 @@ def renderer(hexdomain):
             400,
             'Malformed domain or domain not represented in hexadecimal format.'
         )
+
+    payload = render.render(domain)
     try:
-        payload = base64.b64decode(render.render(domain))
+        image = base64.b64decode(content)
     except:
         print payload
-    return flask.send_file(StringIO.StringIO(payload), mimetype='image/png')
+    return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
