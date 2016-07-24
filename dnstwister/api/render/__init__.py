@@ -3,7 +3,7 @@ import os
 import subprocess
 
 
-EXE = 'phantomjs.exe'
+EXE = 'phantomjs'
 
 
 def render(domain):
