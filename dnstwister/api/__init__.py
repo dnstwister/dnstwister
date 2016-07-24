@@ -1,5 +1,4 @@
 """The analysis API endpoint."""
-import base64
 import binascii
 import contextlib
 import flask
@@ -150,10 +149,9 @@ def renderer(hexdomain):
             'Malformed domain or domain not represented in hexadecimal format.'
         )
 
-    payload = render.render(domain)
     try:
-        image = base64.b64decode(payload)
+        image = render.render(domain)
         return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
     except:
-        print 'response:', payload
+        app.logger.error('Unable to retrieve image for domain')
         flask.abort(500, 'Failed to retrieve image.')
