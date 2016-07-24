@@ -13,4 +13,5 @@ def render(domain):
         os.path.join(os.path.dirname(__file__), 'render.js'),
         'http://{}'.format(domain)
     ]
+    print run_path
     return subprocess.check_output(run_path)
