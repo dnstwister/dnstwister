@@ -12,6 +12,7 @@ PARKED_WORDS = (
     'registrar',
     'hosted',
     'buy this',
+    'buy this domain',
 )
 
 # In-browser redirect checks
