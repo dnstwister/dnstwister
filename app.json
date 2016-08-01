@@ -7,4 +7,12 @@
   "keywords": [
     "python", "flask", "dns", "thisismyrobot"
   ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/thisismyrobot/heroku-buildpack-phantomjs"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ]
 }
