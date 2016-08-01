@@ -59,7 +59,7 @@ def test_parked(f_httpretty, webapp):
 
     response = webapp.get('/api/parked/{}'.format(hexdomain)).json
 
-    assert response['score'] == 0.5
+    assert response['score'] == 0.59
     assert response['score_text'] == 'Fairly likely'
     assert response['redirects']
     assert response['redirects_to'] == 'forsale.com'
