@@ -214,6 +214,17 @@ class fuzz_domain(object):
 
         return list(set(result))
 
+    def __vowel_swap(self):
+        vowels = 'aeiou'
+        result = []
+
+        for i in range(0, len(self.domain)):
+            for vowel in vowels:
+                if self.domain[i] in vowels:
+                    result.append(self.domain[:i] + vowel + self.domain[i+1:])
+
+        return list(set(result))
+
     def __subdomain(self):
         result = []
 
@@ -265,6 +276,8 @@ class fuzz_domain(object):
             self.domains.append({ 'fuzzer': 'Subdomain', 'domain-name': domain + '.' + self.tld })
         for domain in self.__transposition():
             self.domains.append({ 'fuzzer': 'Transposition', 'domain-name': domain + '.' + self.tld })
+        for domain in self.__vowel_swap():
+            self.domains.append({ 'fuzzer': 'Vowel swap', 'domain-name': domain + '.' + self.tld })
 
         if not self.domain.startswith('www.'):
             self.domains.append({ 'fuzzer': 'Various', 'domain-name': 'ww' + self.domain + '.' + self.tld })

@@ -54,6 +54,8 @@ def test_csv_export(webapp, monkeypatch):
         a.com,Replacement,w.com,999.999.999.999,False
         a.com,Replacement,y.com,999.999.999.999,False
         a.com,Replacement,z.com,999.999.999.999,False
+        a.com,Vowel swap,u.com,999.999.999.999,False
+        a.com,Vowel swap,o.com,999.999.999.999,False
         a.com,Various,wwa.com,999.999.999.999,False
         a.com,Various,wwwa.com,999.999.999.999,False
         a.com,Various,www-a.com,999.999.999.999,False
