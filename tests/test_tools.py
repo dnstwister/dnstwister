@@ -166,19 +166,16 @@ class TestTools(unittest.TestCase):
             'First result is the original domain'
         )
 
-        self.assertItemsEqual(
-            [
-                'a.com', 'aa.com', 'ab.com', 'ac.com', 'ad.com', 'ae.com',
-                'af.com', 'ag.com', 'ah.com', 'ai.com', 'aj.com', 'ak.com',
-                'al.com', 'am.com', 'an.com', 'ao.com', 'ap.com', 'aq.com',
-                'ar.com', 'as.com', 'at.com', 'au.com', 'av.com', 'aw.com',
-                'ax.com', 'ay.com', 'az.com', 'c.com', 'e.com', 'i.com',
-                'q.com', '1.com', 's.com', '2.com', 'w.com', 'y.com', 'z.com',
-                'wwa.com', 'wwwa.com', 'www-a.com', 'acom.com'
-            ],
-            map(operator.itemgetter('domain-name'), results[1]['fuzzy_domains']),
-            'We have 41 results including the original domain'
-        )
+        results = map(operator.itemgetter('domain-name'), results[1]['fuzzy_domains'])
+        assert results == [
+            'a.com', 'aa.com', 'ab.com', 'ac.com', 'ad.com', 'ae.com',
+            'af.com', 'ag.com', 'ah.com', 'ai.com', 'aj.com', 'ak.com',
+            'al.com', 'am.com', 'an.com', 'ao.com', 'ap.com', 'aq.com',
+            'ar.com', 'as.com', 'at.com', 'au.com', 'av.com', 'aw.com',
+            'ax.com', 'ay.com', 'az.com', 'c.com', 'e.com', 'i.com',
+            'q.com', '1.com', 's.com', '2.com', 'w.com', 'y.com', 'z.com',
+            'u.com', 'o.com', 'wwa.com', 'wwwa.com', 'www-a.com', 'acom.com',
+        ]
 
         self.assertIs(
             None, tools.analyse('\\.38iusd-s-da   aswd?'),
