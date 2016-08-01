@@ -13,7 +13,6 @@ function validateUrlArg(url) {
 }
 
 try {
-
   var page = require('webpage').create();
   page.viewportSize = { width: 800, height: 600 };
   page.clipRect = { top: 0, left: 0, width: 800, height: 600 };
@@ -21,23 +20,24 @@ try {
   var system = require('system');
   var args = system.args;
   if (args.length !== 2) {
-    phantom.exit();
+    phantom.exit(1);
   }
 
   var url = args[1];
-
   if (validateUrlArg(url) !== true) {
-    phantom.exit();
+    phantom.exit(2);
   }
 
   page.open(url, function(status) {
     if (status === 'success') {
       console.log(page.renderBase64('png'));
+      phantom.exit(0);
     }
-    phantom.exit();
+    else {
+      phantom.exit(3);
+    }
   });
-
 }
 catch (err) {
-  phantom.exit();
+  phantom.exit(4);
 }
