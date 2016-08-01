@@ -30,8 +30,10 @@ try {
     phantom.exit();
   }
 
-  page.open(url, function() {
-    console.log(page.renderBase64('png'));
+  page.open(url, function(status) {
+    if (status === 'success') {
+      console.log(page.renderBase64('png'));
+    }
     phantom.exit();
   });
 
