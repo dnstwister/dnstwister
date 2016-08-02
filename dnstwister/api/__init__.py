@@ -1,12 +1,12 @@
 """The analysis API endpoint."""
 import binascii
-import contextlib
 import flask
 import StringIO
 import urlparse
 
 import checks.parked as parked
 import checks.safebrowsing
+from flask import current_app
 import dnstwister.tools as tools
 import render
 
@@ -152,6 +152,8 @@ def renderer(hexdomain):
     try:
         image = render.render(domain)
         return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
-    except:
-        app.logger.error('Unable to retrieve image for domain')
-        flask.abort(500, 'Failed to retrieve image.')
+    except Exception as ex:
+        current_app.logger.error(
+            'Unable to retrieve image for domain: {}'.format(ex)
+        )
+        flask.abort(500, 'Unable to render thumbnail')

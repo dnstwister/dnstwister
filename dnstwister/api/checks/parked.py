@@ -13,6 +13,8 @@ PARKED_WORDS = (
     'hosted',
     'buy this',
     'buy this domain',
+    'domain names',
+    'domain names for sale',
 )
 
 # In-browser redirect checks
@@ -112,9 +114,11 @@ def get_score(domain):
     for word in PARKED_WORDS:
         if word.lower() in content.lower():
             word_score += 1.0
-    score += (word_score / len(PARKED_WORDS)) * 3
+    score += (word_score / len(PARKED_WORDS)) * 5
 
     normalised_score = round(score / 7.0, 2)
+
+    normalised_score = min(1, normalised_score)
 
     return (
         normalised_score,
