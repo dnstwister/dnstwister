@@ -17,18 +17,57 @@
                         Often domains are "registered" by domain registrars to drive
                         sales when users mistype URLs.
                     </p>
-                    <input type="button" value="Check" />
+                    <input class="tool" type="button" value="Check" />
                     <div class="result" style="display:none"></div>
                 </div>
                 <div class="one-half column analysis_tool" data-id="gsb" data-hexdomain="{{ hexdomain }}">
                     <h5>Google Safe Browsing</h5>
                     <p>
                         Google Safe Browsing maintains a list of reported
-                        phishing sites and sites that host malware or unwanted
-                        software.
+                        phishing sites and sites that host malware or other
+                        unwanted software.
                     </p>
-                    <input type="button" value="Check" />
+                    <input class="tool" type="button" value="Check" />
                     <div class="result" style="display:none"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="one-half column analysis_tool" data-id="thumbnail" data-hexdomain="{{ hexdomain }}">
+                    <h5>Render thumbnail</h5>
+                    <p>
+                        Use this tool to safely view a thumbnail of
+                        http://{{ domain }}.
+                    </p>
+                    <input class="tool" type="button" value="Render" />
+
+                    <div class="lightboxable" id="thumbnail_box">
+                        <div class="content">
+                            <div class="warning">
+                                <h3 class="error">IMPORTANT</h3>
+                                <p>
+                                    Before continuing it is <strong>critical</strong>
+                                    that you understand the following.
+                                </p>
+                                <p>
+                                    You are about to view a screenshot of the
+                                    website <strong>http://{{ domain }}</strong>.
+                                </p>
+                                <p>
+                                    <strong>dnstwister</strong> takes no
+                                    responsibility for the content on
+                                    <strong>http://{{ domain }}</strong>.
+                                </p>
+                                <p>
+                                    <input id="thumbnail_continue" type="button" value="I am absolutely sure I want to continue" />
+                                    <input id="thumbnail_cancel" type="button" value="Cancel" />
+                                </p>
+                            </div>
+                            <img src="" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="one-half column analysis_tool" style="border: none" data-id="gsb" data-hexdomain="{{ hexdomain }}">
                 </div>
             </div>
         </section>
@@ -45,4 +84,5 @@
             </p>
 
         </section>
+
 {% endblock %}

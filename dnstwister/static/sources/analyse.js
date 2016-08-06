@@ -26,9 +26,20 @@ $(document).ready(function() {
                 error();
             });
         },
+        thumbnail: function(hexDomain, success, error) {
+            $('#thumbnail_cancel').unbind('click').click(function() {
+                $('.featherlight-close').click();
+            });
+            $('#thumbnail_continue').unbind('click').click(function() {
+                $('#thumbnail_box .warning').hide();
+                var api_path = '/api/render/' + hexDomain;
+                $('#thumbnail_box img').show().attr('src', api_path);
+            });
+            $.featherlight('#thumbnail_box');
+        }
     };
 
-    $('.analysis_tool input').click(function() {
+    $('.analysis_tool input.tool').click(function() {
         var $section = $(this).parent();
         var toolId = $section.data('id');
         var hexDomain = $section.data('hexdomain');

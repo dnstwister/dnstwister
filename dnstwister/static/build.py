@@ -19,6 +19,7 @@ maps = {
         'normalize.css',
         'skeleton.css',
         'common.css',
+        'featherlight.min.css',
         'analyse.css',
     ),
     'email.min.css': (
@@ -39,6 +40,7 @@ maps = {
     ),
     'analyse.min.js': (
         'jquery-1.11.3.min.js',
+        'featherlight.min.js',
         'analyse.js',
     ),
     'status.min.css': (
