@@ -42,7 +42,7 @@ $(document).ready(function() {
                 $('.report').show();
             }
             else {
-                elem.text('None');
+                elem.text('None resolved');
             }
             to_resolve -= 1;
             $('.resolved_count').text(resolvable - to_resolve);
