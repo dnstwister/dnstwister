@@ -2,10 +2,12 @@
 import binascii
 import flask
 import urlparse
+import whois as whois_mod
 
 import checks.parked as parked
 import checks.safebrowsing
 import dnstwister.tools as tools
+from flask import current_app
 
 app = flask.Blueprint('api', __name__)
 
@@ -23,6 +25,7 @@ def api_definition():
         'parked_check_url': tools.api_url(parked_score, 'domain_as_hexadecimal'),
         'google_safe_browsing_url': tools.api_url(safebrowsing, 'domain_as_hexadecimal'),
         'ip_resolution_url': tools.api_url(resolve_ip, 'domain_as_hexadecimal'),
+        'whois_url': tools.api_url(whois, 'domain_as_hexadecimal'),
     })
 
 
@@ -49,6 +52,27 @@ def standard_api_values(domain, skip=''):
         payload['domain_as_hexadecimal'] = hexdomain
 
     return payload
+
+
+@app.route('/whois/<hexdomain>')
+def whois(hexdomain):
+    """Returns whois information."""
+    domain = tools.parse_domain(hexdomain)
+    if domain is None:
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
+    payload = standard_api_values(domain, skip='whois')
+    try:
+        payload['whois_text'] = whois_mod.whois(domain).text
+    except Exception as ex:
+        current_app.logger.error(
+            'Unable to retrieve whois info for domain: {}'.format(ex)
+        )
+        flask.abort(500, 'Unable to retrieve whois info')
+
+    return flask.jsonify(payload)
 
 
 @app.route('/parked/<hexdomain>')

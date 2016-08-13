@@ -9,6 +9,7 @@ def test_api_root(webapp):
         'ip_resolution_url': 'http://localhost:80/api/ip/{domain_as_hexadecimal}',
         'parked_check_url': 'http://localhost:80/api/parked/{domain_as_hexadecimal}',
         'google_safe_browsing_url': 'http://localhost:80/api/safebrowsing/{domain_as_hexadecimal}',
+        'whois_url': 'http://localhost:80/api/whois/{domain_as_hexadecimal}',
         'url': 'http://localhost:80/api/',
     }
 
