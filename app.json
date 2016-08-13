@@ -9,10 +9,10 @@
   ],
   "buildpacks": [
     {
-      "url": "heroku/python"
+      "url": "https://github.com/thisismyrobot/heroku-buildpack-whois.git"
     },
     {
-      "url": "https://github.com/thisismyrobot/heroku-buildpack-whois.git"
+      "url": "heroku/python"
     }
   ]
 }
