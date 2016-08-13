@@ -1,14 +1,11 @@
 """The analysis API endpoint."""
 import binascii
 import flask
-import StringIO
 import urlparse
 
 import checks.parked as parked
 import checks.safebrowsing
-from flask import current_app
 import dnstwister.tools as tools
-import render
 
 app = flask.Blueprint('api', __name__)
 
@@ -26,7 +23,6 @@ def api_definition():
         'parked_check_url': tools.api_url(parked_score, 'domain_as_hexadecimal'),
         'google_safe_browsing_url': tools.api_url(safebrowsing, 'domain_as_hexadecimal'),
         'ip_resolution_url': tools.api_url(resolve_ip, 'domain_as_hexadecimal'),
-        'renderer_url': tools.api_url(renderer, 'domain_as_hexadecimal'),
     })
 
 
@@ -137,23 +133,3 @@ def fuzz(hexdomain):
     payload = standard_api_values(domain, skip='fuzz')
     payload['fuzzy_domains'] = fuzz_payload
     return flask.jsonify(payload)
-
-
-@app.route('/render/<hexdomain>')
-def renderer(hexdomain):
-    """Renders a page as an image."""
-    domain = tools.parse_domain(hexdomain)
-    if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
-
-    try:
-        image = render.render(domain)
-        return flask.send_file(StringIO.StringIO(image), mimetype='image/png')
-    except Exception as ex:
-        current_app.logger.error(
-            'Unable to retrieve image for domain: {}'.format(ex)
-        )
-        flask.abort(500, 'Unable to render thumbnail')

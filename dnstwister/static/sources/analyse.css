@@ -8,17 +8,3 @@
     text-align: center;
     margin-bottom: 2rem;
 }
-
-.lightboxable {
-    display: none;
-}
-
-.lightboxable .content {
-    padding: 1rem 2rem;
-}
-
-#thumbnail_box img {
-    display: none;
-    width: 320px;
-    height: 240px;
-}
