@@ -7,4 +7,9 @@
   "keywords": [
     "python", "flask", "dns", "thisismyrobot"
   ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
 }
