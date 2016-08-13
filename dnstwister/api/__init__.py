@@ -66,6 +66,8 @@ def whois(hexdomain):
     payload = standard_api_values(domain, skip='whois')
     try:
         payload['whois_text'] = whois_mod.whois(domain).text
+        if payload['whois_text'].strip() == '':
+            raise Exception('No whois data retrieved')
     except Exception as ex:
         current_app.logger.error(
             'Unable to retrieve whois info for domain: {}'.format(ex)
