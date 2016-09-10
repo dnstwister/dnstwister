@@ -38,7 +38,8 @@ FILE_TLD = os.path.join(
     'effective_tld_names.dat'
 )
 DB_TLD = os.path.exists(FILE_TLD)
-assert DB_TLD, 'TLD database is required!'
+if not DB_TLD:
+    raise Exception('TLD database is required!')
 
 
 class InvalidDomain(Exception):

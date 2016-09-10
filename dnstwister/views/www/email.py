@@ -24,8 +24,8 @@ def email_subscribe_get_email(hexdomain, error=None):
     try:
         if error is not None:
             error_idx = int(error)
-            assert error_idx >= 0
-            error_str = ERRORS[error_idx]
+            if error_idx >= 0:
+                error_str = ERRORS[error_idx]
     except:
         app.logger.info(
             'Invalid error index {}'.format(error)

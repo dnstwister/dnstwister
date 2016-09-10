@@ -19,8 +19,8 @@ def index(error_arg=None):
     error = None
     try:
         error_idx = int(error_arg)
-        assert error_idx >= 0
-        error = ERRORS[error_idx]
+        if error_idx >= 0:
+            error = ERRORS[error_idx]
     except:
         # This will fail on no error, an error that can't be converted to an
         # integer and an error that can be converted to an integer but is not
