@@ -1,5 +1,7 @@
 """Test the csv/json export functionality."""
 import binascii
+import flask
+import pytest
 import textwrap
 
 import patches
@@ -101,3 +103,12 @@ def test_json_export(webapp, monkeypatch):
             ]
         }
     }
+
+
+def test_failed_export(webapp):
+    """Test unknown-format export"""
+    domain = 'a.com'
+    hexdomain = binascii.hexlify(domain)
+
+    response = webapp.get('/search/{}/xlsx'.format(hexdomain), expect_errors=True)
+    assert response.status_code == 400
