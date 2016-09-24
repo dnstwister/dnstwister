@@ -70,7 +70,7 @@ def search_post():
     # Handle malformed domains data by redirecting to GET page.
     if qry_domains is None:
         app.logger.info(
-            'No valid domains in POST dict {}'.format(flask.request.args)
+            'No valid domains in POST dict {}'.format(flask.request.form)
         )
         return flask.redirect('/error/2')
 
