@@ -70,40 +70,102 @@ def parse_domain(hexdomain):
     return domain.lower()
 
 
+def tidy_and_split(terms):
+    """Tidy up query terms, return as a list."""
+    terms = re.sub(r'[\t\r, ]', '\n', terms)
+
+    # Filter out blank lines, leading/trailing whitespace
+    terms = filter(
+        None, map(string.strip, terms.split('\n'))
+    )
+
+    # Remove HTTP(s) schemes and trailing slashes.
+    terms = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
+             for domain
+             in terms]
+
+    # Strip leading/trailing whitespace again.
+    terms = filter(None, map(string.strip, terms))
+
+    # Make all lower-case
+    terms = map(string.lower, terms)
+
+    return terms
+
+
 def query_domains(data_dict):
     """ Return the valid queried domains from a request data dict, or None.
 
         Domains are space-separated.
     """
     try:
-        domains = data_dict['domains']
+        query_terms = data_dict['domains']
     except KeyError:
         return
 
-    domains = re.sub(r'[\t\r, ]', '\n', domains)
-
-    # Filter out blank lines, leading/trailing whitespace
-    domains = filter(
-        None, map(string.strip, domains.split('\n'))
-    )
-
-    # Remove HTTP(s) schemes and trailing slashes.
-    domains = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
-               for domain
-               in domains]
-
-    # Strip leading/trailing whitespace again.
-    domains = filter(None, map(string.strip, domains))
+    terms = tidy_and_split(query_terms)
 
     # Filter for only valid domains
     domains = filter(
-        dnstwist.validate_domain, domains
+        dnstwist.validate_domain, terms
     )
 
-    # Make all lower-case
-    domains = map(string.lower, domains)
-
     return sorted(list(set(domains))) if len(domains) > 0 else None
+
+
+def suggest_from(data_dict):
+    """Suggest domain names from a query, or None."""
+    joiners = ('-', '.')
+    tlds = ('com',)  # for now
+    suggestions = []
+
+    try:
+        query_terms = data_dict['domains']
+    except KeyError:
+        return
+
+    terms = tidy_and_split(query_terms)
+
+    # Filter out a ton of garbage being submitted
+    if len(terms) > 2:
+        return []
+
+    # Filter out long terms
+    terms = [term for term in terms if len(term) < 30]
+
+    # Filter out silly characters
+    terms = [re.sub('[^a-zA-Z0-9\-]', '', term)
+             for term
+             in terms]
+
+    # Join the terms
+    for j in joiners:
+        suggestions.append(j.join(terms))
+
+    # Attempt to form acronym
+    if len(terms) > 1:
+        acronym = ''
+        for term in terms:
+            if len(term) <= 2:
+                acronym += term
+            else:
+                acronym += term[0]
+        suggestions.append(acronym)
+
+    # Add TLDs
+    suggested_domains = []
+    for tld in tlds:
+        suggested_domains.extend(['{}.{}'.format(s.lower(), tld)
+                                  for s
+                                  in suggestions])
+
+    suggested_domains = sorted(list(set(suggested_domains)))
+
+    valid_suggestions = filter(
+        dnstwist.validate_domain, suggested_domains
+    )
+
+    return valid_suggestions if len(valid_suggestions) > 0 else None
 
 
 @cache.memoize(3600)
