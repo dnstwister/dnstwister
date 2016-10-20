@@ -65,12 +65,20 @@ def csv_render(qry_domains):
 @app.route('/search', methods=['POST'])
 def search_post():
     """Handle form submit."""
-    qry_domains = tools.query_domains(flask.request.form)
-
-    # Handle malformed domains data by redirecting to GET page.
-    if qry_domains is None:
+    try:
+        post_data = flask.request.form['domains']
+    except KeyError:
         app.logger.info(
-            'No valid domains in POST dict {}'.format(flask.request.form)
+            'Missing "domains" key from POST: {}'.format(flask.request.form)
+        )
+        return flask.redirect('/error/2')
+
+    search_domains = tools.parse_post_data(post_data)
+
+    valid_domains = filter(None, map(tools.parse_domain, search_domains))
+    if len(valid_domains) == 0:
+        app.logger.info(
+            'No valid domains in POST {}'.format(flask.request.form)
         )
         return flask.redirect('/error/2')
 
@@ -78,36 +86,42 @@ def search_post():
     # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
     # we use hex to hide the domains from firewalls that already block some of
     # them.
-    path = ','.join(map(binascii.hexlify, qry_domains))
+    path = ','.join(map(binascii.hexlify, search_domains))
     if len(path) <= 200:
         return flask.redirect('/search/{}'.format(path))
 
     # If there's a ton of domains, just to the report.
-    return html_render(qry_domains)
+    return html_render(search_domains)
 
 
 @app.route('/search/<search_domains>')
-@app.route('/search/<search_domains>/<format>')
-def search(search_domains=None, format=None):
+@app.route('/search/<search_domains>/<fmt>')
+def search(search_domains=None, fmt=None):
     """Handle redirect from form submit."""
+
     # Try to parse out the list of domains
     try:
-        qry_domains = map(
-            tools.parse_domain,
-            search_domains.split(',')
-        )
+        valid_domains = filter(None, map(
+            tools.parse_domain, search_domains.split(',')
+        ))
     except:
         app.logger.info('Unable to decode valid domains from path')
         return flask.redirect('/error/1')
 
-    if format is None:
-        return html_render(qry_domains, search_domains)
-    elif format == 'json':
-        return json_render(qry_domains)
-    elif format == 'csv':
-        return csv_render(qry_domains)
+    if len(valid_domains) == 0:
+        app.logger.info(
+            'No valid domains in GET'
+        )
+        return flask.redirect('/error/2')
+
+    if fmt is None:
+        return html_render(valid_domains, search_domains)
+    elif fmt == 'json':
+        return json_render(valid_domains)
+    elif fmt == 'csv':
+        return csv_render(valid_domains)
     else:
-        flask.abort(400, 'Unknown export format')
+        flask.abort(400, 'Unknown export format: {}'.format(fmt))
 
 
 @app.route('/report')
@@ -116,7 +130,7 @@ def report_old():
     try:
         path = flask.request.args['q']
     except:
-        app.logger.info('Unable to decode valid domains from q GET param')
+        app.logger.info('Unable to decode GET "q" param')
         return flask.redirect('/error/1')
 
     return flask.redirect('/search/{}'.format(path))

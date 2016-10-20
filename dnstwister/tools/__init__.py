@@ -2,13 +2,14 @@
 """
 import base64
 import binascii
-import dns.resolver
-import flask
 import os
 import re
 import socket
 import string
 import urlparse
+
+import dns.resolver
+import flask
 
 from dnstwister import cache
 import dnstwister.dnstwist as dnstwist
@@ -37,80 +38,66 @@ def analyse(domain):
     # Add a hex-encoded version of the domain for the later IP resolution. We
     # do this because the same people who may use this app already have
     # blocking on things like www.exampl0e.com in URLs...
-    for r in results:
-        r['hex'] = binascii.hexlify(r['domain-name'])
+    for result in results:
+        result['hex'] = binascii.hexlify(result['domain-name'])
     data['fuzzy_domains'] = results
 
     return (domain, data)
 
 
-def parse_domain(hexdomain):
-    """Given a plain, b64- or hex-encoded string, try to return a domain.
-
-    Return None on invalid domain.
-    """
-    try:
-        if dnstwist.validate_domain(hexdomain):
-            return hexdomain
-    except:
-        pass
-
-    try:
-        domain = binascii.unhexlify(hexdomain)
-    except TypeError:
-        try:
-            # Old style URLs
-            domain = base64.b64decode(hexdomain)
-        except TypeError:
-            return
-
-    if not dnstwist.validate_domain(domain):
-        return
-
-    return domain.lower()
-
-
-def tidy_and_split(terms):
-    """Tidy up query terms, return as a list."""
-    terms = re.sub(r'[\t\r, ]', '\n', terms)
+def parse_post_data(post_data):
+    """Parse post data to return a set of domain candidates."""
+    data = re.sub(r'[\t\r, ]', '\n', post_data)
 
     # Filter out blank lines, leading/trailing whitespace
-    terms = filter(
-        None, map(string.strip, terms.split('\n'))
+    data = filter(
+        None, map(string.strip, data.split('\n'))
     )
 
     # Remove HTTP(s) schemes and trailing slashes.
-    terms = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
-             for domain
-             in terms]
+    data = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
+            for domain
+            in data]
 
     # Strip leading/trailing whitespace again.
-    terms = filter(None, map(string.strip, terms))
+    data = filter(None, map(string.strip, data))
 
     # Make all lower-case
-    terms = map(string.lower, terms)
+    data = map(string.lower, data)
 
-    return terms
+    return sorted(list(set(data)))
 
 
-def query_domains(data_dict):
-    """ Return the valid queried domains from a request data dict, or None.
+def parse_domain(encoded_domain):
+    """Given a plain, b64- or hex-encoded string, try to validate it and if
+    it is valid, return it.
 
-        Domains are space-separated.
+    Return None on un-decodable or invalid domain.
     """
+
+    # If it's a valid plain-text domain, return it
     try:
-        query_terms = data_dict['domains']
-    except KeyError:
-        return
+        if dnstwist.validate_domain(encoded_domain):
+            return encoded_domain
+    except:
+        pass
 
-    terms = tidy_and_split(query_terms)
+    # If it is hex or base64 encoded, decode it.
+    try:
+        domain = binascii.unhexlify(encoded_domain)
+    except TypeError:
+        try:
+            # Old style URLs
+            domain = base64.b64decode(encoded_domain)
+        except TypeError:
+            return
 
-    # Filter for only valid domains
-    domains = filter(
-        dnstwist.validate_domain, terms
-    )
-
-    return sorted(list(set(domains))) if len(domains) > 0 else None
+    # If the decoded domain is valid, return it
+    try:
+        if dnstwist.validate_domain(domain):
+            return domain.lower()
+    except:
+        pass
 
 
 def suggest_from(data_dict):
