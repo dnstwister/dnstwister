@@ -103,7 +103,7 @@ def parse_domain(encoded_domain):
 
 def suggest_domain(seach_terms):
     """Suggest a domain based on the search fields."""
-    joiners = ('-', '.')
+    joiners = ('',) # for now, also trialling ('', '-', '.')
     tlds = ('com',)  # for now
     suggestions = []
 
