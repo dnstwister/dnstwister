@@ -126,16 +126,6 @@ def suggest_domain(seach_terms):
     for joiner in joiners:
         suggestions.append(joiner.join(seach_terms))
 
-    # Attempt to form an acronym
-    if len(seach_terms) > 1:
-        acronym = ''
-        for term in seach_terms:
-            if len(term) <= 2:
-                acronym += term
-            else:
-                acronym += term[0]
-        suggestions.append(acronym)
-
     # Add TLDs
     suggested_domains = []
     for tld in tlds:
