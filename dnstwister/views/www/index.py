@@ -2,6 +2,7 @@
 import flask
 
 from dnstwister import app
+import dnstwister.tools as tools
 
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
@@ -17,6 +18,9 @@ ERRORS = (
 def index(error_arg=None):
     """Main page."""
     error = None
+    error_idx = None
+    suggestion = None
+
     try:
         error_idx = int(error_arg)
         if error_idx >= 0:
@@ -28,4 +32,13 @@ def index(error_arg=None):
         # situations.
         pass
 
-    return flask.render_template('www/index.html', error=error)
+    if error_idx == 0:
+        try:
+            encoded_suggestion = flask.request.args['suggestion']
+            suggestion = tools.parse_domain(encoded_suggestion)
+        except:
+            pass
+
+    return flask.render_template(
+        'www/index.html', error=error, suggestion=suggestion
+    )

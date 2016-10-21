@@ -49,12 +49,12 @@ def csv_render(qry_domains):
         """Streaming download generator."""
         for (domain, rept) in reports.items():
             for entry in rept['fuzzy_domains']:
-                ip, error = tools.resolve(entry['domain-name'])
+                ip_addr, error = tools.resolve(entry['domain-name'])
                 row = map(str, (
                     domain,
                     entry['fuzzer'],
                     entry['domain-name'],
-                    ip,
+                    ip_addr,
                     error,
                 ))
                 yield ','.join(row) + '\n'
@@ -73,6 +73,12 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
+    if post_data.strip() == '':
+        app.logger.info(
+            'No data in "domains" key in POST'
+        )
+        return flask.redirect('/error/2')
+
     search_domains = tools.parse_post_data(post_data)
 
     valid_domains = filter(None, map(tools.parse_domain, search_domains))
@@ -80,7 +86,13 @@ def search_post():
         app.logger.info(
             'No valid domains in POST {}'.format(flask.request.form)
         )
-        return flask.redirect('/error/2')
+        suggestion = tools.suggest_domain(search_domains)
+        if suggestion is not None:
+            encoded_suggestion = binascii.hexlify(suggestion)
+            return flask.redirect(
+                '/error/0?suggestion={}'.format(encoded_suggestion)
+            )
+        return flask.redirect('/error/0')
 
     # Attempt to create a <= 200 character GET parameter from the domains so
     # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
@@ -96,7 +108,7 @@ def search_post():
 
 @app.route('/search/<search_domains>')
 @app.route('/search/<search_domains>/<fmt>')
-def search(search_domains=None, fmt=None):
+def search(search_domains, fmt=None):
     """Handle redirect from form submit."""
 
     # Try to parse out the list of domains
@@ -106,13 +118,20 @@ def search(search_domains=None, fmt=None):
         ))
     except:
         app.logger.info('Unable to decode valid domains from path')
-        return flask.redirect('/error/1')
+        return flask.redirect('/error/0')
 
     if len(valid_domains) == 0:
         app.logger.info(
             'No valid domains in GET'
         )
-        return flask.redirect('/error/2')
+        suggestion = tools.suggest_domain(search_domains.split(','))
+        if suggestion is not None:
+            encoded_suggestion = binascii.hexlify(suggestion)
+            return flask.redirect(
+                '/error/0?suggestion={}'.format(encoded_suggestion)
+            )
+
+        return flask.redirect('/error/0')
 
     if fmt is None:
         return html_render(valid_domains, search_domains)

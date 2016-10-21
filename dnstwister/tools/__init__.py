@@ -4,6 +4,7 @@ import base64
 import binascii
 import os
 import re
+import random
 import socket
 import string
 import urlparse
@@ -100,39 +101,35 @@ def parse_domain(encoded_domain):
         pass
 
 
-def suggest_from(data_dict):
-    """Suggest domain names from a query, or None."""
+def suggest_domain(seach_terms):
+    """Suggest a domain based on the search fields."""
     joiners = ('-', '.')
     tlds = ('com',)  # for now
     suggestions = []
 
-    try:
-        query_terms = data_dict['domains']
-    except KeyError:
-        return
-
-    terms = tidy_and_split(query_terms)
-
     # Filter out a ton of garbage being submitted
-    if len(terms) > 2:
+    if len(seach_terms) > 2:
         return []
 
-    # Filter out long terms
-    terms = [term for term in terms if len(term) < 30]
+    # Filter out long words
+    seach_terms = [term
+                   for term
+                   in seach_terms
+                   if len(term) < 30]
 
     # Filter out silly characters
-    terms = [re.sub('[^a-zA-Z0-9\-]', '', term)
-             for term
-             in terms]
+    seach_terms = [re.sub(r'[^a-zA-Z0-9\-]', '', term)
+                   for term
+                   in seach_terms]
 
     # Join the terms
-    for j in joiners:
-        suggestions.append(j.join(terms))
+    for joiner in joiners:
+        suggestions.append(joiner.join(seach_terms))
 
-    # Attempt to form acronym
-    if len(terms) > 1:
+    # Attempt to form an acronym
+    if len(seach_terms) > 1:
         acronym = ''
-        for term in terms:
+        for term in seach_terms:
             if len(term) <= 2:
                 acronym += term
             else:
@@ -146,13 +143,18 @@ def suggest_from(data_dict):
                                   for s
                                   in suggestions])
 
-    suggested_domains = sorted(list(set(suggested_domains)))
+    # Drop out duplicates
+    suggested_domains = list(set(suggested_domains))
 
+    # Filter for those that are actually valid domains
     valid_suggestions = filter(
         dnstwist.validate_domain, suggested_domains
     )
 
-    return valid_suggestions if len(valid_suggestions) > 0 else None
+    if len(valid_suggestions) == 0:
+        return
+
+    return random.choice(valid_suggestions)
 
 
 @cache.memoize(3600)
