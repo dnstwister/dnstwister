@@ -85,3 +85,11 @@ def test_get_errors(webapp):
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost:80/error/0'
 
+
+def test_no_suggestion_many_words(webapp):
+    """Test many search terms are dropped in suggestions."""
+    query = 'j s d f i j s'
+    response = webapp.post('/search', {'domains': query})
+
+    assert response.status_code == 302
+    assert response.headers['location'] == 'http://localhost:80/error/0'
