@@ -54,3 +54,17 @@ header p {
 .help {
     color: darkgrey;
 }
+
+#suggestion {
+    position: absolute;
+    text-align: left;
+}
+
+#suggestion:before {
+    content: "\02924";
+    font-size: 200%;
+    font-weight: normal;
+    position: absolute;
+    margin-left: -2rem;
+    margin-top: -2.25rem;
+}

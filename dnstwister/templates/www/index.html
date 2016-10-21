@@ -12,51 +12,27 @@
         <section class="searchbox">
             <form action="/search" method="post">
                 <div class="row">
-
                     <div class="ten columns offset-by-one input_field">
                         <input type="text" autocapitalize="none" name="domains" placeholder="Enter one or more domains" class="u-full-width" value="{% if suggestion is not none %}{{ suggestion }}{% endif %}" />
                     </div>
                     <div class="one columns submit">
                         <input type="submit" value="&#128270;" class="button-primary" alt="search" />
                     </div>
-
                     <div class="twelve columns">
-
                         {% if suggestion is not none %}
-                            <style type="text/css">
-                                #suggestion {
-                                    position: absolute;
-                                    text-align: left;
-                                }
-                                #suggestion:before {
-                                    content: "\02924";
-                                    font-size: 200%;
-                                    font-weight: normal;
-                                    position: absolute;
-                                    margin-left: -2rem;
-                                    margin-top: -2.25rem;
-                                }
-                            </style>
                             <div id="suggestion" class="eleven columns offset-by-one error">
                                 Did you mean?
                             </div>
                         {% endif %}
-
                         {% if error is not none %}
                             <section class="error">
                                 {{ error }}
                             </section>
                         {% endif %}
-
-
                         <div class="help">
                             Would you like some <a href="/help">help</a>?
                         </div>
                     </div>
-
-
-
-
                 </div>
             </form>
         </section>

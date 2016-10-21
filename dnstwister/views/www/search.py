@@ -32,9 +32,9 @@ def json_render(qry_domains):
 
     for rept in reports.values():
         for entry in rept['fuzzy_domains']:
-            ip, error = tools.resolve(entry['domain-name'])
+            ip_addr, error = tools.resolve(entry['domain-name'])
             entry['resolution'] = {
-                'ip': ip,
+                'ip': ip_addr,
                 'error': error,
             }
 
@@ -73,7 +73,7 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
-    if post_data.strip() == '':
+    if post_data is None or post_data.strip() == '':
         app.logger.info(
             'No data in "domains" key in POST'
         )
