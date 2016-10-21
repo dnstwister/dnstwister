@@ -109,7 +109,7 @@ def suggest_domain(seach_terms):
 
     # Filter out a ton of garbage being submitted
     if len(seach_terms) > 2:
-        return []
+        return
 
     # Filter out long words
     seach_terms = [term
