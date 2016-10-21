@@ -81,7 +81,7 @@ def search_post():
 
     search_domains = tools.parse_post_data(post_data)
 
-    valid_domains = filter(None, map(tools.parse_domain, search_domains))
+    valid_domains = sorted(list(set(filter(None, map(tools.parse_domain, search_domains)))))
     if len(valid_domains) == 0:
         app.logger.info(
             'No valid domains in POST {}'.format(flask.request.form)
@@ -113,9 +113,9 @@ def search(search_domains, fmt=None):
 
     # Try to parse out the list of domains
     try:
-        valid_domains = filter(None, map(
+        valid_domains = sorted(list(set(filter(None, map(
             tools.parse_domain, search_domains.split(',')
-        ))
+        )))))
     except:
         app.logger.info('Unable to decode valid domains from path')
         return flask.redirect('/error/0')

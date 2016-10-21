@@ -66,7 +66,7 @@ def parse_post_data(post_data):
     # Make all lower-case
     data = map(string.lower, data)
 
-    return sorted(list(set(data)))
+    return data
 
 
 def parse_domain(encoded_domain):
