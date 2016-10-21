@@ -56,15 +56,29 @@ header p {
 }
 
 #suggestion {
-    position: absolute;
-    text-align: left;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+#suggestion:hover {
+    text-decoration: underline;
 }
 
 #suggestion:before {
-    content: "\02924";
-    font-size: 200%;
-    font-weight: normal;
+    content: "\02191";
     position: absolute;
-    margin-left: -2rem;
-    margin-top: -2.25rem;
+    margin-top: -8px;
+    margin-left: -10px;
+}
+
+@media (min-width: 550px) {
+    #suggestion:before {
+        content: "\02196";
+        margin-top: -5px;
+        margin-left: -15px;
+    }
+}
+
+#suggestion .add_domain {
+    font-weight: bold;
 }

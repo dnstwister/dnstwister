@@ -2,6 +2,9 @@
 {% set hide_logo = True %}
 {% block title %}Domain name permutation service{% endblock %}
 {% block head %}
+        {% if suggestion is not none %}
+            <script type="text/javascript" src="{{ url_for('static', filename='index.min.js') }}"></script>
+        {% endif %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.min.css') }}">
 {% endblock %}
 {% block header %}
@@ -13,22 +16,23 @@
             <form action="/search" method="post">
                 <div class="row">
                     <div class="ten columns offset-by-one input_field">
-                        <input type="text" autocapitalize="none" name="domains" placeholder="Enter one or more domains" class="u-full-width" value="{% if suggestion is not none %}{{ suggestion }}{% endif %}" />
+                        <input id="domains" type="text" autocapitalize="none" name="domains" placeholder="Enter one or more domains" class="u-full-width" />
                     </div>
                     <div class="one columns submit">
                         <input type="submit" value="&#128270;" class="button-primary" alt="search" />
                     </div>
                     <div class="twelve columns">
-                        {% if suggestion is not none %}
-                            <div id="suggestion" class="eleven columns offset-by-one error">
-                                Did you mean?
-                            </div>
-                        {% endif %}
                         {% if error is not none %}
                             <section class="error">
                                 {{ error }}
+                                {% if suggestion is not none %}
+                                    <section id="suggestion" data-domain="{{ suggestion }}">
+                                        Did you mean <span class="add_domain">{{ suggestion }}</span>?
+                                    </section>
+                                {% endif %}
                             </section>
                         {% endif %}
+
                         <div class="help">
                             Would you like some <a href="/help">help</a>?
                         </div>
