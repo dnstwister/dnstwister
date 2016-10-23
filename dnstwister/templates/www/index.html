@@ -13,7 +13,7 @@
             <form action="/search" method="post">
                 <div class="row">
                     <div class="ten columns offset-by-one input_field">
-                        <input id="domains" type="text" autocapitalize="none" name="domains" placeholder="Enter one or more domains" class="u-full-width" />
+                        <input id="domains" type="text" autocapitalize="none" name="domains" placeholder="Enter one or more domains" class="u-full-width" {% if suggestion is not none %}value="{{ suggestion }}"{% endif %} />
                     </div>
                     <div class="one columns submit">
                         <input type="submit" value="&#128270;" class="button-primary" alt="search" />
@@ -23,7 +23,7 @@
                             <section class="error">
                                 {{ error }}
                                 {% if suggestion is not none %}
-                                    Did you mean something like "<span class="suggested_domain">{{ suggestion }}</span>"?
+                                    Did you mean something like "{{ suggestion }}"?
                                 {% endif %}
                             </section>
                         {% endif %}
