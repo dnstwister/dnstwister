@@ -57,32 +57,9 @@ header p {
 
 .error {
     font-weight: normal;
+    margin-top: -0.75rem;
+    padding-bottom: 3rem;
+    padding-left: 10px;
+    padding-right: 20px;
 }
 
-#suggestion {
-    cursor: pointer;
-}
-
-#suggestion:hover {
-    text-decoration: underline;
-}
-
-#suggestion:before {
-    content: "\02191";
-    position: absolute;
-    margin-top: -8px;
-    margin-left: -10px;
-    font-weight: bold;
-}
-
-@media (min-width: 550px) {
-    #suggestion:before {
-        content: "\02196";
-        margin-top: -5px;
-        margin-left: -15px;
-    }
-}
-
-#suggestion .add_domain {
-    font-weight: bold;
-}

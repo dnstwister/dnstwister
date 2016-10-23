@@ -33,10 +33,6 @@ maps = {
         'common.css',
         'report.css',
     ),
-    'index.min.js': (
-        'jquery-1.11.3.min.js',
-        'index.js',
-    ),
     'report.min.js': (
         'jquery-1.11.3.min.js',
         'report.js',

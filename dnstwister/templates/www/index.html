@@ -2,9 +2,6 @@
 {% set hide_logo = True %}
 {% block title %}Domain name permutation service{% endblock %}
 {% block head %}
-        {% if suggestion is not none %}
-            <script type="text/javascript" src="{{ url_for('static', filename='index.min.js') }}"></script>
-        {% endif %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.min.css') }}">
 {% endblock %}
 {% block header %}
@@ -21,14 +18,12 @@
                     <div class="one columns submit">
                         <input type="submit" value="&#128270;" class="button-primary" alt="search" />
                     </div>
-                    <div class="twelve columns">
+                    <div class="ten columns offset-by-one">
                         {% if error is not none %}
                             <section class="error">
                                 {{ error }}
                                 {% if suggestion is not none %}
-                                    <section id="suggestion" data-domain="{{ suggestion }}">
-                                        Did you mean <span class="add_domain">{{ suggestion }}</span>?
-                                    </section>
+                                    Did you mean something like "<span class="suggested_domain">{{ suggestion }}</span>"?
                                 {% endif %}
                             </section>
                         {% endif %}
