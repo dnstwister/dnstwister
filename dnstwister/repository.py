@@ -2,11 +2,11 @@
 import datetime
 
 from dnstwister import db
-import storage.interfaces
+import dnstwister.storage.interfaces
 
 
 # Check the database we're using implements the interface.
-storage.interfaces.instance_valid(db)
+dnstwister.storage.interfaces.instance_valid(db)
 
 
 def register_domain(domain):
@@ -36,7 +36,7 @@ def unregister_domain(domain):
 
 def is_domain_registered(domain):
     """Return whether a domain is registered for reporting."""
-    return db.get('registered_for_reporting:{}'.format(domain)) == True
+    return db.get('registered_for_reporting:{}'.format(domain)) is True
 
 
 def iregistered_domains():
