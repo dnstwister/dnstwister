@@ -2,6 +2,7 @@
 import zope.interface.verify
 
 
+# pylint: disable=inherit-non-class
 class IKeyValueDB(zope.interface.Interface):
     """Interface for a key-value storage."""
     def set(self, key, value):
