@@ -1,4 +1,10 @@
-"""dnstwister web app."""
+#pylint: skip-file
+"""dnstwister web app.
+
+This is the pattern from http://flask.pocoo.org/docs/0.11/patterns/packages/
+which generates circular imports hence the comment at the top to just ignore
+this file.
+"""
 import flask
 import flask.ext.cache
 import logging
@@ -20,7 +26,7 @@ app.logger.setLevel(logging.INFO)
 import api
 app.register_blueprint(api.app, url_prefix='/api')
 
-# Import modules using dnstwister.app/cache/db/emailer here
+# Import modules using dnstwister.app/cache/db/emailer here.
 import repository
 import tools
 import views.syndication.atom
