@@ -11,6 +11,6 @@ RTD_STABLE = 'https://dnstwister.readthedocs.org/en/stable/web.html'
 
 
 @app.route(r'/help')
-def help():
+def help_redirect():
     """Help redirect."""
     return flask.redirect(RTD_STABLE)
