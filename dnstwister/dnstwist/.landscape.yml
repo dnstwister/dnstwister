@@ -4,7 +4,3 @@ ignore-paths:
   - dnstwister/dnstwist
   - provision
   - tests
-ignore-patterns:
-  - ^dnstwister/dnstwist.*$
-  - ^provision.*$
-  - ^tests.*$
