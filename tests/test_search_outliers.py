@@ -93,3 +93,22 @@ def test_no_suggestion_many_words(webapp):
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost:80/error/0'
+
+
+def test_suggestion_bad_data(webapp):
+    """Test that submitting invalid data in suggestion doesn't crash the page.
+    """
+    response = webapp.get('/error/0?suggestion')
+    assert response.status_code == 200
+
+    response = webapp.get('/error/0?suggestion=')
+    assert response.status_code == 200
+
+    response = webapp.get('/error/0?suggestion=sdlkfjsdlfkjsdf')
+    assert response.status_code == 200
+
+    response = webapp.get('/error/0?suggestion=<script>...<?')
+    assert response.status_code == 200
+
+    response = webapp.get('/error/0?suggestion=a.com&cat=2')
+    assert response.status_code == 200

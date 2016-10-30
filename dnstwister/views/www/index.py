@@ -25,19 +25,17 @@ def index(error_arg=None):
         error_idx = int(error_arg)
         if error_idx >= 0:
             error = ERRORS[error_idx]
-    except:
-        # This will fail on no error, an error that can't be converted to an
-        # integer and an error that can be converted to an integer but is not
-        # within the range of the tuple of errors. We don't need to log these
-        # situations.
-        pass
+    except (TypeError, ValueError, IndexError):
+        # This will fail on no error index, an error index that can't be
+        # converted to an integer and an error index that can be converted to
+        # an integer but is not within the range of the tuple of errors.
+        app.logger.info(
+            'Invalid value passed for error index: {}'.format(error_idx)
+        )
 
     if error_idx == 0:
-        try:
-            encoded_suggestion = flask.request.args['suggestion']
-            suggestion = tools.parse_domain(encoded_suggestion)
-        except:
-            pass
+        encoded_suggestion = flask.request.args.get('suggestion')
+        suggestion = tools.parse_domain(encoded_suggestion)
 
     return flask.render_template(
         'www/index.html', error=error, suggestion=suggestion
