@@ -70,35 +70,24 @@ def parse_post_data(post_data):
 
 
 def parse_domain(encoded_domain):
-    """Given a plain, b64- or hex-encoded string, try to validate it and if
-    it is valid, return it.
+    """Given a plain, b64- or hex-encoded string, try to decode and validate
+    it and if it is valid, return it.
 
     Return None on un-decodable or invalid domain.
     """
+    decoders = (
+        str,  # Plain text (breaks on a lot of firewalls).
+        binascii.unhexlify,  # The current hex-encoding scheme.
+        base64.b64decode,  # The predecessor to the hex version,
+    )
 
-    # If it's a valid plain-text domain, return it
-    try:
-        if dnstwist.validate_domain(encoded_domain):
-            return encoded_domain
-    except:
-        pass
-
-    # If it is hex or base64 encoded, decode it.
-    try:
-        domain = binascii.unhexlify(encoded_domain)
-    except TypeError:
+    for decoder in decoders:
         try:
-            # Old style URLs
-            domain = base64.b64decode(encoded_domain)
-        except TypeError:
-            return
-
-    # If the decoded domain is valid, return it
-    try:
-        if dnstwist.validate_domain(domain):
-            return domain.lower()
-    except:
-        pass
+            decoded = decoder(encoded_domain)
+            if dnstwist.validate_domain(decoded):
+                return decoded.lower()
+        except:
+            pass
 
 
 def suggest_domain(seach_terms):
