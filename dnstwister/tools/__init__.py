@@ -78,7 +78,7 @@ def parse_domain(encoded_domain):
     decoders = (
         str,  # Plain text (breaks on a lot of firewalls).
         binascii.unhexlify,  # The current hex-encoding scheme.
-        base64.b64decode,  # The predecessor to the hex version,
+        base64.b64decode,  # The predecessor to the hex version.
     )
 
     for decoder in decoders:
