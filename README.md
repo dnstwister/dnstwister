@@ -2,7 +2,7 @@
 
 [![Development Branch Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
 [![Development Branch Code Health](https://landscape.io/github/thisismyrobot/dnstwister/master/landscape.svg?style=flat)](https://landscape.io/github/thisismyrobot/dnstwister/master)
-
+[![Development Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=master)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=master)
 
 A Heroku-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
@@ -26,7 +26,7 @@ concern as quickly as possible.
 
 ## Tests
 
-WIP, run using 'py.test'.
+Run 'py.test'.
 
 ## Google App Engine
 
