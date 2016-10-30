@@ -4,3 +4,4 @@ ignore-paths:
   - dnstwister/dnstwist
   - provision
   - tests
+  - run_local_server.py
