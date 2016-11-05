@@ -6,7 +6,7 @@ which generates circular imports hence the comment at the top to just ignore
 this file.
 """
 import flask
-import flask.ext.cache
+import flask_cache
 import logging
 
 import mail.sendgridservice
@@ -15,7 +15,7 @@ import storage.pg_database
 
 # Set up app/cache/db/emailer/gateway here
 app = flask.Flask(__name__)
-cache = flask.ext.cache.Cache(app, config={'CACHE_TYPE': 'simple'})
+cache = flask_cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
 

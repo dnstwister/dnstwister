@@ -3,3 +3,4 @@
 brand/*.psd
 _build*
 .coverage
+venv/

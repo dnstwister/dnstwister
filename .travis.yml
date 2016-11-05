@@ -3,6 +3,7 @@ python:
   - "2.7"
 install:
     - pip install -r requirements.txt
+    - pip install -r tests/extra_requirements.txt
     - pip install pytest-cov
 script: py.test --cov=dnstwister --cov-config .coveragerc
 after_success:
