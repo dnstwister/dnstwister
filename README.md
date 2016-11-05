@@ -1,4 +1,7 @@
-# DNS Twister
+# dnstwister
+
+A Heroku-hosted version of the very excellent
+[dnstwist](https://github.com/elceef/dnstwist).
 
 [![Production Branch Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=heroku-deploy)](https://travis-ci.org/thisismyrobot/dnstwister)
 [![Production Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=heroku-deploy)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=heroku-deploy)
@@ -8,32 +11,43 @@
 [![Development Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=master)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=master)
 [![Development Branch Code Health](https://landscape.io/github/thisismyrobot/dnstwister/master/landscape.svg?style=flat)](https://landscape.io/github/thisismyrobot/dnstwister/master)
 
-A Heroku-hosted version of the very excellent
-[dnstwist](https://github.com/elceef/dnstwist).
+## What is dnstwister?
 
-Hosted [here](https://dnstwister.report).
+In the author's words, dnstwist helps you
+["...find similar-looking domains that adversaries can use to attack you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
 
-## DNSTWIST module
+This project, __dnstwister__, gives you access to the power of dnstwist via a
+convenient web interface and offers email alerts, Atom feeds, csv/json reports
+and a fully featured RESTful API.
 
-This project uses a modified (by me) snapshot of version 1.02 of dnstwist, in
-dnstwister/dnstwist.
+Oh, and it's 100% free.
 
-I have left the dnstwist original README and LICENCE in this snapshot, I hope
-this is correct attribution and a correct use of the dnstwist project within
-my project.
+__dnstwister__ is hosted at [https://dnstwister.report](https://dnstwister.report).
 
-I have applied an "Unlicense" to DNS Twister and I believe
-[this is acceptable](http://opensource.stackexchange.com/a/963/3236). If you
-come across this repository and disagree with my usage, attribution or
-licensing of dnstwist, please raise a Git issue and I will address your
-concern as quickly as possible.
+## dnstwist module
+
+This project currently uses a modified snapshot of version 1.02 of dnstwist, in
+[dnstwister/dnstwist](dnstwister/dnstwist).
+
+I have kept the original dnstwist README and LICENCE in that snapshot but I
+have applied an "Unlicense" to __dnstwister__.
+
+I understand - though the licences are different (dnstwist 
+[uses](https://github.com/elceef/dnstwist/blob/master/docs/LICENSE) an
+Apache licence) - that [this is acceptable](http://opensource.stackexchange.com/a/963/3236)
+use of dnstwist in my project.
+
+If you come across this repository and disagree with my usage, attribution or
+licensing of dnstwist, please raise a
+[Git issue](https://github.com/thisismyrobot/dnstwister/issues) and I will
+address your concern as quickly as possible.
 
 ## Tests
 
 Run 'py.test'.
 
-## Google App Engine
+## Google App Engine version
 
-This project used to be on GAE but has since been migrated to Heroku. To view
+This project used to be hosted on Google App Engine (GAE) but has since been migrated to Heroku. To view
 the GAE codebase you'll need to look at the [1.1
 tag](https://github.com/thisismyrobot/dnstwister/releases/tag/1.1).
