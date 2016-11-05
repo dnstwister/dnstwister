@@ -52,11 +52,11 @@ def process_domain(domain):
 
     new_report = {}
     for entry in tools.analyse(domain)[1]['fuzzy_domains'][1:]:
-        ip, error = tools.resolve(entry['domain-name'])
-        if error or not ip or ip is None:
+        ip_addr, error = tools.resolve(entry['domain-name'])
+        if error or not ip_addr or ip_addr is None:
             continue
         new_report[entry['domain-name']] = {
-            'ip': ip,
+            'ip': ip_addr,
             'tweak': entry['fuzzer'],
         }
 
