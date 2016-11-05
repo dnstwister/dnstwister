@@ -73,7 +73,9 @@ def email_subscribe_confirm_email(verify_code):
     pending_verify = repository.get_proposition(verify_code)
 
     if pending_verify is None:
-        app.logger.info('Failed to verify a non-existent subscription.')
+        app.logger.info(
+            'Failed to verify a non-existent subscription with id: {}'.format(verify_code)
+        )
         return flask.redirect('/')
 
     email_address = pending_verify['email_address']
