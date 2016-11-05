@@ -7,6 +7,43 @@ import worker_email
 import worker_deltas
 
 
+def test_dont_send_when_no_changes(capsys, monkeypatch):
+    """Test that emails are not sent when there are no changes."""
+
+    # Patches
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    # Return no IPs
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: (False, False)
+    )
+    emailer = patches.NoEmailer()
+    monkeypatch.setattr('worker_email.emailer', emailer)
+
+    repository = dnstwister.repository
+
+    # Settings
+    domain = 'www.example.com'
+    sub_id = '1234'
+    email = 'a@b.zzzzzzzzzzz'
+
+    # Subscribe a new user.
+    repository.subscribe_email(sub_id, email, domain)
+
+    # Do a delta report.
+    worker_deltas.process_domain(domain)
+
+    # Process the subscription.
+    sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
+    worker_email.process_sub(sub_id, sub_data)
+
+    # We've not sent any emails as there were no changes (no IPs resolved at
+    # all).
+    assert len(emailer.sent_emails) == 0
+
+
 def test_dont_send_too_often(capsys, monkeypatch):
     """Test that emails are not sent more than every 24 hours."""
 
@@ -31,7 +68,7 @@ def test_dont_send_too_often(capsys, monkeypatch):
     # Subscribe a new user.
     repository.subscribe_email(sub_id, email, domain)
 
-    # So let's do a delta report.
+    # Do a delta report.
     worker_deltas.process_domain(domain)
 
     # Process the subscription.
