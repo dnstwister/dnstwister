@@ -65,10 +65,8 @@ def delta_report_updated(domain):
         return datetime.datetime.strptime(updated, '%Y-%m-%dT%H:%M:%SZ')
 
 
-def update_delta_report(domain, delta=None, updated=None):
+def update_delta_report(domain, delta, updated=None):
     """Update the delta report for a domain."""
-    if delta is None:
-        delta = {'new': [], 'updated': [], 'deleted': []}
     if updated is None:
         updated = datetime.datetime.now()
     db.set('delta_report:{}'.format(domain), delta)
