@@ -29,6 +29,16 @@ def test_bad_error_codes(webapp):
 
 
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
+def test_verification_with_bad_id(webapp):
+    """Test that verifying with a dud subscription id just redirects to root.
+    """
+    response = webapp.get('/email/verify/1234')
+
+    assert response.status_code == 302
+    assert response.headers['location'] == 'http://localhost:80/'
+
+
+@mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_isubscriptions_with_no_subscriptions():
     repository = dnstwister.repository
     assert list(repository.isubscriptions()) == []
