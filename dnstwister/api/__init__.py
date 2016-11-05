@@ -119,10 +119,10 @@ def resolve_ip(hexdomain):
             'Malformed domain or domain not represented in hexadecimal format.'
         )
 
-    ip, error = tools.resolve(domain)
+    ip_addr, error = tools.resolve(domain)
 
     payload = standard_api_values(domain, skip='resolve_ip')
-    payload['ip'] = ip
+    payload['ip'] = ip_addr
     payload['error'] = error
     return flask.jsonify(payload)
 
