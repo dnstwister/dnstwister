@@ -85,7 +85,7 @@ def get_score(domain):
                 score += 0.25
             else:
                 score += 1
-    except requests.ConnectionError:
+    except:
         redirects_domain = False
         landed_domain1 = ''
         content = ''
@@ -97,7 +97,7 @@ def get_score(domain):
         redirects_paths, landed_domain2, _ = _domain_redirects(
             domain, 'dnstwister_parked_check'
         )
-    except requests.ConnectionError:
+    except:
         redirects_paths = False
         landed_domain2 = ''
 
