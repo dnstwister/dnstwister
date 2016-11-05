@@ -3,15 +3,19 @@
 A Heroku-hosted version of the very excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
+#### production
+
 [![Production Branch Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=heroku-deploy)](https://travis-ci.org/thisismyrobot/dnstwister)
 [![Production Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=heroku-deploy)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=heroku-deploy)
 [![Production Branch Code Health](https://landscape.io/github/thisismyrobot/dnstwister/heroku-deploy/landscape.svg?style=flat)](https://landscape.io/github/thisismyrobot/dnstwister/heroku-deploy)
+
+#### development
 
 [![Development Branch Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
 [![Development Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=master)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=master)
 [![Development Branch Code Health](https://landscape.io/github/thisismyrobot/dnstwister/master/landscape.svg?style=flat)](https://landscape.io/github/thisismyrobot/dnstwister/master)
 
-## What is dnstwister?
+## dnstwist vs dnstwister
 
 In the author's words, dnstwist helps you
 ["...find similar-looking domains that adversaries can use to attack you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
