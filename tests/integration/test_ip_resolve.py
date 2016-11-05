@@ -1,4 +1,4 @@
-"""Test respolving IPs."""
+"""Test resolving IPs."""
 import socket
 
 
@@ -9,7 +9,7 @@ def test_resolve(webapp):
     assert response.status_code == 200
 
     payload = response.json
-    ip = payload['ip']
+    ip_addr = payload['ip']
     del payload['ip']
 
     assert payload == {
@@ -22,4 +22,16 @@ def test_resolve(webapp):
     }
 
     # Will throw if invalid IP
-    socket.inet_aton(ip)
+    socket.inet_aton(ip_addr)
+
+
+def test_failed_resolve(webapp):
+    """Test basic failure to resolve an IP for a domain - because it's
+    unregistered.
+    """
+    host = 'imprettysurethatthisdomaindoesnotexist.com'
+    response = webapp.get('/api/ip/{}'.format(host))
+
+    assert response.status_code == 200
+    assert response.json['ip'] is False
+    assert response.json['error'] is False
