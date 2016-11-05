@@ -1,5 +1,6 @@
 """Tests of the deltas worker."""
 import datetime
+import time
 
 import dnstwister
 import patches
@@ -187,3 +188,29 @@ def test_old_style_resolution_reports_are_updated(capsys, monkeypatch):
         'updated': [('www.example.co', '127.0.0.1', '999.999.999.999')],
         'new': []
     }
+
+
+def test_domains_are_checked_once_a_day(capsys, monkeypatch):
+    """Test domains are not checked constantly."""
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+    repository = dnstwister.repository
+
+    domain = 'www.example.com'
+
+    worker_deltas.process_domain(domain)
+
+    last_updated_db_key = 'delta_report_updated:{}'.format(domain)
+    last_updated = repository.db._data[last_updated_db_key]
+
+    # Process again not long after.
+    time.sleep(1)
+    worker_deltas.process_domain(domain)
+
+    # Ensure that we didn't updated the last-updated date
+    assert repository.db._data[last_updated_db_key] == last_updated
