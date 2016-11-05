@@ -9,6 +9,8 @@ import dnstwister
 import patches
 
 
+@mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
+@mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_bad_domains_fail(webapp):
     """Test the email views check domain validity."""
     with pytest.raises(webtest.app.AppError) as err:
@@ -18,6 +20,12 @@ def test_bad_domains_fail(webapp):
     with pytest.raises(webtest.app.AppError) as err:
         webapp.post('/email/pending_verify/3234jskdnfsdf7y34')
     assert '400 BAD REQUEST' in err.value.message
+
+
+def test_bad_error_codes(webapp):
+    """Test the email error codes being weird doesn't break the page."""
+    normal_html = webapp.get('/email/subscribe/www.example.com').html
+    assert webapp.get('/email/subscribe/www.example.com/9').html == normal_html
 
 
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
