@@ -2,6 +2,7 @@
 
 
 def test_parked_query(webapp):
+    """Test the parked API against our own domain."""
     request = webapp.get('/api/parked/dnstwister.report')
 
     assert request.status_code == 200
