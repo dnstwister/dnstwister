@@ -2,11 +2,12 @@
 
 
 def test_safebrowsing_query(webapp):
-    request = webapp.get('/api/safebrowsing/dnstwister.report')
+    """Test our domain is safe."""
+    response = webapp.get('/api/safebrowsing/dnstwister.report')
 
-    assert request.status_code == 200
+    assert response.status_code == 200
 
-    assert request.json == {
+    assert response.json == {
         u'domain': u'dnstwister.report',
         u'domain_as_hexadecimal': u'646e73747769737465722e7265706f7274',
         u'fuzz_url': u'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
@@ -15,3 +16,11 @@ def test_safebrowsing_query(webapp):
         u'resolve_ip_url': u'http://localhost:80/api/ip/646e73747769737465722e7265706f7274',
         u'url': u'http://localhost:80/api/safebrowsing/dnstwister.report'
     }
+
+
+def test_safebrowsing_with_bad_domain(webapp):
+    """Test against the google test domain (malware.testing.google.test)."""
+    response = webapp.get('/api/safebrowsing/malware.testing.google.test')
+
+    assert response.status_code == 200
+    assert response.json['issue_detected'] is True
