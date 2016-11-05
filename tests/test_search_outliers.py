@@ -71,9 +71,7 @@ def test_no_valid_domains_only(webapp):
 
 def test_suggestion_rendered(webapp):
     """Test suggestion rendered on index."""
-    response = webapp.post('/search', {'domains': 'example'})
-    next_url = response.headers['location']
-    response = webapp.get(next_url)
+    response = webapp.post('/search', {'domains': 'example'}).follow()
 
     assert 'example.com' in response.body
 
@@ -112,3 +110,36 @@ def test_suggestion_bad_data(webapp):
 
     response = webapp.get('/error/0?suggestion=a.com&cat=2')
     assert response.status_code == 200
+
+
+def test_fix_comma_typo(webapp):
+    """Test accidentally entering in a comma instead of period is corrected.
+    """
+    malformed_domain = 'example,com'
+    expected_suggestion = 'example.com'
+
+    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+
+    assert expected_suggestion in response.body
+
+
+def test_fix_slash_typo(webapp):
+    """Test accidentally entering in a slash instead of period is corrected.
+    """
+    malformed_domain = 'example/com'
+    expected_suggestion = 'example.com'
+
+    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+
+    assert expected_suggestion in response.body
+
+
+def test_fix_space_typo(webapp):
+    """Test accidentally entering in a space instead of period is corrected.
+    """
+    malformed_domain = 'example com'
+    expected_suggestion = 'example.com'
+
+    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+
+    assert expected_suggestion in response.body

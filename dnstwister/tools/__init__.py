@@ -13,6 +13,7 @@ import dns.resolver
 import flask
 
 from dnstwister import cache
+from dnstwister.tools import tld_db
 import dnstwister.dnstwist as dnstwist
 
 
@@ -48,7 +49,7 @@ def analyse(domain):
 
 def parse_post_data(post_data):
     """Parse post data to return a set of domain candidates."""
-    data = re.sub(r'[\t\r, ]', '\n', post_data)
+    data = re.sub(r'[\t\r ]', '\n', post_data)
 
     # Filter out blank lines, leading/trailing whitespace
     data = filter(
@@ -90,30 +91,45 @@ def parse_domain(encoded_domain):
             pass
 
 
-def suggest_domain(seach_terms):
+def suggest_domain(search_terms):
     """Suggest a domain based on the search fields."""
+
+    # Check for a simple common typo first - putting comma instead of period
+    # in-between the second- and top-level domains.
+    if len(search_terms) == 1:
+        candidate = re.sub(r'[,/-]', '.', search_terms[0])
+        if dnstwist.validate_domain(candidate):
+            return candidate
+
+    # Pick up space-separated domain levels.
+    if len(search_terms) == 2 and search_terms[1] in tld_db.TLDS:
+        candidate = '.'.join(search_terms)
+        if dnstwist.validate_domain(candidate):
+            return candidate
+
+    # Attempt to make a domain from the terms.
     joiners = ('', '-') # for now, also trialling ('', '-', '.')
     tlds = ('com',)  # for now
     suggestions = []
 
     # Filter out a ton of garbage being submitted
-    if len(seach_terms) > 2:
+    if len(search_terms) > 2:
         return
 
     # Filter out long words
-    seach_terms = [term
-                   for term
-                   in seach_terms
-                   if len(term) < 30]
+    search_terms = [term
+                    for term
+                    in search_terms
+                    if len(term) < 30]
 
     # Filter out silly characters
-    seach_terms = [re.sub(r'[^a-zA-Z0-9\-]', '', term)
-                   for term
-                   in seach_terms]
+    search_terms = [re.sub(r'[^a-zA-Z0-9\-]', '', term)
+                    for term
+                    in search_terms]
 
     # Join the terms
     for joiner in joiners:
-        suggestions.append(joiner.join(seach_terms))
+        suggestions.append(joiner.join(search_terms))
 
     # Add TLDs
     suggested_domains = []
@@ -148,15 +164,15 @@ def resolve(domain):
     """
     # Try for an 'A' record.
     try:
-        ip = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
-        return ip, False
+        ip_addr = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
+        return ip_addr, False
     except:
         pass
 
     # Try for a simple resolution if the 'A' record request failed
     try:
-        ip = socket.gethostbyname(domain)
-        return ip, False
+        ip_addr = socket.gethostbyname(domain)
+        return ip_addr, False
     except socket.gaierror:
         # Indicates failure to resolve to IP address, not an error in
         # the attempt.
@@ -171,7 +187,7 @@ def random_id(n_bytes=32):
 
 
 def api_url(view, var_pretty_name):
-    """Create nice API urls with placeholders."""
+    """Create nice API urls with place holders."""
     view_path = '.{}'.format(view.func_name)
     route_var = view.func_code.co_varnames[:view.func_code.co_argcount][0]
     path = flask.url_for(view_path, **{route_var: ''})
