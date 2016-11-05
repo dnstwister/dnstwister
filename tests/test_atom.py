@@ -1,15 +1,28 @@
 """Tests of the atom behaviour."""
 import base64
 import datetime
-import flask.ext.webtest
-import mock
 import textwrap
 import unittest
+
+import pytest
+import flask.ext.webtest
+import mock
+import webtest.app
 
 import dnstwister
 import patches
 
 
+def test_atom_feeds_validate_domain(webapp):
+    """Test that the validation checks for valid domains before creating
+    feeds.
+    """
+    with pytest.raises(webtest.app.AppError) as err:
+        webapp.get('/atom/324u82938798swefsdf')
+    assert '400 BAD REQUEST' in err.value.message
+
+
+# TODO: Update to pytest-style.
 class TestAtom(unittest.TestCase):
     """Tests of the atom feed behaviour."""
 
