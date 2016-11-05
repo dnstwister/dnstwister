@@ -42,9 +42,14 @@ licensing of dnstwist, please raise a
 [Git issue](https://github.com/thisismyrobot/dnstwister/issues) and I will
 address your concern as quickly as possible.
 
+## Running dnstwister
+
+    pip install requirements.txt
+    python run_local_server.py
+
 ## Tests
 
-Run 'py.test'.
+    py.test
 
 ## Google App Engine version
 
