@@ -1,10 +1,23 @@
 """Tests of the email subscription mechanism."""
+import binascii
 import flask
 import mock
+import pytest
+import webtest.app
 
-import binascii
 import dnstwister
 import patches
+
+
+def test_bad_domains_fail(webapp):
+    """Test the email views check domain validity."""
+    with pytest.raises(webtest.app.AppError) as err:
+        webapp.get('/email/subscribe/3234jskdnfsdf7y34')
+    assert '400 BAD REQUEST' in err.value.message
+
+    with pytest.raises(webtest.app.AppError) as err:
+        webapp.post('/email/pending_verify/3234jskdnfsdf7y34')
+    assert '400 BAD REQUEST' in err.value.message
 
 
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
