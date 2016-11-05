@@ -93,10 +93,8 @@ def delta_report_last_read(domain):
         return datetime.datetime.strptime(last_read, '%Y-%m-%dT%H:%M:%SZ')
 
 
-def update_resolution_report(domain, report=None, updated=None):
+def update_resolution_report(domain, report, updated=None):
     """Update the resolution report for a domain."""
-    if report is None:
-        report = {}
     if updated is None:
         updated = datetime.datetime.now()
     db.set('resolution_report:{}'.format(domain), report)
