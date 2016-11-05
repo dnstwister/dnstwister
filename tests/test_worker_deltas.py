@@ -209,8 +209,28 @@ def test_domains_are_checked_once_a_day(capsys, monkeypatch):
     last_updated = repository.db._data[last_updated_db_key]
 
     # Process again not long after.
-    time.sleep(1)
+    time.sleep(2)
     worker_deltas.process_domain(domain)
 
     # Ensure that we didn't updated the last-updated date
     assert repository.db._data[last_updated_db_key] == last_updated
+
+
+def test_domains_iter_lists_all_domains(capsys, monkeypatch):
+    """Test the repo can return all domains registered."""
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+    domain = 'www.example.com'
+
+    repository = dnstwister.repository
+
+    assert list(repository.iregistered_domains()) == []
+
+    repository.register_domain(domain)
+
+    assert list(repository.iregistered_domains()) == [domain]
