@@ -22,13 +22,14 @@ def index(error_arg=None):
     suggestion = None
 
     try:
-        error_idx = int(error_arg)
-        if error_idx >= 0:
-            error = ERRORS[error_idx]
+        if error_arg is not None:
+            error_idx = int(error_arg)
+            if error_idx >= 0:
+                error = ERRORS[error_idx]
     except (TypeError, ValueError, IndexError):
-        # This will fail on no error index, an error index that can't be
-        # converted to an integer and an error index that can be converted to
-        # an integer but is not within the range of the tuple of errors.
+        # This will fail an error index that can't be converted to an
+        # integer and an error index that can be converted to an integer
+        # but is not within the range of the tuple of errors.
         app.logger.info(
             'Invalid value passed for error index: {}'.format(error_idx)
         )
