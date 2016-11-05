@@ -124,3 +124,25 @@ def test_isubscriptions_link():
     assert 'You are now subscribed' in subscribed_page.body
 
     assert len(list(repository.isubscriptions())) == 1
+
+
+@mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
+@mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
+def test_unsubscribe():
+    """Test can unsubscribe."""
+    app = flask.ext.webtest.TestApp(dnstwister.app)
+    repository = dnstwister.repository
+
+    domain = 'www.example.com'
+    email = 'a@b.com'
+    sub_id = '1234'
+
+    assert len(list(repository.isubscriptions())) == 0
+
+    repository.subscribe_email(sub_id, email, domain)
+
+    assert len(list(repository.isubscriptions())) == 1
+
+    app.get('/email/unsubscribe/{}'.format(sub_id))
+
+    assert len(list(repository.isubscriptions())) == 0
