@@ -116,15 +116,3 @@ def test_isubscriptions_link():
     assert 'You are now subscribed' in subscribed_page.body
 
     assert len(list(repository.isubscriptions())) == 1
-
-    # Check cannot overwrite an existing verification with a new domain.
-    verify_path = '/email/verify/{}'.format(
-        binascii.hexlify('b.com'), verify_code
-    )
-    redir_page = app.get(verify_path)
-
-    assert redir_page.status_code == 302
-    assert redir_page.headers['location'] == 'http://localhost:80/'
-
-    assert len(list(repository.isubscriptions())) == 1
-    assert repository.isubscriptions().next()[1]['domain'] == 'a.com'
