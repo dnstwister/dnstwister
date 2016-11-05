@@ -7,6 +7,47 @@ import worker_email
 import worker_deltas
 
 
+def test_dont_send_too_often(capsys, monkeypatch):
+    """Test that emails are not sent more than every 24 hours."""
+
+    # Patches
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+    emailer = patches.NoEmailer()
+    monkeypatch.setattr('worker_email.emailer', emailer)
+
+    repository = dnstwister.repository
+
+    # Settings
+    domain = 'www.example.com'
+    sub_id = '1234'
+    email = 'a@b.zzzzzzzzzzz'
+
+    # Subscribe a new user.
+    repository.subscribe_email(sub_id, email, domain)
+
+    # So let's do a delta report.
+    worker_deltas.process_domain(domain)
+
+    # Process the subscription.
+    sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
+    worker_email.process_sub(sub_id, sub_data)
+
+    # And we've sent an email.
+    assert len(emailer.sent_emails) == 1
+
+    # Re-process immediately
+    worker_email.process_sub(sub_id, sub_data)
+
+    # Check we haven't sent two emails
+    assert len(emailer.sent_emails) == 1
+
+
 def test_subscription_email_timing(capsys, monkeypatch):
     """Test that email subscriptions and delta reporting are in sync.
 
