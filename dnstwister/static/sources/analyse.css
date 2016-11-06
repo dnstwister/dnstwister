@@ -2,9 +2,19 @@
     font-weight: bold;
 }
 
-.analysis_tool {
+.analysis_tool,
+.whois_tool {
     border: 1px solid silver;
     padding: 2rem;
     text-align: center;
     margin-bottom: 2rem;
+}
+
+.whois_tool pre {
+    text-align: left;
+    font-weight: normal;
+    font-size: 1.25rem;
+    background-color: #e1e1e1;
+    padding: 1rem;
+    white-space: pre-wrap;
 }
