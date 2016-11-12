@@ -10,6 +10,7 @@ def test_parked_query(webapp):
     assert request.json == {
         u'domain': u'dnstwister.report',
         u'domain_as_hexadecimal': u'646e73747769737465722e7265706f7274',
+        u'dressed': False,
         u'fuzz_url': u'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
         u'redirects': False,
         u'redirects_to': None,
@@ -29,3 +30,4 @@ def test_parked_query_on_broken_domain(webapp):
     assert request.json['redirects'] is False
     assert request.json['redirects_to'] is None
     assert request.json['score_text'] == 'Unlikely'
+    assert request.json['dressed'] is False

@@ -80,7 +80,11 @@ def dressed(domain, redirected_domain):
 
         example.com -> www.example.com
     """
-    return second_level(domain) == second_level(redirected_domain)
+    return (
+        (domain != redirected_domain)
+        and
+        (second_level(domain) == second_level(redirected_domain))
+    )
 
 
 def soft_redirects(content, threshold=0):
@@ -142,5 +146,6 @@ def get_score(domain):
         normalised_score,
         get_text(normalised_score),
         redirects_domain,
+        redirects_domain and dressed(domain, landed_domain1),
         landed_domain1 if redirects_domain else None,
     )
