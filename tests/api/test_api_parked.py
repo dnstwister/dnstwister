@@ -103,23 +103,20 @@ def test_dressed_redirect(f_httpretty, webapp):
 def test_second_level_extraction():
     """Test we can extract second-level domains from tlds."""
     assert parked_api.second_level('www.example.com') == 'example'
-
     assert parked_api.second_level('example.com') == 'example'
-
     assert parked_api.second_level('www2.example.co.uk') == 'example'
-
     assert parked_api.second_level('') == ''
-
     assert parked_api.second_level('com') == ''
+
+    assert parked_api.second_level('sodifoisdfe') == ''
+    assert parked_api.second_level('sodifoisdf.e') == ''
+
 
 def test_dressed_check():
     """Tests the detail of the "dressed" detection."""
     assert parked_api.dressed('example.com', 'www.example.com')
-
     assert parked_api.dressed('example.com', 'ww2.example.com')
-
     assert parked_api.dressed('www.example.com', 'example.com')
-
     assert parked_api.dressed('www.example.com', 'example.com.au')
 
     assert not parked_api.dressed('www.example.com', 'www.examples.com')
