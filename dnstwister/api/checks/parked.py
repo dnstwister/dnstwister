@@ -1,6 +1,7 @@
 """Parked domain detection."""
 import requests
 
+import dnstwister.tools.tld_db as tld_db
 import shared
 
 
@@ -56,9 +57,30 @@ def get_text(score):
         return 'Highly likely'
 
 
+def second_level(domain):
+    """Return the second-level bit of a domain.
+
+    Determine tld by finding the longest tld that is the end of the passed in
+    domain.
+    """
+    candidate = ''
+    for tld in tld_db.TLDS:
+        if domain.endswith('.' + tld) and len(tld) > len(candidate):
+            candidate = tld
+
+    if candidate != '':
+        return domain.rsplit('.' + candidate, 1)[0].split('.')[-1]
+    return ''
+
+
 def dressed(domain, redirected_domain):
-    """Returns whether the domain was "dressed" (made non-naked)."""
-    return redirected_domain.endswith(domain)
+    """Returns whether the domain's second-level is the same.
+
+    For example:
+
+        example.com -> www.example.com
+    """
+    return second_level(domain) == second_level(redirected_domain)
 
 
 def soft_redirects(content, threshold=0):
@@ -81,9 +103,7 @@ def get_score(domain):
     try:
         redirects_domain, landed_domain1, content = _domain_redirects(domain)
         if redirects_domain:
-            if dressed(domain, landed_domain1):
-                score += 0.25
-            else:
+            if not dressed(domain, landed_domain1):
                 score += 1
     except:
         redirects_domain = False
@@ -102,9 +122,7 @@ def get_score(domain):
         landed_domain2 = ''
 
     if redirects_paths:
-        if dressed(domain, landed_domain2):
-            score += 0.25
-        else:
+        if not dressed(domain, landed_domain2):
             score += 1
 
     if landed_domain1 == landed_domain2 and redirects_paths:
