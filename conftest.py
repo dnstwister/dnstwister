@@ -1,9 +1,9 @@
-""" Test setup.
-"""
+""" Test setup."""
+import sys
+
 import flask.ext.webtest
 import httpretty
 import pytest
-import sys
 
 import dnstwister
 
@@ -32,6 +32,7 @@ def webapp():
 def f_httpretty():
     """httpretty doesn't work with pytest fixtures in python 2..."""
     httpretty.enable()
+    httpretty.HTTPretty.allow_net_connect = False
     yield httpretty
     httpretty.disable()
     httpretty.reset()

@@ -6,8 +6,6 @@ import dnstwister.api.checks.parked as parked_api
 
 def test_not_parked(f_httpretty, webapp):
     """Test when the domains don't redirect."""
-
-    f_httpretty.HTTPretty.allow_net_connect = False
     f_httpretty.register_uri(
         f_httpretty.GET, 'http://www.example.com:80/',
         body=lambda request, uri, headers: (200, {}, 'OK'),
@@ -30,8 +28,6 @@ def test_not_parked(f_httpretty, webapp):
 
 def test_parked(f_httpretty, webapp):
     """Test when the domains don't redirect."""
-
-    f_httpretty.HTTPretty.allow_net_connect = False
     f_httpretty.register_uri(
         f_httpretty.GET,
         'http://www.example.com:80/',
@@ -73,8 +69,6 @@ def test_dressed_redirect(f_httpretty, webapp):
 
     AKA, "dressing" the domain :)
     """
-
-    f_httpretty.HTTPretty.allow_net_connect = False
     f_httpretty.register_uri(
         f_httpretty.GET,
         'http://example.com:80/',
