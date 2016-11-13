@@ -1,8 +1,4 @@
 """Updates atom feeds."""
-import os
-import sys
-sys.path.insert(0, os.getcwd())
-
 import datetime
 import time
 
@@ -98,7 +94,8 @@ def process_domain(domain):
     )
 
 
-if __name__ == '__main__':
+def main():
+    """Main code for worker."""
     while True:
 
         domains_iter = repository.iregistered_domains()
@@ -114,3 +111,7 @@ if __name__ == '__main__':
         print 'All deltas processed'
 
         time.sleep(60)
+
+
+if __name__ == '__main__':
+    main()

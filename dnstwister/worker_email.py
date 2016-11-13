@@ -1,8 +1,4 @@
 """Updates atom feeds."""
-import os
-import sys
-sys.path.insert(0, os.getcwd())
-
 import binascii
 import datetime
 import time
@@ -102,7 +98,8 @@ def process_sub(sub_id, detail):
     print 'Emailed delta for {} to {}'.format(domain, email_address)
 
 
-if __name__ == '__main__':
+def main():
+    """Main code for worker."""
     while True:
 
         subs_iter = repository.isubscriptions()
@@ -130,3 +127,7 @@ if __name__ == '__main__':
             time.sleep(1)
 
         time.sleep(60)
+
+
+if __name__ == '__main__':
+    main()
