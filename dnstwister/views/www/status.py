@@ -1,6 +1,7 @@
 """Index page."""
-import flask
 import os
+
+import flask
 import requests
 
 from dnstwister import app
