@@ -1,11 +1,12 @@
 """Storage of results for comparison and CUD alerting."""
 import os
+import urlparse
+
 import psycopg2.extras
 import psycopg2.pool
-import urlparse
 import zope.interface
 
-import interfaces
+from dnstwister.storage import interfaces
 
 
 def resetonfail(func):

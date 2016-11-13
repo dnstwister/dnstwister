@@ -2,8 +2,7 @@
 import requests
 
 import dnstwister.tools.tld_db as tld_db
-import shared
-
+from dnstwister.api.checks import shared
 
 PARKED_WORDS = (
     'domain',
