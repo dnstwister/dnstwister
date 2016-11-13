@@ -1,3 +1,4 @@
+strictness: medium
 uses:
   - flask
 ignore-paths:
