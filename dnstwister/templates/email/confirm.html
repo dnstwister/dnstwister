@@ -1,6 +1,7 @@
 <h1>Subscription confirmation</h1>
 <p>
-    Please click the following link to confirm your subscription to dnstwister alerts for '<a>{{ domain }}</a>'
+    Please click the following link to confirm your subscription to dnstwister
+    alerts for '{{ domain | domain_format}}'
 </p>
 <p>
     <a href="{{ verify_url }}">Confirm subscription</a>

@@ -16,7 +16,7 @@ def test_email_renderer():
     )
 
     assert template.strip() == textwrap.dedent("""
-        <h1>dnstwister report for <a>www.example.com</a></h1>
+        <h1>dnstwister report for 'www<span>.</span>example<span>.</span>com'</h1>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
@@ -31,7 +31,7 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td><a>www.examp1e.com</a></td>
+                    <td>www<span>.</span>examp1e<span>.</span>com</td>
                     <td>127.0.0.1</td>
                     <td><a href="http://dnstwister.report/analyse/1234">analyse</a></td>
                 </tr>
@@ -49,7 +49,7 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td><a>www.exampl3.com</a></td>
+                    <td>www<span>.</span>exampl3<span>.</span>com</td>
                     <td>127.0.0.1</td>
                     <td>127.0.0.2</td>
                     <td><a href="http://dnstwister.report/analyse/6789">analyse</a></td>
@@ -65,7 +65,7 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td><a>www.examplle.com</a></td>
+                    <td>www<span>.</span>examplle<span>.</span>com</td>
                 </tr>
             </tbody>
         </table>
