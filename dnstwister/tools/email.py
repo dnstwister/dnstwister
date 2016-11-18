@@ -9,8 +9,9 @@ TEMPLATES = jinja2.Environment(
 def domain_format(domain):
     """Given a domain in plain text format, render it in a manner that will
     prevent auto-linking/interception in an email.
+
+    Testing suggests the span wrapping is the best so far.
     """
-#    domain = domain.replace('.', ' . ')
     domain = domain.replace('.', '<span>.</span>')
     return domain
 
