@@ -42,7 +42,7 @@ def json_render(qry_domains):
 
         for (i, (dom, rept)) in enumerate(reports.items()):
 
-            yield '"' + dom + '": {"fuzzy_domains": ['
+            yield '"' + dom + '": {"fuzzy_domains": [\n'
 
             fuzzy_domains = rept['fuzzy_domains']
             for (j, entry) in enumerate(fuzzy_domains):
@@ -58,7 +58,7 @@ def json_render(qry_domains):
                     },
                 }
 
-                yield json.dumps(data)
+                yield json.dumps(data, sort_keys=True, indent=4)
                 if j < len(fuzzy_domains) - 1:
                     yield ','
                 yield '\n'
