@@ -37,12 +37,15 @@ def json_render(qry_domains):
 
     def generate():
         """Streaming download generator."""
+        indent_size = 4
+        indent = ' ' * indent_size
 
         yield '{\n'
 
         for (i, (dom, rept)) in enumerate(reports.items()):
 
-            yield '"' + dom + '": {"fuzzy_domains": [\n'
+            yield indent + '"' + dom + '": {\n'
+            yield indent * 2 + '"fuzzy_domains": [\n'
 
             fuzzy_domains = rept['fuzzy_domains']
             for (j, entry) in enumerate(fuzzy_domains):
@@ -58,12 +61,21 @@ def json_render(qry_domains):
                     },
                 }
 
-                yield json.dumps(data, sort_keys=True, indent=4)
+                json_str = json.dumps(
+                    data,
+                    sort_keys=True,
+                    indent=indent_size,
+                    separators=(',', ': ')
+                )
+                yield '\n'.join([indent * 3 + line
+                                 for line
+                                 in json_str.split('\n')])
                 if j < len(fuzzy_domains) - 1:
                     yield ','
                 yield '\n'
 
-            yield ']}'
+            yield indent * 2 + ']\n'
+            yield indent + '}'
             if i < len(reports) - 1:
                 yield ','
             yield '\n'

@@ -165,6 +165,7 @@ def test_json_export_one_domain(webapp, monkeypatch):
         }
     }
 
+
 def test_json_export_no_fuzzy(webapp, monkeypatch):
     """Test JSON export when no fuzzy domains."""
     monkeypatch.setattr(
@@ -194,6 +195,71 @@ def test_json_export_no_fuzzy(webapp, monkeypatch):
             ]
         }
     }
+
+
+
+def test_json_export_formatting(webapp, monkeypatch):
+    """Test JSON export looks nice :)"""
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+
+    domains = ('a.com', 'b.com')
+    path = ','.join(map(binascii.hexlify, domains))
+
+    response = webapp.get('/search/{}/json'.format(path))
+
+    assert response.body.strip() == textwrap.dedent("""
+        {
+            "a.com": {
+                "fuzzy_domains": [
+                    {
+                        "domain-name": "a.com",
+                        "fuzzer": "Original*",
+                        "hex": "612e636f6d",
+                        "resolution": {
+                            "error": false,
+                            "ip": "999.999.999.999"
+                        }
+                    },
+                    {
+                        "domain-name": "a.co",
+                        "fuzzer": "Pretend",
+                        "hex": "612e636f",
+                        "resolution": {
+                            "error": false,
+                            "ip": "999.999.999.999"
+                        }
+                    }
+                ]
+            },
+            "b.com": {
+                "fuzzy_domains": [
+                    {
+                        "domain-name": "b.com",
+                        "fuzzer": "Original*",
+                        "hex": "622e636f6d",
+                        "resolution": {
+                            "error": false,
+                            "ip": "999.999.999.999"
+                        }
+                    },
+                    {
+                        "domain-name": "b.co",
+                        "fuzzer": "Pretend",
+                        "hex": "622e636f",
+                        "resolution": {
+                            "error": false,
+                            "ip": "999.999.999.999"
+                        }
+                    }
+                ]
+            }
+        }
+    """).strip()
 
 
 def test_failed_export(webapp):
