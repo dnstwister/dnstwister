@@ -64,3 +64,19 @@ class SimpleFuzzer(object):
             {'domain-name': self._domain, 'fuzzer': 'Original*'},
             {'domain-name': self._domain[:-1], 'fuzzer': 'Pretend'},
         ]
+
+
+class NoFuzzer(object):
+    """Replace the fuzzer with something that returns nothing but the
+    original domain."""
+    def __init__(self, domain):
+        self._domain = domain
+
+    def fuzz(self):
+        pass
+
+    @property
+    def domains(self):
+        return [
+            {'domain-name': self._domain, 'fuzzer': 'Original*'},
+        ]

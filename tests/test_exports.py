@@ -73,10 +73,10 @@ def test_json_export(webapp, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
 
-    domain = 'a.com'
-    hexdomain = binascii.hexlify(domain)
+    domains = ('a.com', 'b.com')
+    path = ','.join(map(binascii.hexlify, domains))
 
-    response = webapp.get('/search/{}/json'.format(hexdomain))
+    response = webapp.get('/search/{}/json'.format(path))
 
     assert response.json == {
         u'a.com': {
@@ -94,6 +94,98 @@ def test_json_export(webapp, monkeypatch):
                     u'domain-name': u'a.co',
                     u'fuzzer': u'Pretend',
                     u'hex': u'612e636f',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                }
+            ]
+        },
+        u'b.com': {
+            u'fuzzy_domains': [
+                {
+                    u'domain-name': u'b.com',
+                    u'fuzzer': u'Original*',
+                    u'hex': u'622e636f6d',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                },
+                {
+                    u'domain-name': u'b.co',
+                    u'fuzzer': u'Pretend',
+                    u'hex': u'622e636f',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                }
+            ]
+        }
+    }
+
+
+def test_json_export_one_domain(webapp, monkeypatch):
+    """Test JSON export when no reports"""
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+
+    domains = ('a.com',)
+    path = ','.join(map(binascii.hexlify, domains))
+
+    response = webapp.get('/search/{}/json'.format(path))
+
+    assert response.json == {
+        u'a.com': {
+            u'fuzzy_domains': [
+                {
+                    u'domain-name': u'a.com',
+                    u'fuzzer': u'Original*',
+                    u'hex': u'612e636f6d',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                },
+                {
+                    u'domain-name': u'a.co',
+                    u'fuzzer': u'Pretend',
+                    u'hex': u'612e636f',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                }
+            ]
+        }
+    }
+
+def test_json_export_no_fuzzy(webapp, monkeypatch):
+    """Test JSON export when no fuzzy domains."""
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.NoFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+
+    domains = ('a.com',)
+    path = ','.join(map(binascii.hexlify, domains))
+
+    response = webapp.get('/search/{}/json'.format(path))
+
+    assert response.json == {
+        u'a.com': {
+            u'fuzzy_domains': [
+                {
+                    u'domain-name': u'a.com',
+                    u'fuzzer': u'Original*',
+                    u'hex': u'612e636f6d',
                     u'resolution': {
                         u'error': False,
                         u'ip': u'999.999.999.999'

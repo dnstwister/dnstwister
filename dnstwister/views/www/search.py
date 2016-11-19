@@ -1,5 +1,7 @@
 """Search/report page."""
 import binascii
+import json
+
 import flask
 
 from dnstwister import app
@@ -27,18 +29,54 @@ def html_render(qry_domains, search_domains=None):
 
 
 def json_render(qry_domains):
-    """Render and return the json-formatted report."""
+    """Render and return the json-formatted report.
+
+    The hand-assembly is due to the streaming of the response.
+    """
     reports = dict(filter(None, map(tools.analyse, qry_domains)))
 
-    for rept in reports.values():
-        for entry in rept['fuzzy_domains']:
-            ip_addr, error = tools.resolve(entry['domain-name'])
-            entry['resolution'] = {
-                'ip': ip_addr,
-                'error': error,
-            }
+    def generate():
+        """Streaming download generator."""
 
-    return flask.json.jsonify(reports)
+        yield '{\n'
+
+        for (i, (dom, rept)) in enumerate(reports.items()):
+
+            yield '"' + dom + '": {"fuzzy_domains": ['
+
+            fuzzy_domains = rept['fuzzy_domains']
+            for (j, entry) in enumerate(fuzzy_domains):
+
+                ip_addr, error = tools.resolve(entry['domain-name'])
+                data = {
+                    'domain-name': entry['domain-name'],
+                    'fuzzer': entry['fuzzer'],
+                    'hex': entry['hex'],
+                    'resolution': {
+                        'error': error,
+                        'ip': ip_addr,
+                    },
+                }
+
+                yield json.dumps(data)
+                if j < len(fuzzy_domains) - 1:
+                    yield ','
+                yield '\n'
+
+            yield ']}'
+            if i < len(reports) - 1:
+                yield ','
+            yield '\n'
+
+        yield '}\n'
+
+    return flask.Response(
+        generate(),
+        headers={
+            'Content-Disposition': 'attachment; filename=dnstwister_report.json'
+        },
+        content_type='application/json'
+    )
 
 
 def csv_render(qry_domains):
