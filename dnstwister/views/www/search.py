@@ -61,7 +61,13 @@ def csv_render(qry_domains):
                 ))
                 yield ','.join(row) + '\n'
 
-    return flask.Response(generate(), mimetype='text/csv')
+    return flask.Response(
+        generate(),
+        headers={
+            'Content-Disposition': 'attachment; filename=dnstwister_report.csv'
+        },
+        mimetype='text/csv',
+    )
 
 
 @app.route('/search', methods=['POST'])
