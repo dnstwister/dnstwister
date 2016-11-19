@@ -43,10 +43,12 @@ def json_render(qry_domains):
 
 def csv_render(qry_domains):
     """Render and return the csv-formatted report."""
+    headers = ('Domain', 'Type', 'Tweak', 'IP', 'Error')
     reports = dict(filter(None, map(tools.analyse, qry_domains)))
 
     def generate():
         """Streaming download generator."""
+        yield ','.join(headers) + '\n'
         for (domain, rept) in reports.items():
             for entry in rept['fuzzy_domains']:
                 ip_addr, error = tools.resolve(entry['domain-name'])

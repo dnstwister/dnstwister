@@ -1,7 +1,5 @@
 """Test the csv/json export functionality."""
 import binascii
-import flask
-import pytest
 import textwrap
 
 import patches
@@ -19,6 +17,7 @@ def test_csv_export(webapp, monkeypatch):
     response = webapp.get('/search/{}/csv'.format(hexdomain))
 
     assert response.body.strip() == textwrap.dedent("""
+        Domain,Type,Tweak,IP,Error
         a.com,Original*,a.com,999.999.999.999,False
         a.com,Addition,aa.com,999.999.999.999,False
         a.com,Addition,ab.com,999.999.999.999,False
