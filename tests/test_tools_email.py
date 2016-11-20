@@ -74,3 +74,70 @@ def test_email_renderer():
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
     """).strip()
+
+
+def test_email_renderer_domain_sorting():
+    """Test the email rendering helper sorts domains."""
+    template = email_tools.render_email(
+        'report.html',
+        domain='www.example.com',
+        new=(
+            ('www.examp2e.com', '', ''),
+            ('www.examp1e.com', '', ''),
+            ('www.examp2f.com', '', ''),
+            ('www.axample.com', 'z', ''),
+            ('www.axample.com', 'a', ''),
+        ),
+        updated=[],
+        deleted=[],
+        unsubscribe_link='https://dnstwister.report/...',
+    )
+
+    assert template.strip() == textwrap.dedent("""
+        <h1>dnstwister report for 'www<span>.</span>example<span>.</span>com'</h1>
+        <p>
+            <a href="https://dnstwister.report/...">Unsubscribe</a>
+        </p>
+        <h2>New registrations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Registered Domain</th>
+                    <th>Resolved IP</th>
+                    <th>Tools</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>www<span>.</span>axample<span>.</span>com</td>
+                    <td>a</td>
+                    <td><a href="">analyse</a></td>
+                </tr>
+                <tr>
+                    <td>www<span>.</span>axample<span>.</span>com</td>
+                    <td>z</td>
+                    <td><a href="">analyse</a></td>
+                </tr>
+                <tr>
+                    <td>www<span>.</span>examp1e<span>.</span>com</td>
+                    <td></td>
+                    <td><a href="">analyse</a></td>
+                </tr>
+                <tr>
+                    <td>www<span>.</span>examp2e<span>.</span>com</td>
+                    <td></td>
+                    <td><a href="">analyse</a></td>
+                </tr>
+                <tr>
+                    <td>www<span>.</span>examp2f<span>.</span>com</td>
+                    <td></td>
+                    <td><a href="">analyse</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            <a href="https://dnstwister.report/...">Unsubscribe</a>
+        </p>
+    """).strip()
+
