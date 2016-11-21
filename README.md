@@ -61,6 +61,10 @@ Running:
 
     py.test
 
+## Say hello
+
+I'd love to hear your feedback so [email me](mailto:hello@dnstwister.report), fire off a [tweet](https://twitter.com/dnstwister) in my general direction or you can just [say thanks](https://saythanks.io/to/thisismyrobot)!... :)
+
 ## Google App Engine version
 
 This project used to be hosted on Google App Engine (GAE) but has since been migrated to Heroku. To view
