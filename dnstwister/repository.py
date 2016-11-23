@@ -43,7 +43,7 @@ def iregistered_domains():
     """Return an iterator of all the registered domains."""
     domain_keys_iter = db.ikeys('registered_for_reporting')
     while True:
-        domain_key = domain_keys_iter.next()
+        domain_key = next(domain_keys_iter)
         if domain_key is not None:
             yield domain_key.split('registered_for_reporting:')[1]
 
@@ -108,7 +108,7 @@ def isubscriptions():
     """Return an iterator of subscription information."""
     keys_iter = db.ikeys('email_sub')
     while True:
-        key = keys_iter.next()
+        key = next(keys_iter)
         if key is not None:
             sub = db.get(key)
             if sub is not None:

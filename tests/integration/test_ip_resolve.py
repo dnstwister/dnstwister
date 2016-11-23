@@ -13,12 +13,12 @@ def test_resolve(webapp):
     del payload['ip']
 
     assert payload == {
-        u'domain': u'dnstwister.report',
-        u'domain_as_hexadecimal': u'646e73747769737465722e7265706f7274',
-        u'error': False,
-        u'fuzz_url': u'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
-        u'parked_score_url': u'http://localhost:80/api/parked/646e73747769737465722e7265706f7274',
-        u'url': u'http://localhost:80/api/ip/646e73747769737465722e7265706f7274'
+        'domain': 'dnstwister.report',
+        'domain_as_hexadecimal': '646e73747769737465722e7265706f7274',
+        'error': False,
+        'fuzz_url': 'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
+        'parked_score_url': 'http://localhost:80/api/parked/646e73747769737465722e7265706f7274',
+        'url': 'http://localhost:80/api/ip/646e73747769737465722e7265706f7274'
     }
 
     # Will throw if invalid IP

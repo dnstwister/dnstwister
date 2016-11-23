@@ -9,8 +9,8 @@ import flask
 import flask_cache
 import logging
 
-import mail.sendgridservice
-import storage.pg_database
+import dnstwister.mail.sendgridservice
+import dnstwister.storage.pg_database
 
 
 # Set up app/cache/db/emailer/gateway here
@@ -23,16 +23,16 @@ emailer = mail.sendgridservice.SGSender()
 app.logger.setLevel(logging.INFO)
 
 # Blueprints
-import api
+from . import api
 app.register_blueprint(api.app, url_prefix='/api')
 
 # Import modules using dnstwister.app/cache/db/emailer here.
-import repository
-import tools
-import views.syndication.atom
-import views.www.analyse
-import views.www.email
-import views.www.help
-import views.www.index
-import views.www.search
-import views.www.status
+import dnstwister.repository
+import dnstwister.tools
+import dnstwister.views.syndication.atom
+import dnstwister.views.www.analyse
+import dnstwister.views.www.email
+import dnstwister.views.www.help
+import dnstwister.views.www.index
+import dnstwister.views.www.search
+import dnstwister.views.www.status

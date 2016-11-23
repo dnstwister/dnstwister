@@ -79,46 +79,46 @@ def test_json_export(webapp, monkeypatch):
     response = webapp.get('/search/{}/json'.format(path))
 
     assert response.json == {
-        u'a.com': {
-            u'fuzzy_domains': [
+        'a.com': {
+            'fuzzy_domains': [
                 {
-                    u'domain-name': u'a.com',
-                    u'fuzzer': u'Original*',
-                    u'hex': u'612e636f6d',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'a.com',
+                    'fuzzer': 'Original*',
+                    'hex': '612e636f6d',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 },
                 {
-                    u'domain-name': u'a.co',
-                    u'fuzzer': u'Pretend',
-                    u'hex': u'612e636f',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'a.co',
+                    'fuzzer': 'Pretend',
+                    'hex': '612e636f',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 }
             ]
         },
-        u'b.com': {
-            u'fuzzy_domains': [
+        'b.com': {
+            'fuzzy_domains': [
                 {
-                    u'domain-name': u'b.com',
-                    u'fuzzer': u'Original*',
-                    u'hex': u'622e636f6d',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'b.com',
+                    'fuzzer': 'Original*',
+                    'hex': '622e636f6d',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 },
                 {
-                    u'domain-name': u'b.co',
-                    u'fuzzer': u'Pretend',
-                    u'hex': u'622e636f',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'b.co',
+                    'fuzzer': 'Pretend',
+                    'hex': '622e636f',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 }
             ]
@@ -141,24 +141,24 @@ def test_json_export_one_domain(webapp, monkeypatch):
     response = webapp.get('/search/{}/json'.format(path))
 
     assert response.json == {
-        u'a.com': {
-            u'fuzzy_domains': [
+        'a.com': {
+            'fuzzy_domains': [
                 {
-                    u'domain-name': u'a.com',
-                    u'fuzzer': u'Original*',
-                    u'hex': u'612e636f6d',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'a.com',
+                    'fuzzer': 'Original*',
+                    'hex': '612e636f6d',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 },
                 {
-                    u'domain-name': u'a.co',
-                    u'fuzzer': u'Pretend',
-                    u'hex': u'612e636f',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'a.co',
+                    'fuzzer': 'Pretend',
+                    'hex': '612e636f',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 }
             ]
@@ -181,15 +181,15 @@ def test_json_export_no_fuzzy(webapp, monkeypatch):
     response = webapp.get('/search/{}/json'.format(path))
 
     assert response.json == {
-        u'a.com': {
-            u'fuzzy_domains': [
+        'a.com': {
+            'fuzzy_domains': [
                 {
-                    u'domain-name': u'a.com',
-                    u'fuzzer': u'Original*',
-                    u'hex': u'612e636f6d',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
+                    'domain-name': 'a.com',
+                    'fuzzer': 'Original*',
+                    'hex': '612e636f6d',
+                    'resolution': {
+                        'error': False,
+                        'ip': '999.999.999.999'
                     }
                 }
             ]

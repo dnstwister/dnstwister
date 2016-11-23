@@ -10,7 +10,7 @@ import dnstwister.tools as tools
 
 def html_render(qry_domains, search_domains=None):
     """Render and return the html report."""
-    reports = dict(filter(None, map(tools.analyse, qry_domains)))
+    reports = dict([_f for _f in map(tools.analyse, qry_domains) if _f])
 
     # Handle no valid domains by redirecting to GET page.
     if len(reports) == 0:
@@ -22,7 +22,7 @@ def html_render(qry_domains, search_domains=None):
     return flask.render_template(
         'www/report.html',
         reports=reports,
-        atoms=dict(zip(qry_domains, map(binascii.hexlify, qry_domains))),
+        atoms=dict(list(zip(qry_domains, list(map(binascii.hexlify, qry_domains))))),
         exports={'json': 'json', 'csv': 'csv'},
         search=search_domains,
     )
@@ -33,7 +33,7 @@ def json_render(qry_domains):
 
     The hand-assembly is due to the streaming of the response.
     """
-    reports = dict(filter(None, map(tools.analyse, qry_domains)))
+    reports = dict([_f for _f in map(tools.analyse, qry_domains) if _f])
 
     def generate():
         """Streaming download generator."""
@@ -94,21 +94,21 @@ def json_render(qry_domains):
 def csv_render(qry_domains):
     """Render and return the csv-formatted report."""
     headers = ('Domain', 'Type', 'Tweak', 'IP', 'Error')
-    reports = dict(filter(None, map(tools.analyse, qry_domains)))
+    reports = dict([_f for _f in map(tools.analyse, qry_domains) if _f])
 
     def generate():
         """Streaming download generator."""
         yield ','.join(headers) + '\n'
-        for (domain, rept) in reports.items():
+        for (domain, rept) in list(reports.items()):
             for entry in rept['fuzzy_domains']:
                 ip_addr, error = tools.resolve(entry['domain-name'])
-                row = map(str, (
+                row = list(map(str, (
                     domain,
                     entry['fuzzer'],
                     entry['domain-name'],
                     ip_addr,
                     error,
-                ))
+                )))
                 yield ','.join(row) + '\n'
 
     return flask.Response(
@@ -139,7 +139,7 @@ def search_post():
 
     search_domains = tools.parse_post_data(post_data)
 
-    valid_domains = sorted(list(set(filter(None, map(tools.parse_domain, search_domains)))))
+    valid_domains = sorted(list(set([_f for _f in map(tools.parse_domain, search_domains) if _f])))
     if len(valid_domains) == 0:
         app.logger.info(
             'No valid domains in POST {}'.format(flask.request.form)
@@ -156,7 +156,9 @@ def search_post():
     # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
     # we use hex to hide the domains from firewalls that already block some of
     # them.
-    path = ','.join(map(binascii.hexlify, search_domains))
+    path = ','.join([str(binascii.hexlify(domain.encode('utf8')), 'ascii')
+                     for domain
+                     in search_domains])
     if len(path) <= 200:
         return flask.redirect('/search/{}'.format(path))
 
@@ -171,9 +173,9 @@ def search(search_domains, fmt=None):
 
     # Try to parse out the list of domains
     try:
-        valid_domains = sorted(list(set(filter(None, map(
+        valid_domains = sorted(list(set([_f for _f in map(
             tools.parse_domain, search_domains.split(',')
-        )))))
+        ) if _f])))
     except:
         app.logger.info('Unable to decode valid domains from path')
         return flask.redirect('/error/0')
@@ -184,7 +186,10 @@ def search(search_domains, fmt=None):
         )
         suggestion = tools.suggest_domain(search_domains.split(','))
         if suggestion is not None:
-            encoded_suggestion = binascii.hexlify(suggestion)
+            encoded_suggestion = str(
+                binascii.hexlify(suggestion.encode('utf8')),
+                'ascii'
+            )
             return flask.redirect(
                 '/error/0?suggestion={}'.format(encoded_suggestion)
             )

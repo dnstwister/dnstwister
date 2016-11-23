@@ -1,7 +1,7 @@
 """Database provisioning."""
 import psycopg2.extras
 import sys
-import urlparse
+import urllib.parse
 
 
 def setup(new_conn, cursor):
@@ -9,10 +9,10 @@ def setup(new_conn, cursor):
 
     Assumes no existing database.
     """
-    print 'Setting up jsonb...'
+    print('Setting up jsonb...')
     psycopg2.extras.register_json(new_conn, name='jsonb')
 
-    print 'Creating "data" table...'
+    print('Creating "data" table...')
     cursor.execute("""
         CREATE TABLE data
             (
@@ -31,8 +31,8 @@ if __name__ == '__main__':
     if not db_url.startswith('postgres'):
         raise Exception('Missing database url')
 
-    urlparse.uses_netloc.append('postgres')
-    new_url = urlparse.urlparse(db_url)
+    urllib.parse.uses_netloc.append('postgres')
+    new_url = urllib.parse.urlparse(db_url)
 
     new_conn = psycopg2.connect(
         database=new_url.path[1:],

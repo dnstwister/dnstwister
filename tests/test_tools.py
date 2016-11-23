@@ -73,7 +73,7 @@ class TestTools(unittest.TestCase):
 
         self.assertEqual(
             ['fuzzy_domains'],
-            results[1].keys(),
+            list(results[1].keys()),
             'We only return fuzzy domains in report'
         )
 
@@ -83,7 +83,7 @@ class TestTools(unittest.TestCase):
             'First result is the original domain'
         )
 
-        results = map(operator.itemgetter('domain-name'), results[1]['fuzzy_domains'])
+        results = list(map(operator.itemgetter('domain-name'), results[1]['fuzzy_domains']))
         assert results == [
             'a.com', 'aa.com', 'ab.com', 'ac.com', 'ad.com', 'ae.com',
             'af.com', 'ag.com', 'ah.com', 'ai.com', 'aj.com', 'ak.com',

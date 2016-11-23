@@ -16,7 +16,7 @@ UNREGISTER = 7
 def process_domain(domain):
     """Process a domain - generating resolution reports and deltas."""
     if dnstwist.validate_domain(domain) is None:
-        print 'Unregistering (invalid) {}'.format(domain)
+        print(('Unregistering (invalid) {}'.format(domain)))
         repository.unregister_domain(domain)
         return
 
@@ -27,7 +27,7 @@ def process_domain(domain):
     else:
         age = datetime.datetime.now() - last_read
         if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
-            print 'Unregistering (not read > 7 days) {}'.format(domain)
+            print(('Unregistering (not read > 7 days) {}'.format(domain)))
             repository.unregister_domain(domain)
             return
 
@@ -36,7 +36,7 @@ def process_domain(domain):
     if delta_last_updated is not None:
         age = datetime.datetime.now() - delta_last_updated
         if age < datetime.timedelta(seconds=PERIOD):
-            print 'Skipping (recently updated) {}'.format(domain)
+            print(('Skipping (recently updated) {}'.format(domain)))
             return
 
     start = time.time()
@@ -59,7 +59,7 @@ def process_domain(domain):
     repository.update_resolution_report(domain, new_report)
 
     delta_report = {'new': [], 'updated': [], 'deleted': []}
-    for (dom, data) in new_report.items():
+    for (dom, data) in list(new_report.items()):
 
         try:
             new_ip = data['ip']
@@ -67,7 +67,7 @@ def process_domain(domain):
             # handle old-style ip-only reports
             new_ip = data
 
-        if dom in existing_report.keys():
+        if dom in list(existing_report.keys()):
 
             try:
                 existing_ip = existing_report[dom]['ip']
@@ -83,15 +83,15 @@ def process_domain(domain):
 
             delta_report['new'].append((dom, new_ip))
 
-    for dom in existing_report.keys():
-        if dom not in new_report.keys():
+    for dom in list(existing_report.keys()):
+        if dom not in list(new_report.keys()):
             delta_report['deleted'].append(dom)
 
     repository.update_delta_report(domain, delta_report)
 
-    print 'Updated deltas for {} in {} seconds'.format(
+    print(('Updated deltas for {} in {} seconds'.format(
         domain, time.time() - start
-    )
+    )))
 
 
 def main():
@@ -102,13 +102,13 @@ def main():
 
         while True:
             try:
-                domain = domains_iter.next()
+                domain = next(domains_iter)
             except StopIteration:
                 break
 
             process_domain(domain)
 
-        print 'All deltas processed'
+        print('All deltas processed')
 
         time.sleep(60)
 

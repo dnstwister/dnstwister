@@ -42,6 +42,8 @@ address your concern as quickly as possible.
 
 ## Running dnstwister
 
+Python 3.5.2.
+
 Setup:
 
     pip install -r requirements.txt
@@ -51,6 +53,8 @@ Running:
     python run_local_server.py
 
 ## Tests
+
+Python 3.5.2.
 
 Setup:
 

@@ -21,5 +21,5 @@ def status():
     return flask.render_template(
         'www/status.html',
         summary=all(status_data['values'][0]),
-        statuses=zip(status_data['fields'], status_data['values'][0])
+        statuses=list(zip(status_data['fields'], status_data['values'][0]))
     )
