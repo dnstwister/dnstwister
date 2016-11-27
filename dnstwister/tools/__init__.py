@@ -7,7 +7,7 @@ import re
 import random
 import socket
 import string
-import urlparse
+import urllib.parse
 
 import dns.resolver
 import flask
@@ -52,9 +52,7 @@ def parse_post_data(post_data):
     data = re.sub(r'[\t\r ]', '\n', post_data)
 
     # Filter out blank lines, leading/trailing whitespace
-    data = filter(
-        None, map(string.strip, data.split('\n'))
-    )
+    data = filter(None, [line.strip() for line in data.split('\n')])
 
     # Remove HTTP(s) schemes and trailing slashes.
     data = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
@@ -62,10 +60,10 @@ def parse_post_data(post_data):
             in data]
 
     # Strip leading/trailing whitespace again.
-    data = filter(None, map(string.strip, data))
+    data = filter(None, [line.strip() for line in data])
 
     # Make all lower-case
-    data = map(string.lower, data)
+    data = [line.lower() for line in data]
 
     return data
 
@@ -142,9 +140,9 @@ def suggest_domain(search_terms):
     suggested_domains = list(set(suggested_domains))
 
     # Filter for those that are actually valid domains
-    valid_suggestions = filter(
+    valid_suggestions = list(filter(
         dnstwist.validate_domain, suggested_domains
-    )
+    ))
 
     if len(valid_suggestions) == 0:
         return
@@ -188,11 +186,11 @@ def random_id(n_bytes=32):
 
 def api_url(view, var_pretty_name):
     """Create nice API urls with place holders."""
-    view_path = '.{}'.format(view.func_name)
-    route_var = view.func_code.co_varnames[:view.func_code.co_argcount][0]
+    view_path = '.{}'.format(view.__name__)
+    route_var = view.__code__.co_varnames[:view.__code__.co_argcount][0]
     path = flask.url_for(view_path, **{route_var: ''})
     path += '{' + var_pretty_name + '}'
-    return urlparse.urljoin(
+    return urllib.parse.urljoin(
         flask.request.url_root,
         path
     )

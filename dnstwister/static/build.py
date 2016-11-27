@@ -51,8 +51,8 @@ maps = {
 
 
 def build():
-    print 'building...'
-    for (dest, srcs) in maps.items():
+    print('building...')
+    for (dest, srcs) in list(maps.items()):
         dest_data = []
         for src in srcs:
             with open('sources/{}'.format(src), 'rb') as srcf:

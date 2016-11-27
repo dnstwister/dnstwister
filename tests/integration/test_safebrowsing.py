@@ -8,13 +8,13 @@ def test_safebrowsing_query(webapp):
     assert response.status_code == 200
 
     assert response.json == {
-        u'domain': u'dnstwister.report',
-        u'domain_as_hexadecimal': u'646e73747769737465722e7265706f7274',
-        u'fuzz_url': u'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
-        u'issue_detected': False,
-        u'parked_score_url': u'http://localhost:80/api/parked/646e73747769737465722e7265706f7274',
-        u'resolve_ip_url': u'http://localhost:80/api/ip/646e73747769737465722e7265706f7274',
-        u'url': u'http://localhost:80/api/safebrowsing/dnstwister.report'
+        'domain': 'dnstwister.report',
+        'domain_as_hexadecimal': '646e73747769737465722e7265706f7274',
+        'fuzz_url': 'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
+        'issue_detected': False,
+        'parked_score_url': 'http://localhost:80/api/parked/646e73747769737465722e7265706f7274',
+        'resolve_ip_url': 'http://localhost:80/api/ip/646e73747769737465722e7265706f7274',
+        'url': 'http://localhost:80/api/safebrowsing/dnstwister.report'
     }
 
 

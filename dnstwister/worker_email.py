@@ -29,17 +29,17 @@ def process_sub(sub_id, detail):
     if last_sent is not None:
         age_last_sent = datetime.datetime.now() - last_sent
         if age_last_sent < datetime.timedelta(seconds=PERIOD):
-            print 'Skipping {} + {}, < 24h hours'.format(
+            print(('Skipping {} + {}, < 24h hours'.format(
                 email_address, domain
-            )
+            )))
             return
 
     # Grab the delta
     delta = repository.get_delta_report(domain)
     if delta is None:
-        print 'Skipping {} + {}, no delta report yet'.format(
+        print(('Skipping {} + {}, no delta report yet'.format(
             email_address, domain
-        )
+        )))
         return
 
     # Grab the delta report update time.
@@ -51,9 +51,9 @@ def process_sub(sub_id, detail):
     if delta_updated is not None:
         age_delta_updated = datetime.datetime.now() - delta_updated
         if age_delta_updated > datetime.timedelta(hours=23):
-            print 'Skipping {} + {}, delta > 23h hours old'.format(
+            print(('Skipping {} + {}, delta > 23h hours old'.format(
                 email_address, domain
-            )
+            )))
             return
 
     # Don't email if no changes
@@ -62,9 +62,9 @@ def process_sub(sub_id, detail):
     deleted = delta['deleted'] if len(delta['deleted']) > 0 else None
 
     if new is updated is deleted is None:
-        print 'Skipping {} + {}, no changes'.format(
+        print(('Skipping {} + {}, no changes'.format(
             email_address, domain
-        )
+        )))
         return
 
     # Add analysis links
@@ -95,7 +95,7 @@ def process_sub(sub_id, detail):
     emailer.send(
         email_address, 'dnstwister report for {}'.format(domain), body
     )
-    print 'Emailed delta for {} to {}'.format(domain, email_address)
+    print(('Emailed delta for {} to {}'.format(domain, email_address)))
 
 
 def main():
@@ -107,9 +107,9 @@ def main():
         while True:
 
             try:
-                sub = subs_iter.next()
+                sub = next(subs_iter)
             except StopIteration:
-                print 'All subs processed'
+                print('All subs processed')
                 break
 
             if sub is None:
@@ -120,9 +120,9 @@ def main():
             try:
                 process_sub(sub_id, sub_detail)
             except:
-                print 'Skipping {}, exception:\n {}'.format(
+                print(('Skipping {}, exception:\n {}'.format(
                     sub_id, traceback.format_exc()
-                )
+                )))
 
             time.sleep(1)
 

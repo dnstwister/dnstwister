@@ -2,6 +2,7 @@
 
 It's small so we hold it in memory as a set.
 """
+import codecs
 import os
 
 
@@ -23,11 +24,11 @@ def valid_tld(line):
     if line.startswith('//') or line.startswith('*') or line == '':
         return False
     try:
-        line.decode('ascii')
-    except UnicodeDecodeError:
+        codecs.decode(line, 'ascii')
+    except TypeError:
         return False
     return True
 
 
 with open(DB_PATH, 'rb') as tldf:
-    TLDS.update(filter(valid_tld, tldf.read().split('\n')))
+    TLDS.update(list(filter(valid_tld, str(tldf.read()).split('\n'))))

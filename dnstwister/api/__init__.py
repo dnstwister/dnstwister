@@ -1,6 +1,6 @@
 """The analysis API endpoint."""
 import binascii
-import urlparse
+import urllib.parse
 import whois as whois_mod
 
 import flask
@@ -41,7 +41,7 @@ def standard_api_values(domain, skip=''):
         key = '{}_url'.format(endpoint)
         view_path = '.{}'.format(endpoint)
         path = flask.url_for(view_path, hexdomain=hexdomain)
-        url = urlparse.urljoin(flask.request.url_root, path)
+        url = urllib.parse.urljoin(flask.request.url_root, path)
         payload[key] = url
 
     if skip != 'url':

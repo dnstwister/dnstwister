@@ -1,6 +1,6 @@
 """Storage of results for comparison and CUD alerting."""
 import os
-import urlparse
+import urllib.parse
 
 import psycopg2.extras
 import psycopg2.pool
@@ -22,10 +22,9 @@ def resetonfail(func):
     return wrapped
 
 
+@zope.interface.implementer(interfaces.IKeyValueDB)
 class PGDatabase(object):
     """Postgres database storage implementation."""
-    zope.interface.implements(interfaces.IKeyValueDB)
-
     def __init__(self):
         self._db = None
 
@@ -33,9 +32,9 @@ class PGDatabase(object):
     def cursor(self):
         """Return a database cursor."""
         if self._db is None or self._db.closed != 0:
-            print 'Creating postgres database connection.'
-            urlparse.uses_netloc.append('postgres')
-            db_url = urlparse.urlparse(os.environ['DATABASE_URL'])
+            print('Creating postgres database connection.')
+            urllib.parse.uses_netloc.append('postgres')
+            db_url = urllib.parse.urlparse(os.environ['DATABASE_URL'])
             db = psycopg2.connect(
                 database=db_url.path[1:],
                 user=db_url.username,
