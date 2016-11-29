@@ -2,6 +2,11 @@
 import binascii
 
 
+def test_unicode_search(webapp):
+    """Test POSTing unicode."""
+    response = webapp.post('/search', {'domains': u'\uf06e.com'})
+
+
 def test_no_domains_key(webapp):
     """Test a POST without 'domains' being set fails."""
     response = webapp.post('/search')

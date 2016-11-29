@@ -156,7 +156,12 @@ def search_post():
     # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
     # we use hex to hide the domains from firewalls that already block some of
     # them.
-    path = ','.join(map(binascii.hexlify, search_domains))
+    try:
+        path = ','.join(map(binascii.hexlify, search_domains))
+    except UnicodeEncodeError:
+        # Need to do Punycode'ing if want in URL...
+        pass
+
     if len(path) <= 200:
         return flask.redirect('/search/{}'.format(path))
 
