@@ -12,7 +12,7 @@ def test_initial_model():
 
     assert stats == {
         'domain': domain,
-        'last_checked': now,
+        'window_last_checked': now,
         'window_start': now,
         'deltas': 0,
     }
@@ -28,7 +28,7 @@ def test_update_when_inside_window():
 
     assert updated_stats == {
         'domain': stats['domain'],
-        'last_checked': stats['last_checked'] + datetime.timedelta(days=25),
+        'window_last_checked': stats['window_last_checked'] + datetime.timedelta(days=25),
         'window_start': stats['window_start'],
         'deltas': stats['deltas'],
     }
@@ -44,7 +44,7 @@ def test_update_when_outside_window():
 
     assert updated_stats == {
         'domain': stats['domain'],
-        'last_checked': stats['last_checked'] + datetime.timedelta(days=31),
+        'window_last_checked': stats['window_last_checked'] + datetime.timedelta(days=31),
         'window_start': stats['window_start'] + datetime.timedelta(days=15),
         'deltas': stats['deltas'],
     }
@@ -60,7 +60,7 @@ def test_update_when_outside_window_updates_deltas():
     updated_stats = noisy_domains.update(stats, now + datetime.timedelta(days=31))
     assert updated_stats == {
         'domain': stats['domain'],
-        'last_checked': stats['last_checked'] + datetime.timedelta(days=31),
+        'window_last_checked': stats['window_last_checked'] + datetime.timedelta(days=31),
         'window_start': stats['window_start'] + datetime.timedelta(days=15),
         'deltas': 5,
     }
@@ -72,7 +72,7 @@ def test_update_when_outside_window_updates_deltas():
     updated_stats = noisy_domains.update(stats, now + datetime.timedelta(days=34))
     assert updated_stats == {
         'domain': stats['domain'],
-        'last_checked': stats['last_checked'] + datetime.timedelta(days=34),
+        'window_last_checked': stats['window_last_checked'] + datetime.timedelta(days=34),
         'window_start': stats['window_start'] + datetime.timedelta(days=15),
         'deltas': 8,
     }
@@ -81,7 +81,7 @@ def test_update_when_outside_window_updates_deltas():
     updated_stats = noisy_domains.update(stats, now + datetime.timedelta(days=45))
     assert updated_stats == {
         'domain': stats['domain'],
-        'last_checked': stats['last_checked'] + datetime.timedelta(days=45),
+        'window_last_checked': stats['window_last_checked'] + datetime.timedelta(days=45),
         'window_start': stats['window_start'] + datetime.timedelta(days=15),
         'deltas': 16,
     }
