@@ -3,8 +3,8 @@ import datetime
 
 import dnstwister
 import patches
-import worker_email
-import worker_deltas
+import workers.email
+import workers.deltas
 
 
 def test_dont_send_when_no_changes(capsys, monkeypatch):
@@ -20,7 +20,7 @@ def test_dont_send_when_no_changes(capsys, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: (False, False)
     )
     emailer = patches.NoEmailer()
-    monkeypatch.setattr('worker_email.emailer', emailer)
+    monkeypatch.setattr('workers.email.emailer', emailer)
 
     repository = dnstwister.repository
 
@@ -33,11 +33,11 @@ def test_dont_send_when_no_changes(capsys, monkeypatch):
     repository.subscribe_email(sub_id, email, domain)
 
     # Do a delta report.
-    worker_deltas.process_domain(domain)
+    workers.deltas.process_domain(domain)
 
     # Process the subscription.
     sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
-    worker_email.process_sub(sub_id, sub_data)
+    workers.email.process_sub(sub_id, sub_data)
 
     # We've not sent any emails as there were no changes (no IPs resolved at
     # all).
@@ -56,7 +56,7 @@ def test_dont_send_too_often(capsys, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
     emailer = patches.NoEmailer()
-    monkeypatch.setattr('worker_email.emailer', emailer)
+    monkeypatch.setattr('workers.email.emailer', emailer)
 
     repository = dnstwister.repository
 
@@ -69,17 +69,17 @@ def test_dont_send_too_often(capsys, monkeypatch):
     repository.subscribe_email(sub_id, email, domain)
 
     # Do a delta report.
-    worker_deltas.process_domain(domain)
+    workers.deltas.process_domain(domain)
 
     # Process the subscription.
     sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
-    worker_email.process_sub(sub_id, sub_data)
+    workers.email.process_sub(sub_id, sub_data)
 
     # And we've sent an email.
     assert len(emailer.sent_emails) == 1
 
     # Re-process immediately
-    worker_email.process_sub(sub_id, sub_data)
+    workers.email.process_sub(sub_id, sub_data)
 
     # Check we haven't sent two emails
     assert len(emailer.sent_emails) == 1
@@ -102,7 +102,7 @@ def test_subscription_email_timing(capsys, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
     emailer = patches.NoEmailer()
-    monkeypatch.setattr('worker_email.emailer', emailer)
+    monkeypatch.setattr('workers.email.emailer', emailer)
 
     repository = dnstwister.repository
 
@@ -122,7 +122,7 @@ def test_subscription_email_timing(capsys, monkeypatch):
 
     # Process the subscription.
     sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
-    worker_email.process_sub(sub_id, sub_data)
+    workers.email.process_sub(sub_id, sub_data)
 
     # We won't have sent any emails.
     assert emailer.sent_emails == []
@@ -131,11 +131,11 @@ def test_subscription_email_timing(capsys, monkeypatch):
     assert repository.is_domain_registered(domain)
 
     # So let's do a delta report.
-    worker_deltas.process_domain(domain)
+    workers.deltas.process_domain(domain)
 
     # Process the subscription again.
     sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
-    worker_email.process_sub(sub_id, sub_data)
+    workers.email.process_sub(sub_id, sub_data)
 
     # And we've sent an email.
     assert len(emailer.sent_emails) == 1
@@ -153,7 +153,7 @@ def test_subscription_email_timing(capsys, monkeypatch):
     )
 
     # Now we run the email worker for the sub *before* the delta report.
-    worker_email.process_sub(sub_id, sub_data)
+    workers.email.process_sub(sub_id, sub_data)
 
     # We've not sent an extra email because it's more than 23 hours since the
     # last delta report.
@@ -163,8 +163,8 @@ def test_subscription_email_timing(capsys, monkeypatch):
     monkeypatch.setattr(
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.222', False)
     )
-    worker_deltas.process_domain(domain)
-    worker_email.process_sub(sub_id, sub_data)
+    workers.deltas.process_domain(domain)
+    workers.email.process_sub(sub_id, sub_data)
     assert len(emailer.sent_emails) == 2
 
     # And the emails are different.
