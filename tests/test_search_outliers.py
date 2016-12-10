@@ -1,10 +1,24 @@
+# -*- coding: utf-8 -*-
 """Test of weird search behaviours."""
 import binascii
 
 
-def test_unicode_search(webapp):
-    """Test POSTing unicode."""
-    response = webapp.post('/search', {'domains': u'\uf06e.com'})
+def test_unicode_post_search(webapp):
+    """Test POSTing Unicode will fail.
+
+    GET cannot be tested through webtest but has been tested manually to
+    ensure it has the same behaviour - using url:
+        http://localhost:5000/search/www.example.新加坡
+    """
+    # TLD is Singapore/Chinese: 新加坡 OR xn--yfro4i67o
+    domain = u'www.example.\u65b0\u52a0\u5761'
+    response = webapp.post(
+        '/search', {'domains': domain},
+        content_type='application/x-www-form-urlencoded; charset=utf-8'
+    )
+
+    assert response.status_code == 302
+    assert response.headers['location'] == 'http://localhost:80/error/3'
 
 
 def test_no_domains_key(webapp):

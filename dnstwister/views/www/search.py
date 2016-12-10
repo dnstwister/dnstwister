@@ -137,6 +137,15 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
+    # We currently don't support Unicode in searches.
+    try:
+        post_data.decode('ascii')
+    except UnicodeEncodeError:
+        app.logger.info(
+            'Unicode search requested'
+        )
+        return flask.redirect('/error/3')
+
     search_domains = tools.parse_post_data(post_data)
 
     valid_domains = sorted(list(set(filter(None, map(tools.parse_domain, search_domains)))))
@@ -156,11 +165,7 @@ def search_post():
     # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
     # we use hex to hide the domains from firewalls that already block some of
     # them.
-    try:
-        path = ','.join(map(binascii.hexlify, search_domains))
-    except UnicodeEncodeError:
-        # Need to do Punycode'ing if want in URL...
-        pass
+    path = ','.join(map(binascii.hexlify, search_domains))
 
     if len(path) <= 200:
         return flask.redirect('/search/{}'.format(path))
@@ -173,6 +178,15 @@ def search_post():
 @app.route('/search/<search_domains>/<fmt>')
 def search(search_domains, fmt=None):
     """Handle redirect from form submit."""
+
+    # We currently don't support Unicode in searches.
+    try:
+        search_domains.decode('ascii')
+    except UnicodeEncodeError:
+        app.logger.info(
+            'Unicode search requested'
+        )
+        return flask.redirect('/error/3')
 
     # Try to parse out the list of domains
     try:

@@ -10,6 +10,7 @@ ERRORS = (
     'No valid domains submitted.',
     'Invalid report URL.',
     'No domains submitted.',
+    'Unfortunately Unicode domains are not currently supported.',
 )
 
 
