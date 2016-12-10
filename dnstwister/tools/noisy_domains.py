@@ -32,16 +32,19 @@ def initialise_record(domain, now=None):
 
 
 def limit_frequency(function):
-    """Limit calls to function to FREQUENCY."""
+    """Decorator to limit calls to function to FREQUENCY."""
     def wrapper(domain_stats, now=None):
         """Not using *ags and **kwargs as know signatures."""
         if now is None:
             now = datetime.datetime.now()
 
-        key = '__{}'.format(function.func_name)
-        if now - domain_stats[key] <= FREQUENCY:
+        domain_stats = dict(domain_stats)
+
+        updated_key = '__{}'.format(function.func_name)
+        if now - domain_stats[updated_key] <= FREQUENCY:
             return domain_stats
 
+        domain_stats[updated_key] = now
         return function(domain_stats, now)
 
     return wrapper
@@ -60,10 +63,6 @@ def update(domain_stats, now=None):
     """
     if now is None:
         now = datetime.datetime.now()
-
-    # Always update the last checked time
-    domain_stats = dict(domain_stats)
-    domain_stats['__update'] = now
 
     window_start = domain_stats['window_start']
     window_age = now - window_start
@@ -92,10 +91,5 @@ def increment(domain_stats, now=None):
     """Increment the number of deltas in the stats, return them."""
     if now is None:
         now = datetime.datetime.now()
-
-    domain_stats = dict(domain_stats)
-
     domain_stats['deltas'] += 1
-    domain_stats['__increment'] = now
-
     return domain_stats
