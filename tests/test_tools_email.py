@@ -140,4 +140,3 @@ def test_email_renderer_domain_sorting():
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
     """).strip()
-
