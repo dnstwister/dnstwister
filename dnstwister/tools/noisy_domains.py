@@ -12,6 +12,9 @@ WINDOW_SIZE = 30
 # domain changed or state once every two days or more.
 THRESHOLD = 50
 
+# How often to execute on stats records.
+FREQUENCY = datetime.timedelta(days=1)
+
 
 def initialise_record(domain, now=None):
     """The initial values if there is no noise record for a domain."""
@@ -20,13 +23,31 @@ def initialise_record(domain, now=None):
 
     model = {
         'domain': domain,
-        'window_last_checked': now,
         'window_start': now,
         'deltas': 0,
+        '__update': now,
+        '__increment': now,
     }
     return model
 
 
+def limit_frequency(function):
+    """Limit calls to function to FREQUENCY."""
+    def wrapper(domain_stats, now=None):
+        """Not using *ags and **kwargs as know signatures."""
+        if now is None:
+            now = datetime.datetime.now()
+
+        key = '__{}'.format(function.func_name)
+        if now - domain_stats[key] <= FREQUENCY:
+            return domain_stats
+
+        return function(domain_stats, now)
+
+    return wrapper
+
+
+@limit_frequency
 def update(domain_stats, now=None):
     """Update the domain window and stats.
 
@@ -42,7 +63,7 @@ def update(domain_stats, now=None):
 
     # Always update the last checked time
     domain_stats = dict(domain_stats)
-    domain_stats['window_last_checked'] = now
+    domain_stats['__update'] = now
 
     window_start = domain_stats['window_start']
     window_age = now - window_start
@@ -62,5 +83,19 @@ def update(domain_stats, now=None):
     delta_factor = 1 - ((WINDOW_SIZE / 2.0) / window_age.days)
 
     domain_stats['deltas'] = int(domain_stats['deltas'] * delta_factor)
+
+    return domain_stats
+
+
+@limit_frequency
+def increment(domain_stats, now=None):
+    """Increment the number of deltas in the stats, return them."""
+    if now is None:
+        now = datetime.datetime.now()
+
+    domain_stats = dict(domain_stats)
+
+    domain_stats['deltas'] += 1
+    domain_stats['__increment'] = now
 
     return domain_stats
