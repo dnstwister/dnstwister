@@ -93,3 +93,14 @@ def increment(domain_stats, now=None):
         now = datetime.datetime.now()
     domain_stats['deltas'] += 1
     return domain_stats
+
+
+def delta_rate(domain_stats, now=None):
+    """Return the average number of deltas for a domain, per day."""
+    if now is None:
+        now = datetime.datetime.now()
+
+    window_start = domain_stats['window_start']
+    window_age = now - window_start
+
+    return domain_stats['deltas'] / float(window_age.days)
