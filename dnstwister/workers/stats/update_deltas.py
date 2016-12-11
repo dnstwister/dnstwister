@@ -36,7 +36,7 @@ def main():
 
             process_domain(domain)
 
-        print 'All deltas processed'
+        print 'All stats for all deltas processed'
 
         time.sleep(60)
 

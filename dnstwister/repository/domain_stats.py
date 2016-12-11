@@ -1,4 +1,6 @@
 """Domain statistics repository."""
+import datetime
+
 from dnstwister import db
 import dnstwister.storage.interfaces
 
@@ -8,20 +10,29 @@ dnstwister.storage.interfaces.instance_valid(db)
 
 def set_noise_stats(stats):
     """Update the stats for a domain."""
-    stats = dict(stats)
     key = 'statistics_noise:{}'.format(stats['domain'])
-    del stats['domain']
-    db.set(key, stats)
+    value = {
+        'deltas': stats['deltas'],
+        'window_start': stats['window_start'].strftime('%Y-%m-%dT%H:%M:%SZ'),
+        '__update': stats['__update'].strftime('%Y-%m-%dT%H:%M:%SZ'),
+        '__increment': stats['__increment'].strftime('%Y-%m-%dT%H:%M:%SZ'),
+    }
+    db.set(key, value)
 
 
 def get_noise_stats(domain):
     """Get the stats for a domain."""
     key = 'statistics_noise:{}'.format(domain)
-    stats = db.get(key)
-    if stats is None:
+    value = db.get(key)
+    if value is None:
         return
-    stats = dict(stats)
-    stats['domain'] = domain
+    stats = {
+        'domain': domain,
+        'deltas': value['deltas'],
+        'window_start': datetime.datetime.strptime(value['window_start'], '%Y-%m-%dT%H:%M:%SZ'),
+        '__update': datetime.datetime.strptime(value['__update'], '%Y-%m-%dT%H:%M:%SZ'),
+        '__increment': datetime.datetime.strptime(value['__increment'], '%Y-%m-%dT%H:%M:%SZ'),
+    }
     return stats
 
 
