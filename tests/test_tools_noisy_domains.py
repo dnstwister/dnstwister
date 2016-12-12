@@ -4,7 +4,7 @@ import datetime
 from dnstwister.tools import noisy_domains
 
 
-def test_initial_model():
+def test_initialising_model():
     """Test how we set up a new domain."""
     domain = 'www.example.com'
     now = datetime.datetime.now()
@@ -14,6 +14,21 @@ def test_initial_model():
         'domain': domain,
         'window_start': now,
         'deltas': 0,
+        '__update': now,
+        '__increment': now,
+    }
+
+
+def test_initialising_model_with_custom_start():
+    """Test how we set up a new domain, pre-loading the hits."""
+    domain = 'www.example.com'
+    now = datetime.datetime.now()
+    stats = noisy_domains.initialise_record(domain, now, start=1)
+
+    assert stats == {
+        'domain': domain,
+        'window_start': now,
+        'deltas': 1,
         '__update': now,
         '__increment': now,
     }

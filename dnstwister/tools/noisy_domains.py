@@ -16,7 +16,7 @@ THRESHOLD = 50
 FREQUENCY = datetime.timedelta(days=1)
 
 
-def initialise_record(domain, now=None):
+def initialise_record(domain, now=None, start=0):
     """The initial values if there is no noise record for a domain."""
     if now is None:
         now = datetime.datetime.now()
@@ -24,7 +24,7 @@ def initialise_record(domain, now=None):
     model = {
         'domain': domain,
         'window_start': now,
-        'deltas': 0,
+        'deltas': start,
         '__update': now,
         '__increment': now,
     }

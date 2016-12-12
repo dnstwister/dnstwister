@@ -18,7 +18,9 @@ def process_domain(domain):
 
             current_stats = domain_stats.get_noise_stats(result_domain)
             if current_stats is None:
-                current_stats = noisy_domains.initialise_record(result_domain)
+                current_stats = noisy_domains.initialise_record(
+                    result_domain, start=1
+                )
 
             updated_stats = noisy_domains.increment(current_stats)
             domain_stats.set_noise_stats(updated_stats)
