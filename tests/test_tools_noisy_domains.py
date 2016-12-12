@@ -16,6 +16,7 @@ def test_initialising_model():
         'deltas': 0,
         '__update': now,
         '__increment': now,
+        'noisy': False,
     }
 
 
@@ -31,7 +32,21 @@ def test_initialising_model_with_custom_start():
         'deltas': 1,
         '__update': now,
         '__increment': now,
+        'noisy': False,
     }
+
+
+def test_update_noiseless_model_adds_default_noise():
+    """Test records missing "noise" flag have it updated."""
+    domain = 'www.example.com'
+    now = datetime.datetime.now()
+    stats = noisy_domains.initialise_record(domain, now)
+
+    del stats['noisy']
+
+    updated_stats = noisy_domains.update(stats, now + datetime.timedelta(days=1.1))
+
+    assert updated_stats['noisy'] is False
 
 
 def test_update_when_inside_window():
@@ -48,6 +63,7 @@ def test_update_when_inside_window():
         'deltas': stats['deltas'],
         '__update': stats['__update'] + datetime.timedelta(days=25),
         '__increment': now,
+        'noisy': False,
     }
 
 
@@ -65,6 +81,7 @@ def test_update_when_outside_window():
         'deltas': stats['deltas'],
         '__update': stats['__update'] + datetime.timedelta(days=31),
         '__increment': now,
+        'noisy': False,
     }
 
 
@@ -82,6 +99,7 @@ def test_update_when_outside_window_updates_deltas():
         'deltas': 5,
         '__update': stats['__update'] + datetime.timedelta(days=31),
         '__increment': now,
+        'noisy': False,
     }
 
     # The update to deltas is proportional to progress past the end of the
@@ -95,6 +113,7 @@ def test_update_when_outside_window_updates_deltas():
         'deltas': 8,
         '__update': stats['__update'] + datetime.timedelta(days=34),
         '__increment': now,
+        'noisy': False,
     }
 
     stats['deltas'] = 24
@@ -105,6 +124,7 @@ def test_update_when_outside_window_updates_deltas():
         'deltas': 16,
         '__update': stats['__update'] + datetime.timedelta(days=45),
         '__increment': now,
+        'noisy': False,
     }
 
 

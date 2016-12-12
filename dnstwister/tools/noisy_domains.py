@@ -8,12 +8,13 @@ import datetime
 # Sliding window size
 WINDOW_SIZE = 30
 
-# Percent threshold of changes per day to mark as "noisy". 50% would mean the
-# domain changed or state once every two days or more.
-THRESHOLD = 50
-
 # How often to execute on stats records.
 FREQUENCY = datetime.timedelta(days=1)
+
+# Higher and lower threshold to mark as noisy or not, of changes per day.
+NOISE_MIN_DAYS = 5
+NOISE_ON = 0.5
+NOISE_OFF = 0.25
 
 
 def initialise_record(domain, now=None, start=0):
@@ -27,6 +28,7 @@ def initialise_record(domain, now=None, start=0):
         'deltas': start,
         '__update': now,
         '__increment': now,
+        'noisy': False,
     }
     return model
 
@@ -52,7 +54,7 @@ def limit_frequency(function):
 
 @limit_frequency
 def update(domain_stats, now=None):
-    """Update the domain window and stats.
+    """Update the domain window, stats and noisiness.
 
     Shuffles the start date of the window for this delta forward by 1/2
     WINDOW_SIZE size once we're more than WINDOW_SIZE beyond when we last
@@ -64,13 +66,22 @@ def update(domain_stats, now=None):
     if now is None:
         now = datetime.datetime.now()
 
+    # Add noisy flag to data if missing.
+    try:
+        domain_stats['noisy']
+    except KeyError:
+        domain_stats['noisy'] = False
+
+    # Work out if is noisy or not
+    update_noisy_flag(domain_stats)
+
     window_start = domain_stats['window_start']
     window_age = now - window_start
 
     breakpoint = datetime.timedelta(days=WINDOW_SIZE)
     move_size = datetime.timedelta(days=WINDOW_SIZE / 2.0)
 
-    # Don't do anything if we're within the window.
+    # Don't do anything to window if we're within the window.
     if window_age <= breakpoint:
         return domain_stats
 
@@ -95,6 +106,15 @@ def increment(domain_stats, now=None):
     return domain_stats
 
 
+def update_noisy_flag(domain_stats):
+    """Update the noisiness flag based on current state and delta rate."""
+    currently_noisy = domain_stats['noisy']
+    if not currently_noisy and delta_rate(domain_stats) > NOISE_ON:
+        domain_stats['noisy'] = True
+    elif currently_noisy and delta_rate(domain_stats) < NOISE_OFF:
+        domain_stats['noisy'] = False
+
+
 def delta_rate(domain_stats, now=None):
     """Return the average number of deltas for a domain, per day."""
     if now is None:
@@ -102,5 +122,8 @@ def delta_rate(domain_stats, now=None):
 
     window_start = domain_stats['window_start']
     window_age = now - window_start
+
+    if window_age.days <= 0:
+        return 0
 
     return domain_stats['deltas'] / float(window_age.days)
