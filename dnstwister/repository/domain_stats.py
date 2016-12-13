@@ -30,11 +30,16 @@ def get_noise_stats(domain):
     stats = {
         'domain': domain,
         'deltas': value['deltas'],
-        'noisy': value['noisy'],
         'window_start': datetime.datetime.strptime(value['window_start'], '%Y-%m-%dT%H:%M:%SZ'),
         '__update': datetime.datetime.strptime(value['__update'], '%Y-%m-%dT%H:%M:%SZ'),
         '__increment': datetime.datetime.strptime(value['__increment'], '%Y-%m-%dT%H:%M:%SZ'),
     }
+
+    try:
+        stats['noisy'] = value['noisy']
+    except KeyError:
+        stats['noisy'] = False
+
     return stats
 
 
