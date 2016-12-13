@@ -66,12 +66,6 @@ def update(domain_stats, now=None):
     if now is None:
         now = datetime.datetime.now()
 
-    # Add noisy flag to data if missing.
-    try:
-        domain_stats['noisy']
-    except KeyError:
-        domain_stats['noisy'] = False
-
     # Work out if is noisy or not
     update_noisy_flag(domain_stats)
 
