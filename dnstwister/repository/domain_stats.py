@@ -14,6 +14,7 @@ def set_noise_stats(stats):
     value = {
         'deltas': stats['deltas'],
         'window_start': stats['window_start'].strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'noisy': stats['noisy'],
         '__update': stats['__update'].strftime('%Y-%m-%dT%H:%M:%SZ'),
         '__increment': stats['__increment'].strftime('%Y-%m-%dT%H:%M:%SZ'),
     }
@@ -29,6 +30,7 @@ def get_noise_stats(domain):
     stats = {
         'domain': domain,
         'deltas': value['deltas'],
+        'noisy': value['noisy'],
         'window_start': datetime.datetime.strptime(value['window_start'], '%Y-%m-%dT%H:%M:%SZ'),
         '__update': datetime.datetime.strptime(value['__update'], '%Y-%m-%dT%H:%M:%SZ'),
         '__increment': datetime.datetime.strptime(value['__increment'], '%Y-%m-%dT%H:%M:%SZ'),
