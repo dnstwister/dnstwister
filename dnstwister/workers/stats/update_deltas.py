@@ -12,18 +12,20 @@ def process_domain(domain):
     if delta_report is None:
         return
 
-    for results in delta_report.values():
-        for result in results:
-            result_domain = result[0]
+    result_domains = []
+    result_domains.extend([d[0] for d in delta_report['new']])
+    result_domains.extend([d[0] for d in delta_report['updated']])
+    result_domains.extend(delta_report['deleted'])
 
-            current_stats = domain_stats.get_noise_stats(result_domain)
-            if current_stats is None:
-                current_stats = noisy_domains.initialise_record(
-                    result_domain, start=1
-                )
+    for result_domain in result_domains:
+        current_stats = domain_stats.get_noise_stats(result_domain)
+        if current_stats is None:
+            current_stats = noisy_domains.initialise_record(
+                result_domain, start=1
+            )
 
-            updated_stats = noisy_domains.increment(current_stats)
-            domain_stats.set_noise_stats(updated_stats)
+        updated_stats = noisy_domains.increment(current_stats)
+        domain_stats.set_noise_stats(updated_stats)
 
 
 def main():
