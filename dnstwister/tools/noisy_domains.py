@@ -17,7 +17,7 @@ NOISE_ON = 0.5
 NOISE_OFF = 0.25
 
 
-def initialise_record(domain, now=None, start=0):
+def initialise_record(domain, now=None):
     """The initial values if there is no noise record for a domain."""
     if now is None:
         now = datetime.datetime.now()
@@ -26,35 +26,24 @@ def initialise_record(domain, now=None, start=0):
         'domain': domain,
         'window_start': now,
         'deltas': start,
-        '__update': now,
-        '__increment': now,
         'noisy': False,
     }
     return model
 
 
-def limit_frequency(function):
-    """Decorator to limit calls to function to FREQUENCY."""
-    def wrapper(domain_stats, now=None):
-        """Not using *ags and **kwargs as know signatures."""
-        if now is None:
-            now = datetime.datetime.now()
-
-        domain_stats = dict(domain_stats)
-
-        updated_key = '__{}'.format(function.func_name)
-        if now - domain_stats[updated_key] <= FREQUENCY:
-            return domain_stats
-
-        domain_stats[updated_key] = now
-        return function(domain_stats, now)
-
-    return wrapper
+def update_noisy_flag(domain_stats):
+    """Update the noisiness flag based on current state and delta rate."""
+    stats = dict(domain_stats)
+    currently_noisy = stats['noisy']
+    if not currently_noisy and delta_rate(stats) > NOISE_ON:
+        stats['noisy'] = True
+    elif currently_noisy and delta_rate(stats) < NOISE_OFF:
+        stats['noisy'] = False
+    return stats
 
 
-@limit_frequency
-def update(domain_stats, now=None):
-    """Update the domain window, stats and noisiness.
+def update_window(domain_stats, now=None):
+    """Update the domain window (and stats, proportionally).
 
     Shuffles the start date of the window for this delta forward by 1/2
     WINDOW_SIZE size once we're more than WINDOW_SIZE beyond when we last
@@ -65,9 +54,6 @@ def update(domain_stats, now=None):
     """
     if now is None:
         now = datetime.datetime.now()
-
-    # Work out if is noisy or not
-    update_noisy_flag(domain_stats)
 
     window_start = domain_stats['window_start']
     window_age = now - window_start
@@ -91,7 +77,6 @@ def update(domain_stats, now=None):
     return domain_stats
 
 
-@limit_frequency
 def increment(domain_stats, now=None):
     """Increment the number of deltas in the stats, return them."""
     if now is None:
@@ -99,14 +84,6 @@ def increment(domain_stats, now=None):
     domain_stats['deltas'] += 1
     return domain_stats
 
-
-def update_noisy_flag(domain_stats):
-    """Update the noisiness flag based on current state and delta rate."""
-    currently_noisy = domain_stats['noisy']
-    if not currently_noisy and delta_rate(domain_stats) > NOISE_ON:
-        domain_stats['noisy'] = True
-    elif currently_noisy and delta_rate(domain_stats) < NOISE_OFF:
-        domain_stats['noisy'] = False
 
 def delta_rate(domain_stats, min_days=5, now=None):
     """Return the average number of deltas for a domain, per day.

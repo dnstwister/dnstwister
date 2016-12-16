@@ -62,7 +62,7 @@ def delta_report_updated(domain):
     """Retrieve when a delta report was last updated, or None."""
     updated = db.get('delta_report_updated:{}'.format(domain))
     if updated is not None:
-        return datetime.datetime.strptime(updated, '%Y-%m-%dT%H:%M:%SZ')
+        return datetime.datetime.strptime(updated, db.datetime_format)
 
 
 def update_delta_report(domain, delta, updated=None):
@@ -72,7 +72,7 @@ def update_delta_report(domain, delta, updated=None):
     db.set('delta_report:{}'.format(domain), delta)
     db.set(
         'delta_report_updated:{}'.format(domain),
-        updated.strftime('%Y-%m-%dT%H:%M:%SZ')
+        updated.strftime(db.datetime_format)
     )
 
 
@@ -82,7 +82,7 @@ def mark_delta_report_as_read(domain, last_read=None):
         last_read = datetime.datetime.now()
     db.set(
         'delta_report_read:{}'.format(domain),
-        last_read.strftime('%Y-%m-%dT%H:%M:%SZ')
+        last_read.strftime(db.datetime_format)
     )
 
 
@@ -90,7 +90,7 @@ def delta_report_last_read(domain):
     """Retrieve the "last-read" date for delta report."""
     last_read = db.get('delta_report_read:{}'.format(domain))
     if last_read is not None:
-        return datetime.datetime.strptime(last_read, '%Y-%m-%dT%H:%M:%SZ')
+        return datetime.datetime.strptime(last_read, db.datetime_format)
 
 
 def update_resolution_report(domain, report, updated=None):
@@ -100,7 +100,7 @@ def update_resolution_report(domain, report, updated=None):
     db.set('resolution_report:{}'.format(domain), report)
     db.set(
         'resolution_report_updated:{}'.format(domain),
-        updated.strftime('%Y-%m-%dT%H:%M:%SZ')
+        updated.strftime(db.datetime_format)
     )
 
 
@@ -122,7 +122,7 @@ def propose_subscription(verify_code, email_address, domain):
             'email_address': email_address,
             'domain': domain,
             'since': datetime.datetime.now().strftime(
-                '%Y-%m-%dT%H:%M:%SZ'
+                db.datetime_format
             ),
         }
     )
@@ -153,7 +153,7 @@ def update_last_email_sub_sent_date(sub_id, when=None):
     db.set(
         'email_sub_last_sent:{}'.format(sub_id),
         when.strftime(
-            '%Y-%m-%dT%H:%M:%SZ'
+            db.datetime_format
         )
     )
 
@@ -162,7 +162,7 @@ def email_last_send_for_sub(sub_id):
     """Return when an email was last sent for a subscription, or None."""
     last_sent = db.get('email_sub_last_sent:{}'.format(sub_id))
     if last_sent is not None:
-        return datetime.datetime.strptime(last_sent, '%Y-%m-%dT%H:%M:%SZ')
+        return datetime.datetime.strptime(last_sent, db.datetime_format)
 
 
 def unsubscribe(sub_id):

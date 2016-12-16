@@ -26,6 +26,8 @@ class PGDatabase(object):
     """Postgres database storage implementation."""
     zope.interface.implements(interfaces.IKeyValueDB)
 
+    datetime_format = '%Y-%m-%dT%H:%M:%SZ'
+
     def __init__(self):
         self._db = None
 
