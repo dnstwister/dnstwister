@@ -108,16 +108,18 @@ def update_noisy_flag(domain_stats):
     elif currently_noisy and delta_rate(domain_stats) < NOISE_OFF:
         domain_stats['noisy'] = False
 
+def delta_rate(domain_stats, min_days=5, now=None):
+    """Return the average number of deltas for a domain, per day.
 
-def delta_rate(domain_stats, now=None):
-    """Return the average number of deltas for a domain, per day."""
+    min_days ensures we don't get too sensitive readings early on.
+    """
     if now is None:
         now = datetime.datetime.now()
 
     window_start = domain_stats['window_start']
     window_age = now - window_start
 
-    if window_age.days <= 0:
+    if window_age.days <= min_days:
         return 0
 
     return domain_stats['deltas'] / float(window_age.days)
