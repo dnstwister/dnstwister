@@ -12,23 +12,21 @@ class GCDB(object):
     def __init__(self):
         self._client = datastore.Client()
 
-    def ikeys(self, prefix):
-        """Return an iterator of all the keys starting with a prefix,
-        in the database.
-        """
-        query = self._client.query(kind=prefix)
+    def ikeys(self, kind):
+        """Return an iterator of all the keys of a kind."""
+        query = self._client.query(kind=kind)
         return query.keys_only()
 
-    def set(self, prefix, key, value):
+    def set(self, kind, key, value):
         """Insert/Update the value for a key."""
-        entity = datastore.Entity(self._client.key(prefix, key))
+        entity = datastore.Entity(self._client.key(kind, key))
         entity.update(value)
         self._client.put(entity)
 
-    def delete(self, prefix, key):
+    def delete(self, kind, key):
         """Delete by key."""
-        self._client.delete(self._client.key(prefix, key))
+        self._client.delete(self._client.key(kind, key))
 
-    def get(self, prefix, key):
+    def get(self, kind, key):
         """Return the value for key, or None if no value."""
-        return self._client.get(self._client.key(prefix, key))
+        return self._client.get(self._client.key(kind, key))
