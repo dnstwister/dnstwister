@@ -1,7 +1,7 @@
 """Domain statistics repository."""
 import datetime
 
-from dnstwister import db
+from dnstwister import stats_db as db
 import dnstwister.storage.interfaces
 
 from dnstwister.domain.statistics import NoiseStatistic
