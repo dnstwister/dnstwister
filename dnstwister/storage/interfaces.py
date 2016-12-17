@@ -12,7 +12,7 @@ class IKeyValueDB(zope.interface.Interface):
     def get(self, key):
         """Get a value for key or None."""
 
-    def ikeys(self, prefix=''):
+    def ikeys(self, prefix):
         """Return an iterator of all keys, optionally filtered on prefix."""
 
     def delete(self, key):

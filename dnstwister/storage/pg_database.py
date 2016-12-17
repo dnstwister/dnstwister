@@ -68,10 +68,9 @@ class PGDatabase(object):
             self._db = None
 
     @resetonfail
-    def ikeys(self, prefix=''):
-        """Return an iterator of all the keys in the database.
-
-        Optionally filter by key prefix.
+    def ikeys(self, prefix):
+        """Return an iterator of all the keys starting with a prefix,
+        in the database.
         """
         with self.cursor as cur:
             cur.execute("""
