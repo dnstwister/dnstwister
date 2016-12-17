@@ -12,6 +12,7 @@ def test_email_renderer():
         new=(('www.examp1e.com', '127.0.0.1', 'http://dnstwister.report/analyse/1234'),),
         updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2', 'http://dnstwister.report/analyse/6789'),),
         deleted=('www.examplle.com',),
+        noisy=('www.examplle.com',),
         unsubscribe_link='https://dnstwister.report/...',
     )
 
@@ -70,7 +71,7 @@ def test_email_renderer():
             <tbody>
                 <tr>
                     <td>
-                        www<span>.</span>examplle<span>.</span>com
+                        www<span>.</span>examplle<span>.</span>com *
                     </td>
                 </tr>
             </tbody>
