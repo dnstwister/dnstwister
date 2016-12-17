@@ -5,17 +5,18 @@ import zope.interface.verify
 # pylint: disable=inherit-non-class
 class IKeyValueDB(zope.interface.Interface):
     """Interface for a key-value storage."""
-    def set(self, key, value):
-        """Set the value for key"""
+    def set(self, prefix, key, value):
+        """Set the value for prefix:key.
+        """
 
     # pylint: disable=arguments-differ
-    def get(self, key):
-        """Get a value for key or None."""
+    def get(self, prefix, key):
+        """Get a value for prefix:key or None."""
 
     def ikeys(self, prefix):
         """Return an iterator of all keys, optionally filtered on prefix."""
 
-    def delete(self, key):
+    def delete(self, prefix, key):
         """Delete a key."""
 
 

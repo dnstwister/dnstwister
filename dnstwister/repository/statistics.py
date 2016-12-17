@@ -15,9 +15,8 @@ def mark_noise_stat_as_updated(domain, now=None):
     if now is None:
         now = datetime.datetime.now()
 
-    key = 'noise_statistic_updated:{}'.format(domain)
     value = now.strftime(db.datetime_format)
-    db.set(key, value)
+    db.set('noise_statistic_updated', domain, value)
 
 
 def noise_stat_last_updated(domain, now=None):
@@ -25,8 +24,7 @@ def noise_stat_last_updated(domain, now=None):
     if now is None:
         now = datetime.datetime.now()
 
-    key = 'noise_statistic_updated:{}'.format(domain)
-    value = db.get(key)
+    value = db.get('noise_statistic_updated', domain)
     if value is None:
         return
 
@@ -35,19 +33,17 @@ def noise_stat_last_updated(domain, now=None):
 
 def set_noise_stat(stat):
     """Update the noise statistics for a domain."""
-    key = 'noise_statistic:{}'.format(stat.domain)
     value = {
         'deltas': stat.deltas,
         'window_start': stat.window_start.strftime(db.datetime_format),
         'noisy': stat.is_noisy,
     }
-    db.set(key, value)
+    db.set('noise_statistic', stat.domain, value)
 
 
 def get_noise_stat(domain):
     """Get the noise statistics for a domain."""
-    key = 'noise_statistic:{}'.format(domain)
-    stat = db.get(key)
+    stat = db.get('noise_statistic', domain)
     if stat is None:
         return
 
@@ -61,8 +57,4 @@ def get_noise_stat(domain):
 
 def inoisy_domains():
     """Return an iterator of all the domains with noise statistics."""
-    domain_keys_iter = db.ikeys('noise_statistic')
-    while True:
-        domain_key = domain_keys_iter.next()
-        if domain_key is not None:
-            yield domain_key.split('noise_statistic:')[1]
+    return db.ikeys('noise_statistic')

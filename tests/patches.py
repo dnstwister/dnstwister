@@ -27,27 +27,27 @@ class SimpleKVDatabase(object):
         """Return a read-only dict representation of the data, for testing."""
         return dict(self._data)
 
-    def set(self, key, value):
+    def set(self, prefix, key, value):
         """Set the value for key"""
-        self._data[key] = value
+        self._data[prefix + ':' + key] = value
 
-    def get(self, key):
+    def get(self, prefix, key):
         """Get a value for key or None."""
         try:
-            return self._data[key]
+            return self._data[prefix + ':' + key]
         except KeyError:
             pass
 
-    def ikeys(self, prefix=''):
+    def ikeys(self, prefix):
         """Return an iterator of all keys, optionally filtered on prefix."""
         for key in self._data.keys():
             if key.startswith(prefix + ':'):
-                yield key
+                yield key.split(prefix + ':')[1]
 
-    def delete(self, key):
+    def delete(self, prefix, key):
         """Delete a key."""
         try:
-            del self._data[key]
+            del self._data[prefix + ':' + key]
         except KeyError:
             pass
 

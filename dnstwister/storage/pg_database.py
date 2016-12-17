@@ -82,45 +82,48 @@ class PGDatabase(object):
                 if row is None:
                     break
                 if row[0].startswith(prefix + ':'):
-                    yield row[0]
+                    yield row[0].split(prefix + ':')[1]
 
     @resetonfail
-    def delete(self, key):
+    def delete(self, prefix, key):
         """Delete by key."""
+        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
                 DELETE FROM data
                 WHERE key = (%s);
-            """, (key,))
+            """, (pkey,))
             self._commit()
 
     @resetonfail
-    def set(self, key, value):
+    def set(self, prefix, key, value):
         """Insert/Update the value for a key."""
+        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             try:
                 cur.execute("""
                     INSERT INTO data (key, value)
                     VALUES (%s, %s);
-                """, (key, psycopg2.extras.Json(value)))
+                """, (pkey, psycopg2.extras.Json(value)))
             except psycopg2.IntegrityError:
                 self._rollback()
                 cur.execute("""
                     UPDATE data
                     SET (value) = (%s)
                     WHERE key = (%s);
-                """, (psycopg2.extras.Json(value), key))
+                """, (psycopg2.extras.Json(value), pkey))
             self._commit()
 
     @resetonfail
-    def get(self, key):
+    def get(self, prefix, key):
         """Return the value for key, or None if no value."""
+        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
                 SELECT value
                 FROM data
                 WHERE key = (%s);
-            """, (key,))
+            """, (pkey,))
             result = cur.fetchone()
             if result is None:
                 return
