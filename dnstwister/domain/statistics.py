@@ -47,10 +47,16 @@ class NoiseStatistic(object):
         To prevent hunting there is an upper and lower bound to switch flag
         states, creating hysteresis.
         """
+        new_flag = None
+
         if not self._noisy and self.delta_rate > self.NOISE_ON:
-            self._noisy = True
+            new_flag = True
         elif self._noisy and self.delta_rate < self.NOISE_OFF:
-            self._noisy = False
+            new_flag = False
+
+        if new_flag is not None:
+            self._noisy = new_flag
+
         return self._noisy
 
     @property

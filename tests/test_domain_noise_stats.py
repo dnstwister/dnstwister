@@ -108,3 +108,61 @@ def test_delta_rate_calculation():
     stat = NoiseStatistic(domain, 10, window_start=past_date)
 
     assert round(stat.delta_rate, 2) == 0.91
+
+
+def test_noisy_flag_is_stable():
+    """Test the noise flag itself."""
+    domain = 'www.example.com'
+    now = datetime.datetime.now()
+    past_date = now + datetime.timedelta(days=-11)
+    stat = NoiseStatistic(domain, 10, window_start=past_date)
+
+    assert stat.is_noisy is True
+    assert stat.is_noisy is True
+
+
+def test_noisy_flag_on_threshold():
+    """Test the noise flag triggers at the right threshold."""
+    domain = 'www.example.com'
+    now = datetime.datetime.now()
+    past_date = now + datetime.timedelta(days=-10)
+    stat = NoiseStatistic(domain, 5, window_start=past_date)
+
+    assert stat.is_noisy is False
+    assert stat.is_noisy is False
+
+    stat = NoiseStatistic(domain, 6, window_start=past_date, noisy=False)
+
+    assert stat.is_noisy is True
+    assert stat.is_noisy is True
+
+    stat = NoiseStatistic(domain, 5, window_start=past_date, noisy=True)
+
+    assert stat.is_noisy is True
+    assert stat.is_noisy is True
+
+
+def test_noisy_flag_off_threshold():
+    """Test the noise flag triggers at the right threshold."""
+    domain = 'www.example.com'
+    now = datetime.datetime.now()
+    past_date = now + datetime.timedelta(days=-10)
+    stat = NoiseStatistic(domain, 6, window_start=past_date)
+
+    assert stat.is_noisy is True
+    assert stat.is_noisy is True
+
+    stat = NoiseStatistic(domain, 3, window_start=past_date, noisy=True)
+
+    assert stat.is_noisy is True
+    assert stat.is_noisy is True
+
+    stat = NoiseStatistic(domain, 2, window_start=past_date, noisy=True)
+
+    assert stat.is_noisy is False
+    assert stat.is_noisy is False
+
+    stat = NoiseStatistic(domain, 3, window_start=past_date, noisy=False)
+
+    assert stat.is_noisy is False
+    assert stat.is_noisy is False
