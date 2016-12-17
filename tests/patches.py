@@ -17,6 +17,8 @@ class NoEmailer(object):
 class SimpleKVDatabase(object):
     """Replace the main storage with a lightweight in-memory shim."""
 
+    datetime_format = '%Y-%m-%dT%H:%M:%SZ'
+
     def __init__(self):
         self._data = {}
 
