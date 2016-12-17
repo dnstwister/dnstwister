@@ -2,7 +2,8 @@
 import datetime
 import time
 
-from dnstwister import repository, tools
+from dnstwister import repository
+from dnstwister.tools import delta_reports
 from dnstwister.domain.statistics import NoiseStatistic
 from dnstwister.repository import statistics as statistics_repository
 
@@ -19,7 +20,7 @@ def process_domain(registered_domain, now=None):
     if delta_report is None:
         return
 
-    for domain in tools.delta_reports.extract_domains(delta_report):
+    for domain in delta_reports.extract_domains(delta_report):
 
         updated = statistics_repository.noise_stat_last_updated(domain)
         if updated is not None and (now - updated) < FREQUENCY:

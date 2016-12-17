@@ -31,7 +31,9 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td>www<span>.</span>examp1e<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>examp1e<span>.</span>com
+                    </td>
                     <td>127.0.0.1</td>
                     <td><a href="http://dnstwister.report/analyse/1234">analyse</a></td>
                 </tr>
@@ -49,7 +51,9 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td>www<span>.</span>exampl3<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>exampl3<span>.</span>com
+                    </td>
                     <td>127.0.0.1</td>
                     <td>127.0.0.2</td>
                     <td><a href="http://dnstwister.report/analyse/6789">analyse</a></td>
@@ -65,7 +69,9 @@ def test_email_renderer():
             </thead>
             <tbody>
                 <tr>
-                    <td>www<span>.</span>examplle<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>examplle<span>.</span>com
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -109,27 +115,37 @@ def test_email_renderer_domain_sorting():
             </thead>
             <tbody>
                 <tr>
-                    <td>www<span>.</span>axample<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>axample<span>.</span>com
+                    </td>
                     <td>a</td>
                     <td><a href="">analyse</a></td>
                 </tr>
                 <tr>
-                    <td>www<span>.</span>axample<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>axample<span>.</span>com
+                    </td>
                     <td>z</td>
                     <td><a href="">analyse</a></td>
                 </tr>
                 <tr>
-                    <td>www<span>.</span>examp1e<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>examp1e<span>.</span>com
+                    </td>
                     <td></td>
                     <td><a href="">analyse</a></td>
                 </tr>
                 <tr>
-                    <td>www<span>.</span>examp2e<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>examp2e<span>.</span>com
+                    </td>
                     <td></td>
                     <td><a href="">analyse</a></td>
                 </tr>
                 <tr>
-                    <td>www<span>.</span>examp2f<span>.</span>com</td>
+                    <td>
+                        www<span>.</span>examp2f<span>.</span>com
+                    </td>
                     <td></td>
                     <td><a href="">analyse</a></td>
                 </tr>
