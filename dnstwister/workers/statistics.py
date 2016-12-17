@@ -22,7 +22,7 @@ def extract_domains(delta_report):
 def process_domain(registered_domain, now=None):
     """Update the statistics for all fuzz results for this domain."""
     if now is None:
-        return datetime.datetime.now()
+        now = datetime.datetime.now()
 
     delta_report = repository.get_delta_report(registered_domain)
     if delta_report is None:
