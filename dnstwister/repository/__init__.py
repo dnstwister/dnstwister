@@ -1,7 +1,7 @@
 """Application repository."""
 import datetime
 
-from dnstwister import db
+from dnstwister import data_db as db
 import dnstwister.storage.interfaces
 
 
