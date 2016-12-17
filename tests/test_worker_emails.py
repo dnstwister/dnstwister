@@ -48,15 +48,27 @@ def test_dont_send_too_often(capsys, monkeypatch):
     """Test that emails are not sent more than every 24 hours."""
 
     # Patches
-    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
     monkeypatch.setattr(
-        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+        'dnstwister.repository.db',
+        patches.SimpleKVDatabase()
     )
     monkeypatch.setattr(
-        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+        'dnstwister.repository.statistics.db',
+        patches.SimpleKVDatabase()
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer',
+        patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve',
+        lambda domain: ('999.999.999.999', False)
     )
     emailer = patches.NoEmailer()
-    monkeypatch.setattr('workers.email.emailer', emailer)
+    monkeypatch.setattr(
+        'workers.email.emailer',
+        emailer
+    )
 
     repository = dnstwister.repository
 
@@ -94,15 +106,27 @@ def test_subscription_email_timing(capsys, monkeypatch):
     """
 
     # Patch away
-    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
     monkeypatch.setattr(
-        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+        'dnstwister.repository.db',
+        patches.SimpleKVDatabase()
     )
     monkeypatch.setattr(
-        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+        'dnstwister.repository.statistics.db',
+        patches.SimpleKVDatabase()
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer',
+        patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve',
+        lambda domain: ('999.999.999.999', False)
     )
     emailer = patches.NoEmailer()
-    monkeypatch.setattr('workers.email.emailer', emailer)
+    monkeypatch.setattr(
+        'workers.email.emailer',
+        emailer
+    )
 
     repository = dnstwister.repository
 
