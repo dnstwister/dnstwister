@@ -57,6 +57,10 @@
         </tr>{% endfor %}
     </tbody>
 </table>
+{% endif %}{% if noisy %}
+<p>
+    * "noisy" domain that changes state regularly.
+</p>
 {% endif %}
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>

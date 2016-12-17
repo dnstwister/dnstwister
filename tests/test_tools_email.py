@@ -78,6 +78,10 @@ def test_email_renderer():
         </table>
 
         <p>
+            * "noisy" domain that changes state regularly.
+        </p>
+
+        <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
     """).strip()
