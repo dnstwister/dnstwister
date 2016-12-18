@@ -9,7 +9,7 @@ class IKeyValueDB(zope.interface.Interface):
         """Set the value for kind:key.
         """
 
-    # pylint: disable=arguments-differ
+    # pylint: disable=arguments-differ,signature-differs
     def get(self, kind, key):
         """Get a value for kind + key or None."""
 
