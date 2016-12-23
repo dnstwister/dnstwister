@@ -50,7 +50,7 @@ def get_noise_stat(domain):
     return NoiseStatistic(
         domain,
         stat['deltas'],
-        datetime.datetime.strptime(stat['window_start']),
+        datetime.datetime.strptime(stat['window_start'], db.datetime_format),
         stat['noisy'],
     )
 
