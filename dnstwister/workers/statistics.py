@@ -48,48 +48,24 @@ def process_domain(registered_domain, updated_domains=None, now=None):
     return updated_domains
 
 
-def increment_delta_report_domains():
-    """Add/increment domains found in delta reports.
+def increment_email_sub_deltas():
+    """Add/increment domains found in delta reports for email subs.
 
-    Return set of domains updated found.
+    Return set of domains incremented.
     """
     updated_domains = set()
-    domains_iter = repository.iregistered_domains()
+    subs_iter = repository.isubscriptions()
 
     while True:
         try:
-            domain = domains_iter.next()
+            sub = subs_iter.next()
         except StopIteration:
             break
+
+        sub_detail = sub[1]
+        domain = sub_detail['domain']
 
         updated_domains = process_domain(domain, updated_domains)
-
-    return updated_domains
-
-
-def update_remaining_stats(updated_domains, now=None):
-    """Update the last checked date on domains not already updated."""
-    if now is None:
-        now = datetime.datetime.now()
-
-    updated_domains = set()
-    domains_iter = statistics_repository.inoisy_domains()
-
-    while True:
-        try:
-            domain = domains_iter.next()
-        except StopIteration:
-            break
-
-        if domain in updated_domains:
-            continue
-
-        updated = statistics_repository.noise_stat_last_updated(domain)
-        if updated is not None and (now - updated) < FREQUENCY:
-            continue
-
-        statistics_repository.mark_noise_stat_as_updated(domain)
-        updated_domains.add(domain)
 
     return updated_domains
 
@@ -98,16 +74,10 @@ def main():
     """Main code for worker."""
     while True:
 
-        incremented_domains = increment_delta_report_domains()
+        incremented_domains = increment_email_sub_deltas()
         print 'Incremented statistic for {} domains.'.format(
             len(incremented_domains)
         )
-
-        updated_domains = update_remaining_stats(incremented_domains)
-        print 'Marked {} domains\' statistics as up to date.'.format(
-            len(updated_domains)
-        )
-
         time.sleep(60)
 
 
