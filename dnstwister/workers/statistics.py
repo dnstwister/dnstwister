@@ -51,7 +51,7 @@ def process_domain(registered_domain, updated_domains=None, now=None):
 def increment_email_sub_deltas():
     """Add/increment domains found in delta reports for email subs.
 
-    Return set of domains incremented.
+    Return count of updated domains.
     """
     updated_domains = set()
     subs_iter = repository.isubscriptions()
@@ -67,17 +67,16 @@ def increment_email_sub_deltas():
 
         updated_domains = process_domain(domain, updated_domains)
 
-    return updated_domains
+    return len(updated_domains)
 
 
 def main():
     """Main code for worker."""
     while True:
 
-        incremented_domains = increment_email_sub_deltas()
-        print 'Incremented statistic for {} domains.'.format(
-            len(incremented_domains)
-        )
+        incremented_count = increment_email_sub_deltas()
+        print 'Incremented stats for {} domains.'.format(incremented_count)
+
         time.sleep(60)
 
 
