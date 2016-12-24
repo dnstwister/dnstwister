@@ -11,16 +11,24 @@ from dnstwister.repository import statistics as statistics_repository
 FREQUENCY = datetime.timedelta(days=1)
 
 
-def process_domain(registered_domain, now=None):
+def process_domain(registered_domain, updated_domains=None, now=None):
     """Update the statistics for all fuzz results for this domain."""
     if now is None:
         now = datetime.datetime.now()
 
+    if updated_domains is None:
+        updated_domains = set()
+    else:
+        updated_domains = set(updated_domains)
+
     delta_report = repository.get_delta_report(registered_domain)
     if delta_report is None:
-        return
+        return updated_domains
 
     for domain in delta_reports.extract_domains(delta_report):
+
+        if domain in updated_domains:
+            continue
 
         updated = statistics_repository.noise_stat_last_updated(domain)
         if updated is not None and (now - updated) < FREQUENCY:
@@ -35,23 +43,38 @@ def process_domain(registered_domain, now=None):
 
         statistics_repository.set_noise_stat(stat)
         statistics_repository.mark_noise_stat_as_updated(domain)
+        updated_domains.add(domain)
+
+    return updated_domains
+
+
+def update_delta_report_domains():
+    """Add/increment domains found in delta reports.
+
+    Return set of domains updated found.
+    """
+    updated_domains = set()
+    domains_iter = repository.iregistered_domains()
+
+    while True:
+        try:
+            domain = domains_iter.next()
+        except StopIteration:
+            break
+
+        updated_domains = process_domain(domain, updated_domains)
+
+    return updated_domains
 
 
 def main():
     """Main code for worker."""
     while True:
 
-        domains_iter = repository.iregistered_domains()
-
-        while True:
-            try:
-                domain = domains_iter.next()
-            except StopIteration:
-                break
-
-            process_domain(domain)
-
-        print 'All statistics for all deltas processed'
+        updated_domains = update_delta_report_domains()
+        print 'Stats for deltas processed, {} domains incremented'.format(
+            len(updated_domains)
+        )
 
         time.sleep(60)
 
