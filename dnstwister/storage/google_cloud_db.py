@@ -31,14 +31,16 @@ class GCDB(object):
         """Return the value for key, or None if no value."""
         return self._client.get(self._client.key(kind, key))
 
-    def to_db_datetime(self, datetime_obj):
+    @staticmethod
+    def to_db_datetime(datetime_obj):
         """Convert a datetime object to db datetime data.
 
         No conversion needed in google db.
         """
         return datetime_obj
 
-    def from_db_datetime(self, datetime_data):
+    @staticmethod
+    def from_db_datetime(datetime_data):
         """Convert datetime data from db to a datetime object.
 
         No conversion needed in google db.
