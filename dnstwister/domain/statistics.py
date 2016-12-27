@@ -3,9 +3,9 @@ import datetime
 
 
 class NoiseStatistic(object):
-    """Holds noise stats."""
+    """Holds noise statistics."""
 
-    # How many days in a stats window.
+    # How many days in a statistics window.
     WINDOW_SIZE = 30
 
     # Higher and lower threshold to mark as noisy or not, of changes per day.
@@ -70,7 +70,7 @@ class NoiseStatistic(object):
         return self._deltas / float(window_age)
 
     def update_window(self, now=None):
-        """Update the window and (proportionally) the stats."""
+        """Update the window and (proportionally) the statistics."""
         if now is None:
             now = datetime.datetime.now()
 
