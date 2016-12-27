@@ -34,3 +34,17 @@ def test_new_email_sub_creates_new_statistics(capsys, monkeypatch):
     stats_data = statistics_repository.get_noise_stat('exxample.com')
     assert stats_data.domain == 'exxample.com'
     assert stats_data.deltas == 1
+
+
+def test_statistics_worker_handles_no_delta_report(capsys, monkeypatch):
+    """A new email sub will create a new set of stats."""
+    data_repository, statistics_repository = set_up_mocks(monkeypatch)
+
+    # GIVEN a subscribed user (and no delta report created).
+    data_repository.subscribe_email('1234', 'a@b.com', 'example.com')
+
+    # WHEN the email work is ran
+    workers.statistics.increment_email_sub_deltas()
+
+    # THEN nothing happens.
+    assert statistics_repository.get_noise_stat('exxample.com') is None

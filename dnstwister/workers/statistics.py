@@ -11,15 +11,12 @@ from dnstwister.repository import statistics as statistics_repository
 FREQUENCY = datetime.timedelta(days=1)
 
 
-def process_domain(registered_domain, updated_domains=None, now=None):
+def process_domain(registered_domain, updated_domains, now=None):
     """Update the statistics for all fuzz results for this domain."""
     if now is None:
         now = datetime.datetime.now()
 
-    if updated_domains is None:
-        updated_domains = set()
-    else:
-        updated_domains = set(updated_domains)
+    updated_domains = set(updated_domains)
 
     delta_report = repository.get_delta_report(registered_domain)
     if delta_report is None:
