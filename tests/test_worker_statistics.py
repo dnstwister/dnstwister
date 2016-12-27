@@ -101,3 +101,65 @@ def test_statistics_dont_update_once_a_day(capsys, monkeypatch):
     stats_data = statistics_repository.get_noise_stat('exxample.com')
     assert stats_data.domain == 'exxample.com'
     assert stats_data.deltas == 1
+
+
+def test_statistics_update_once_per_domain_only(capsys, monkeypatch):
+    """Statistics will only update once per domain."""
+    data_repository, statistics_repository = set_up_mocks(monkeypatch)
+
+    # GIVEN a two subscribed users with the same domain.
+    data_repository.subscribe_email('1234', 'a@b.com', 'example.com')
+    data_repository.subscribe_email('5678', 'b@b.com', 'example.com')
+    data_repository.update_delta_report('example.com', {
+        'new': [['exxample.com', '127.0.0.1']],
+        'updated': [],
+        'deleted': [],
+    })
+
+    # WHEN the email work is ran
+    workers.statistics.increment_email_sub_deltas()
+
+    # THEN the statistic is created with a delta of 1 only.
+    stats_data = statistics_repository.get_noise_stat('exxample.com')
+    assert stats_data.domain == 'exxample.com'
+    assert stats_data.deltas == 1
+
+
+def test_statistics_increment_based_on_delta_reports(capsys, monkeypatch):
+    """Statistics will only update once per domain."""
+    data_repository, statistics_repository = set_up_mocks(monkeypatch)
+
+    # GIVEN a subscribed user with a delta report created.
+    data_repository.subscribe_email('1234', 'a@b.com', 'example.com')
+    data_repository.update_delta_report('example.com', {
+        'new': [['exxample.com', '127.0.0.1']],
+        'updated': [],
+        'deleted': [],
+    })
+
+    # GIVEN the worker has already ran.
+    workers.statistics.increment_email_sub_deltas()
+
+    # GIVEN a new delta report has been created.
+    data_repository.update_delta_report('example.com', {
+        'new': [['exampl3.com', '127.0.0.1']],
+        'updated': [['exxample.com', '127.0.0.1', '127.0.0.2']],
+        'deleted': [],
+    })
+
+    # GIVEN a day has passed
+    now = datetime.datetime.now() - datetime.timedelta(hours=24, minutes=1)
+    statistics_repository.mark_noise_stat_as_updated('exampl3.com', now=now)
+    statistics_repository.mark_noise_stat_as_updated('exxample.com', now=now)
+
+    # WHEN the email work is ran a second time.
+    workers.statistics.increment_email_sub_deltas()
+
+    # THEN each statistic reflects how often it has appears.
+    stats_data = statistics_repository.get_noise_stat('exampl3.com')
+    assert stats_data.domain == 'exampl3.com'
+    assert stats_data.deltas == 1
+
+    stats_data = statistics_repository.get_noise_stat('exxample.com')
+    assert stats_data.domain == 'exxample.com'
+    assert stats_data.deltas == 2
