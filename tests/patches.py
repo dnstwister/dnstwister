@@ -41,7 +41,7 @@ class SimpleKVDatabase(object):
 
     def ikeys(self, kind):
         """Return an iterator of all keys filtered on kind."""
-        for key in self._data:
+        for key in dict(self._data):
             if key.startswith(kind + ':'):
                 yield key.split(kind + ':')[1]
 
