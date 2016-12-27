@@ -1,4 +1,5 @@
 """Storage of results for comparison and CUD alerting."""
+import datetime
 import os
 import urlparse
 
@@ -9,9 +10,11 @@ import zope.interface
 from dnstwister.storage import interfaces
 
 
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+
 def resetonfail(func):
-    """Decorator to ensure that the transaction is rolled back on failure.
-    """
+    """Decorator to ensure that the transaction is rolled back on failure."""
     def wrapped(instance, *args, **kwargs):
         """ Wrapper to do DB reset."""
         try:
@@ -25,8 +28,6 @@ def resetonfail(func):
 class PGDatabase(object):
     """Postgres database storage implementation."""
     zope.interface.implements(interfaces.IKeyValueDB)
-
-    datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 
     def __init__(self):
         self._db = None
@@ -128,3 +129,13 @@ class PGDatabase(object):
             if result is None:
                 return
             return result[0]
+
+    @staticmethod
+    def to_db_datetime(datetime_obj):
+        """Convert a datetime object to db datetime data."""
+        return datetime_obj.strftime(DATETIME_FORMAT)
+
+    @staticmethod
+    def from_db_datetime(datetime_data):
+        """Convert datetime data from db to a datetime object."""
+        return datetime.datetime.strptime(datetime_data, DATETIME_FORMAT)

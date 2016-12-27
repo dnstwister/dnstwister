@@ -1,4 +1,8 @@
 """Mocks."""
+import datetime
+
+
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class NoEmailer(object):
@@ -16,9 +20,6 @@ class NoEmailer(object):
 
 class SimpleKVDatabase(object):
     """Replace the main storage with a lightweight in-memory shim."""
-
-    datetime_format = '%Y-%m-%dT%H:%M:%SZ'
-
     def __init__(self):
         self._data = {}
 
@@ -50,6 +51,22 @@ class SimpleKVDatabase(object):
             del self._data[kind + ':' + key]
         except KeyError:
             pass
+
+    @staticmethod
+    def to_db_datetime(datetime_obj):
+        """Convert a datetime object to db datetime data.
+
+        Just copy the PG database implementation.
+        """
+        return datetime_obj.strftime(DATETIME_FORMAT)
+
+    @staticmethod
+    def from_db_datetime(datetime_data):
+        """Convert datetime data from db to a datetime object.
+
+        Just copy the PG database implementation.
+        """
+        return datetime.datetime.strptime(datetime_data, DATETIME_FORMAT)
 
 
 class SimpleFuzzer(object):

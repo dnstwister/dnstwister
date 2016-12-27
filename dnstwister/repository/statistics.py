@@ -15,7 +15,7 @@ def mark_noise_stat_as_updated(domain, now=None):
     if now is None:
         now = datetime.datetime.now()
 
-    value = now.strftime(db.datetime_format)
+    value = db.to_db_datetime(now)
     db.set('noise_statistic_updated', domain, value)
 
 
@@ -28,14 +28,14 @@ def noise_stat_last_updated(domain, now=None):
     if value is None:
         return
 
-    return datetime.datetime.strptime(value, db.datetime_format)
+    return db.from_db_datetime(value)
 
 
 def set_noise_stat(stat):
     """Update the noise statistics for a domain."""
     value = {
         'deltas': stat.deltas,
-        'window_start': stat.window_start.strftime(db.datetime_format),
+        'window_start': db.to_db_datetime(stat.window_start),
         'noisy': stat.is_noisy,
     }
     db.set('noise_statistic', stat.domain, value)
@@ -50,7 +50,7 @@ def get_noise_stat(domain):
     return NoiseStatistic(
         domain,
         stat['deltas'],
-        datetime.datetime.strptime(stat['window_start'], db.datetime_format),
+        db.from_db_datetime(stat['window_start']),
         stat['noisy'],
     )
 
