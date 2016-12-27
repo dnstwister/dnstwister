@@ -64,7 +64,7 @@ class NoiseStatistic(object):
         """Return the average number of deltas for a domain, per day."""
         window_age = (datetime.datetime.now() - self._window_start).days
 
-        if window_age <= self.MIN_RATE_DAYS:
+        if window_age < self.MIN_RATE_DAYS:
             return 0
 
         return self._deltas / float(window_age)
