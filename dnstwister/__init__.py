@@ -17,6 +17,7 @@ import storage.pg_database
 app = flask.Flask(__name__)
 cache = flask_cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 data_db = storage.pg_database.PGDatabase()
+stats_db = data_db  # For now.
 emailer = mail.sendgridservice.SGSender()
 
 # Logging

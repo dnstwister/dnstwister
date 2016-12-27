@@ -13,7 +13,9 @@
     </thead>
     <tbody>{% for (dom, ip, analysis_link) in new | sort %}
         <tr>
-            <td>{{ dom | domain_format }}</td>
+            <td>
+                {{ dom | domain_format }}{% if dom in noisy %} *{% endif %}
+            </td>
             <td>{{ ip }}</td>
             <td><a href="{{ analysis_link }}">analyse</a></td>
         </tr>{% endfor %}
@@ -31,7 +33,9 @@
     </thead>
     <tbody>{% for (dom, old_ip, new_ip, analysis_link) in updated | sort %}
         <tr>
-            <td>{{ dom | domain_format }}</td>
+            <td>
+                {{ dom | domain_format }}{% if dom in noisy %} *{% endif %}
+            </td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
             <td><a href="{{ analysis_link }}">analyse</a></td>
@@ -47,10 +51,16 @@
     </thead>
     <tbody>{% for dom in deleted | sort %}
         <tr>
-            <td>{{ dom | domain_format }}</td>
+            <td>
+                {{ dom | domain_format }}{% if dom in noisy %} *{% endif %}
+            </td>
         </tr>{% endfor %}
     </tbody>
 </table>
+{% endif %}{% if noisy %}
+<p>
+    * "noisy" domain that changes state regularly.
+</p>
 {% endif %}
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>

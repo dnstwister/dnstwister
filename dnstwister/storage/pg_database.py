@@ -1,4 +1,5 @@
 """Storage of results for comparison and CUD alerting."""
+import datetime
 import os
 import urlparse
 
@@ -9,9 +10,11 @@ import zope.interface
 from dnstwister.storage import interfaces
 
 
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+
 def resetonfail(func):
-    """Decorator to ensure that the transaction is rolled back on failure.
-    """
+    """Decorator to ensure that the transaction is rolled back on failure."""
     def wrapped(instance, *args, **kwargs):
         """ Wrapper to do DB reset."""
         try:
@@ -66,10 +69,9 @@ class PGDatabase(object):
             self._db = None
 
     @resetonfail
-    def ikeys(self, prefix=''):
-        """Return an iterator of all the keys in the database.
-
-        Optionally filter by key prefix.
+    def ikeys(self, prefix):
+        """Return an iterator of all the keys starting with a prefix,
+        in the database.
         """
         with self.cursor as cur:
             cur.execute("""
@@ -81,46 +83,59 @@ class PGDatabase(object):
                 if row is None:
                     break
                 if row[0].startswith(prefix + ':'):
-                    yield row[0]
+                    yield row[0].split(prefix + ':')[1]
 
     @resetonfail
-    def delete(self, key):
+    def delete(self, prefix, key):
         """Delete by key."""
+        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
                 DELETE FROM data
                 WHERE key = (%s);
-            """, (key,))
+            """, (pkey,))
             self._commit()
 
     @resetonfail
-    def set(self, key, value):
+    def set(self, prefix, key, value):
         """Insert/Update the value for a key."""
+        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             try:
                 cur.execute("""
                     INSERT INTO data (key, value)
                     VALUES (%s, %s);
-                """, (key, psycopg2.extras.Json(value)))
+                """, (pkey, psycopg2.extras.Json(value)))
             except psycopg2.IntegrityError:
                 self._rollback()
                 cur.execute("""
                     UPDATE data
                     SET (value) = (%s)
                     WHERE key = (%s);
-                """, (psycopg2.extras.Json(value), key))
+                """, (psycopg2.extras.Json(value), pkey))
             self._commit()
 
     @resetonfail
-    def get(self, key):
+    def get(self, prefix, key):
         """Return the value for key, or None if no value."""
+        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
                 SELECT value
                 FROM data
                 WHERE key = (%s);
-            """, (key,))
+            """, (pkey,))
             result = cur.fetchone()
             if result is None:
                 return
             return result[0]
+
+    @staticmethod
+    def to_db_datetime(datetime_obj):
+        """Convert a datetime object to db datetime data."""
+        return datetime_obj.strftime(DATETIME_FORMAT)
+
+    @staticmethod
+    def from_db_datetime(datetime_data):
+        """Convert datetime data from db to a datetime object."""
+        return datetime.datetime.strptime(datetime_data, DATETIME_FORMAT)
