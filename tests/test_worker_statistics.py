@@ -1,7 +1,4 @@
-"""Tests of the deltas worker."""
-import datetime
-import time
-
+"""Tests of the statistics worker."""
 import dnstwister
 import patches
 import workers.statistics
