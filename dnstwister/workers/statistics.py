@@ -32,8 +32,7 @@ def process_domain(registered_domain, updated_domains=None, now=None):
 
         updated = statistics_repository.noise_stat_last_updated(domain)
         if updated is not None and (now - updated) < FREQUENCY:
-            pass
-#            continue
+            continue
 
         stat = statistics_repository.get_noise_stat(domain)
         if stat is None:
