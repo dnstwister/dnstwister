@@ -9,3 +9,5 @@ script: py.test --cov=dnstwister --cov-config .coveragerc
 after_success:
     - pip install python-coveralls
     - coveralls
+dist: trusty
+sudo: false
