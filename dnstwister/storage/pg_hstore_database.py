@@ -47,7 +47,6 @@ class PgHstoreDatabase(object):
                 host=db_url.hostname,
                 port=db_url.port,
             )
-            psycopg2.extras.register_hstore(db)
             self._db = db
         cur = self._db.cursor()
         return cur
