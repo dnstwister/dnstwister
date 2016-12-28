@@ -16,8 +16,14 @@ def setup(new_conn, cursor):
     cursor.execute("""
         CREATE TABLE stats
             (
-                data jsonb default '{}'
+                data jsonb
             );
+    """)
+
+    print 'Creating json object...'
+    cursor.execute("""
+        INSERT INTO stats (data)
+        VALUES ('{}');
     """)
 
 
