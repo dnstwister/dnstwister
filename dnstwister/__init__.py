@@ -11,13 +11,14 @@ import logging
 
 import mail.sendgridservice
 import storage.pg_database
+import storage.pg_hstore_database
 
 
 # Set up app/cache/db/emailer/gateway here
 app = flask.Flask(__name__)
 cache = flask_cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 data_db = storage.pg_database.PGDatabase()
-stats_db = data_db  # For now.
+stats_db = storage.pg_hstore_database.PgHstoreDatabase()
 emailer = mail.sendgridservice.SGSender()
 
 # Logging

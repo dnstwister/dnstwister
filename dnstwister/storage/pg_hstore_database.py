@@ -7,7 +7,7 @@ import psycopg2.extras
 import psycopg2.pool
 import zope.interface
 
-#from dnstwister.storage import interfaces
+from dnstwister.storage import interfaces
 
 
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -28,7 +28,7 @@ def resetonfail(func):
 
 class PgHstoreDatabase(object):
     """Postgres key-value storage implementation."""
-#    zope.interface.implements(interfaces.IKeyValueDB)
+    zope.interface.implements(interfaces.IKeyValueDB)
 
     def __init__(self):
         self._db = None
