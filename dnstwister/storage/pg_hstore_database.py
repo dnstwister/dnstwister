@@ -26,31 +26,6 @@ def resetonfail(func):
     return wrapped
 
 
-def hstore_format(cursor, string):
-    """Prepare a string for use as a in a hstore query.
-
-    Keys and values need to be escaped for safety, but the format of the
-    hstore updates requires no surrounding quotes so we cannot just use the
-    standard parameters.
-    """
-
-    # Perform any mogrification of the value first. This converts dicts to
-    # hstore representations etc.
-    mogrified = cursor.mogrify('%s', (string,))
-
-    # Strip surrounding quotes if added in mogrification.
-    if mogrified.startswith('\'') and mogrified.endswith('\''):
-        mogrified = mogrified[1:-1]
-
-    # Now quote the string to prevent naught SQL (this is what happens to
-    # parameters in cursor.execute(...)).
-    quoted = psycopg2.extensions.QuotedString(mogrified).getquoted()
-
-    # Finally, strip the leading and trailing quotes and return as an "AsIs"
-    # psycopg2 value.
-    return psycopg2.extensions.AsIs(quoted[1:-1])
-
-
 class PgHstoreDatabase(object):
     """Postgres key-value storage implementation."""
 #    zope.interface.implements(interfaces.IKeyValueDB)
@@ -101,8 +76,8 @@ class PgHstoreDatabase(object):
         """
         with self.cursor as cur:
             cur.execute("""
-                SELECT key
-                FROM data;
+                SELECT jsonb_object_keys(data)
+                FROM stats;
             """)
             while True:
                 row = cur.fetchone()
@@ -117,8 +92,8 @@ class PgHstoreDatabase(object):
         pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
-                DELETE FROM data
-                WHERE key = (%s);
+                UPDATE stats
+                SET data = data - %s;
             """, (pkey,))
             self._commit()
 
@@ -129,11 +104,8 @@ class PgHstoreDatabase(object):
         with self.cursor as cur:
             cur.execute("""
                 UPDATE stats
-                SET data = data || '"%s" => "%s"';
-            """, (
-                hstore_format(cur, pkey),
-                hstore_format(cur, value)
-            ))
+                SET data = jsonb_set(data, %s, %s, true);
+            """, ('{' + pkey + '}', psycopg2.extras.Json(value)))
             self._commit()
 
     @resetonfail
@@ -142,7 +114,8 @@ class PgHstoreDatabase(object):
         pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
-                SELECT (data -> %s)::hstore FROM stats;
+                SELECT data -> %s
+                FROM stats;
             """, (pkey,))
             result = cur.fetchone()
             if result is None:
@@ -158,14 +131,3 @@ class PgHstoreDatabase(object):
     def from_db_datetime(datetime_data):
         """Convert datetime data from db to a datetime object."""
         return datetime.datetime.strptime(datetime_data, DATETIME_FORMAT)
-
-
-if __name__ == '__main__':
-    db = PgHstoreDatabase()
-
-    db.set('test', '9', {'test':'wit\'h2', 'x': '2'})
-
-    val = db.get('test', '9')
-    print 'get', val
-
-    import pdb; pdb.set_trace()
