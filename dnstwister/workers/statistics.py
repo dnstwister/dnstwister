@@ -71,8 +71,12 @@ def main():
     """Main code for worker."""
     while True:
 
+        start = time.time()
         incremented_count = increment_email_sub_deltas()
-        print 'Incremented stats for {} domains.'.format(incremented_count)
+        print 'Incremented stats for {} domains in {} seconds.'.format(
+            incremented_count,
+            round(time.time() - start, 2)
+        )
 
         time.sleep(60)
 
