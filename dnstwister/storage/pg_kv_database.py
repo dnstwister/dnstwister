@@ -1,4 +1,4 @@
-"""Key-value store using hstore in postgres. """
+"""Key-value store using jsonb in postgres. """
 import datetime
 import os
 import urlparse
@@ -26,7 +26,7 @@ def resetonfail(func):
     return wrapped
 
 
-class PgHstoreDatabase(object):
+class PgKvDatabase(object):
     """Postgres key-value storage implementation."""
     zope.interface.implements(interfaces.IKeyValueDB)
 
