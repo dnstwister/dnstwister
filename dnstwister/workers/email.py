@@ -119,6 +119,8 @@ def main():
     """Main code for worker."""
     while True:
 
+        start = time.time()
+
         subs_iter = repository.isubscriptions()
 
         while True:
@@ -126,7 +128,9 @@ def main():
             try:
                 sub = subs_iter.next()
             except StopIteration:
-                print 'All subs processed'
+                print 'All subs processed in {} seconds'.format(
+                    round(time.time() - start, 2)
+                )
                 break
 
             if sub is None:

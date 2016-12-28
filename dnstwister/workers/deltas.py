@@ -98,6 +98,8 @@ def main():
     """Main code for worker."""
     while True:
 
+        start = time.time()
+
         domains_iter = repository.iregistered_domains()
 
         while True:
@@ -108,7 +110,9 @@ def main():
 
             process_domain(domain)
 
-        print 'All deltas processed'
+        print 'All deltas processed in {} seconds'.format(
+            round(time.time() - start, 2)
+        )
 
         time.sleep(60)
 
