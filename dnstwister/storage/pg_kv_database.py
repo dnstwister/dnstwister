@@ -76,46 +76,46 @@ class PgKvDatabase(object):
         with self.cursor as cur:
             cur.execute("""
                 SELECT jsonb_object_keys(data)
-                FROM stats;
-            """)
+                FROM data
+                WHERE prefix = %s;
+            """, prefix)
             while True:
                 row = cur.fetchone()
                 if row is None:
                     break
-                if row[0].startswith(prefix + ':'):
-                    yield row[0].split(prefix + ':')[1]
+                yield row[0]
 
     @resetonfail
     def delete(self, prefix, key):
         """Delete by key."""
-        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
-                UPDATE stats
-                SET data = data - %s;
-            """, (pkey,))
+                UPDATE data
+                SET data = data - %s
+                WHERE prefix = %s;
+            """, (key, prefix))
             self._commit()
 
     @resetonfail
     def set(self, prefix, key, value):
         """Insert/Update the value for a key."""
-        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
-                UPDATE stats
-                SET data = jsonb_set(data, %s, %s, true);
-            """, ('{' + pkey + '}', psycopg2.extras.Json(value)))
+                UPDATE data
+                SET data = jsonb_set(data, %s, %s, true)
+                WHERE prefix = %s;
+            """, ('{' + key + '}', psycopg2.extras.Json(value), prefix))
             self._commit()
 
     @resetonfail
     def get(self, prefix, key):
         """Return the value for key, or None if no value."""
-        pkey = ':'.join((prefix, key))
         with self.cursor as cur:
             cur.execute("""
                 SELECT data -> %s
-                FROM stats;
-            """, (pkey,))
+                FROM data
+                WHERE prefix = %s;
+            """, (key, prefix))
             result = cur.fetchone()
             if result is None:
                 return

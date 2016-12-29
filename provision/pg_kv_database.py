@@ -1,7 +1,8 @@
 """Database provisioning."""
-import psycopg2.extras
 import sys
 import urlparse
+
+import psycopg2.extras
 
 
 def setup(new_conn, cursor):
@@ -12,18 +13,28 @@ def setup(new_conn, cursor):
     print 'Setting up jsonb...'
     psycopg2.extras.register_json(new_conn, name='jsonb')
 
-    print 'Creating "stats" table...'
+    print 'Creating "data" table...'
     cursor.execute("""
-        CREATE TABLE stats
+        CREATE TABLE data
             (
+                prefix varchar PRIMARY KEY,
                 data jsonb
             );
     """)
 
-    print 'Creating json object...'
+    print 'Creating indexes...'
     cursor.execute("""
-        INSERT INTO stats (data)
-        VALUES ('{}');
+        CREATE INDEX on data (lower(prefix))
+    """)
+
+    print 'Creating json objects...'
+    cursor.execute("""
+        INSERT INTO data (prefix, data)
+        VALUES ('noise_statistic', '{}');
+    """)
+    cursor.execute("""
+        INSERT INTO data (prefix, data)
+        VALUES ('noise_statistic_updated', '{}');
     """)
 
 
