@@ -2,7 +2,7 @@
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>
-{% if new %}<h2>New registrations</h2>
+{% if report.alertable.new %}<h2>New registrations</h2>
 <table>
     <thead>
         <tr>
@@ -11,17 +11,17 @@
             <th>Tools</th>
         </tr>
     </thead>
-    <tbody>{% for (dom, ip, analysis_link) in new | sort %}
+    <tbody>{% for (dom, ip, analysis_link) in report.alertable.new | sort %}
         <tr>
             <td>
-                {{ dom | domain_format }}{% if dom in noisy %} *{% endif %}
+                {{ dom | domain_format }}
             </td>
             <td>{{ ip }}</td>
             <td><a href="{{ analysis_link }}">analyse</a></td>
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if updated %}<h2>Updated registrations</h2>
+{% endif %}{% if report.alertable.updated %}<h2>Updated registrations</h2>
 <table>
     <thead>
         <tr>
@@ -31,10 +31,10 @@
             <th>Tools</th>
         </tr>
     </thead>
-    <tbody>{% for (dom, old_ip, new_ip, analysis_link) in updated | sort %}
+    <tbody>{% for (dom, old_ip, new_ip, analysis_link) in report.alertable.updated | sort %}
         <tr>
             <td>
-                {{ dom | domain_format }}{% if dom in noisy %} *{% endif %}
+                {{ dom | domain_format }}
             </td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
@@ -42,25 +42,21 @@
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if deleted %}<h2>Deleted registrations</h2>
+{% endif %}{% if report.alertable.deleted %}<h2>Deleted registrations</h2>
 <table>
     <thead>
         <tr>
             <th>Previously Registered Domain</th>
         </tr>
     </thead>
-    <tbody>{% for dom in deleted | sort %}
+    <tbody>{% for dom in report.alertable.deleted | sort %}
         <tr>
             <td>
-                {{ dom | domain_format }}{% if dom in noisy %} *{% endif %}
+                {{ dom | domain_format }}
             </td>
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if noisy %}
-<p>
-    * "noisy" domain that changes state regularly.
-</p>
 {% endif %}
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>

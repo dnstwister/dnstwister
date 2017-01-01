@@ -1,18 +1,24 @@
 """Tests of the tools.email module."""
 import textwrap
 
+
+from dnstwister.domain.email_report import EmailReport
 import dnstwister.tools.email as email_tools
 
 
 def test_email_renderer():
     """Test the email rendering helper."""
+    new = (('www.examp1e.com', '127.0.0.1', 'http://dnstwister.report/analyse/1234'),)
+    updated = (('www.exampl3.com', '127.0.0.1', '127.0.0.2', 'http://dnstwister.report/analyse/6789'),)
+    deleted = ('www.examplle.com',)
+    noisy = ('www.examplle.com',)
+
+    report = EmailReport(new, updated, deleted, noisy)
+
     template = email_tools.render_email(
         'report.html',
         domain='www.example.com',
-        new=(('www.examp1e.com', '127.0.0.1', 'http://dnstwister.report/analyse/1234'),),
-        updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2', 'http://dnstwister.report/analyse/6789'),),
-        deleted=('www.examplle.com',),
-        noisy=('www.examplle.com',),
+        report=report,
         unsubscribe_link='https://dnstwister.report/...',
     )
 
@@ -61,25 +67,6 @@ def test_email_renderer():
                 </tr>
             </tbody>
         </table>
-        <h2>Deleted registrations</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Previously Registered Domain</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        www<span>.</span>examplle<span>.</span>com *
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p>
-            * "noisy" domain that changes state regularly.
-        </p>
 
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
@@ -89,18 +76,23 @@ def test_email_renderer():
 
 def test_email_renderer_domain_sorting():
     """Test the email rendering helper sorts domains."""
+    new = (
+        ('www.examp2e.com', '', ''),
+        ('www.examp1e.com', '', ''),
+        ('www.examp2f.com', '', ''),
+        ('www.axample.com', 'z', ''),
+        ('www.axample.com', 'a', ''),
+    )
+    updated = []
+    deleted = []
+    noisy = []
+
+    report = EmailReport(new, updated, deleted, noisy)
+
     template = email_tools.render_email(
         'report.html',
         domain='www.example.com',
-        new=(
-            ('www.examp2e.com', '', ''),
-            ('www.examp1e.com', '', ''),
-            ('www.examp2f.com', '', ''),
-            ('www.axample.com', 'z', ''),
-            ('www.axample.com', 'a', ''),
-        ),
-        updated=[],
-        deleted=[],
+        report=report,
         unsubscribe_link='https://dnstwister.report/...',
     )
 
