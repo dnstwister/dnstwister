@@ -2,7 +2,7 @@
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>
-{% if report.alertable.new %}<h2>New registrations</h2>
+{% if report.alertable %}{% if report.alertable.new %}<h2>New registrations</h2>
 <table>
     <thead>
         <tr>
@@ -57,7 +57,7 @@
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}
+{% endif %}{% endif %}
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>

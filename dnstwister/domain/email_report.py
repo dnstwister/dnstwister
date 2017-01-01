@@ -31,7 +31,8 @@ class EmailReport(object):
                                    for domain
                                    in self._deleted
                                    if domain not in self._noisy]
-        return filtered
+
+        return filtered if len(filtered) > 0 else None
 
     @property
     def noisy(self):
@@ -54,4 +55,6 @@ class EmailReport(object):
                                    for domain
                                    in self._deleted
                                    if domain in self._noisy]
-        return filtered
+
+        return filtered if len(filtered) > 0 else None
+
