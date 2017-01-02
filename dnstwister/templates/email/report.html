@@ -2,7 +2,7 @@
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>
-{% if report.alertable %}{% if report.alertable.new %}<h2>New registrations</h2>
+{% if report.alertable %}{% if report.alertable.new %}<h2>New registrations ({{ report.alertable.new | count }})</h2>
 <table>
     <thead>
         <tr>
@@ -21,7 +21,7 @@
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if report.alertable.updated %}<h2>Updated registrations</h2>
+{% endif %}{% if report.alertable.updated %}<h2>Updated registrations ({{ report.alertable.updated | count }})</h2>
 <table>
     <thead>
         <tr>
@@ -42,7 +42,7 @@
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if report.alertable.deleted %}<h2>Deleted registrations</h2>
+{% endif %}{% if report.alertable.deleted %}<h2>Deleted registrations ({{ report.alertable.deleted | count }}) </h2>
 <table>
     <thead>
         <tr>

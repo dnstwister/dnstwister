@@ -27,7 +27,7 @@ def test_email_renderer():
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
-        <h2>New registrations</h2>
+        <h2>New registrations (1)</h2>
         <table>
             <thead>
                 <tr>
@@ -46,7 +46,7 @@ def test_email_renderer():
                 </tr>
             </tbody>
         </table>
-        <h2>Updated registrations</h2>
+        <h2>Updated registrations (1)</h2>
         <table>
             <thead>
                 <tr>
@@ -122,7 +122,7 @@ def test_email_renderer_domain_sorting():
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
-        <h2>New registrations</h2>
+        <h2>New registrations (5)</h2>
         <table>
             <thead>
                 <tr>
