@@ -57,7 +57,68 @@
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% endif %}
+{% endif %}{% endif %}{%if report.noisy %}<hr />
+<h3>Noisy changes</h3>
 <p>
+    Domains that change IP or are registered and unregistered regularly are
+    considered "noisy" and are listed below. Most subscriptions will have one
+    or more "noisy" domains.
+</p>
+{% if report.noisy.new %}<h4>New registrations</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Registered Domain</th>
+            <th>Resolved IP</th>
+            <th>Tools</th>
+        </tr>
+    </thead>
+    <tbody>{% for (dom, ip, analysis_link) in report.noisy.new | sort %}
+        <tr>
+            <td>
+                {{ dom | domain_format }}
+            </td>
+            <td>{{ ip }}</td>
+            <td><a href="{{ analysis_link }}">analyse</a></td>
+        </tr>{% endfor %}
+    </tbody>
+</table>
+{% endif %}{% if report.noisy.updated %}<h4>Updated registrations</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Registered Domain</th>
+            <th>Previously Resolved IP</th>
+            <th>Currently Resolved IP</th>
+            <th>Tools</th>
+        </tr>
+    </thead>
+    <tbody>{% for (dom, old_ip, new_ip, analysis_link) in report.noisy.updated | sort %}
+        <tr>
+            <td>
+                {{ dom | domain_format }}
+            </td>
+            <td>{{ old_ip }}</td>
+            <td>{{ new_ip }}</td>
+            <td><a href="{{ analysis_link }}">analyse</a></td>
+        </tr>{% endfor %}
+    </tbody>
+</table>
+{% endif %}{% if report.noisy.deleted %}<h4>Deleted registrations</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Previously Registered Domain</th>
+        </tr>
+    </thead>
+    <tbody>{% for dom in report.noisy.deleted | sort %}
+        <tr>
+            <td>
+                {{ dom | domain_format }}
+            </td>
+        </tr>{% endfor %}
+    </tbody>
+</table>
+{% endif %}{% endif %}<p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>

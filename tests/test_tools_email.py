@@ -67,7 +67,28 @@ def test_email_renderer():
                 </tr>
             </tbody>
         </table>
-
+        <hr />
+        <h3>Noisy changes</h3>
+        <p>
+            Domains that change IP or are registered and unregistered regularly are
+            considered "noisy" and are listed below. Most subscriptions will have one
+            or more "noisy" domains.
+        </p>
+        <h4>Deleted registrations</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Previously Registered Domain</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        www<span>.</span>examplle<span>.</span>com
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
@@ -148,7 +169,6 @@ def test_email_renderer_domain_sorting():
                 </tr>
             </tbody>
         </table>
-
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>

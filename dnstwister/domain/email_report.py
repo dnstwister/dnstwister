@@ -32,7 +32,11 @@ class EmailReport(object):
                                    in self._deleted
                                    if domain not in self._noisy]
 
-        return filtered if len(filtered) > 0 else None
+        # Return None if no results in any operation.
+        if sum(map(len, filtered.values())) == 0:
+            return None
+
+        return filtered
 
     @property
     def noisy(self):
@@ -56,5 +60,8 @@ class EmailReport(object):
                                    in self._deleted
                                    if domain in self._noisy]
 
-        return filtered if len(filtered) > 0 else None
+        # Return None if no results in any operation.
+        if sum(map(len, filtered.values())) == 0:
+            return None
 
+        return filtered
