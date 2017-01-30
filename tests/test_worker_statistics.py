@@ -76,7 +76,7 @@ def test_statistics_dont_update_in_under_a_day(capsys, monkeypatch):
     assert statistics_repository.get_noise_stat('exxample.com') is None
 
 
-def test_statistics_dont_update_once_a_day(capsys, monkeypatch):
+def test_statistics_update_once_a_day(capsys, monkeypatch):
     """Statistics will only update once a day."""
     data_repository, statistics_repository = set_up_mocks(monkeypatch)
 
@@ -88,15 +88,13 @@ def test_statistics_dont_update_once_a_day(capsys, monkeypatch):
         'deleted': [],
     })
 
-    # GIVEN the statistic was checked within one day.
+    # GIVEN the statistic was checked more than one day ago.
     now = datetime.datetime.now() - datetime.timedelta(hours=24, minutes=1)
     statistics_repository.mark_noise_stat_as_updated('exxample.com', now=now)
 
     # WHEN the email work is ran
     workers.statistics.increment_email_sub_deltas()
 
-    # THEN no statistics will be created for exxample.com, even though there
-    # is (now) a delta report.
     # THEN statistics will be created for exxample.com.
     stats_data = statistics_repository.get_noise_stat('exxample.com')
     assert stats_data.domain == 'exxample.com'
