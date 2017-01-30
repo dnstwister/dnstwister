@@ -78,7 +78,7 @@ class PgKvDatabase(object):
                 SELECT jsonb_object_keys(data)
                 FROM data
                 WHERE prefix = %s;
-            """, prefix)
+            """, (prefix,))
             while True:
                 row = cur.fetchone()
                 if row is None:
