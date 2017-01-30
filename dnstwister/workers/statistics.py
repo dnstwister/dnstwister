@@ -64,7 +64,43 @@ def increment_email_sub_deltas():
 
         updated_domains = process_domain(domain, updated_domains)
 
-    return len(updated_domains)
+    return updated_domains
+
+
+def update_windows(skip_list, now=None):
+    """Update all the windows.
+
+    Skip those updated already, as the window is updated as part of the
+    increment process too.
+    """
+    if now is None:
+        now = datetime.datetime.now()
+
+    domains_iter = statistics_repository.inoisy_domains()
+
+    while True:
+        try:
+            domain = domains_iter.next()
+        except StopIteration:
+            break
+
+        if domain is None:
+            continue
+
+        if domain in skip_list:
+            continue
+
+        updated = statistics_repository.noise_stat_last_updated(domain)
+        if updated is not None and (now - updated) < FREQUENCY:
+            continue
+
+        stat = statistics_repository.get_noise_stat(domain)
+        if stat is None:
+            continue
+
+        stat.update_window()
+        statistics_repository.set_noise_stat(stat)
+        statistics_repository.mark_noise_stat_as_updated(domain)
 
 
 def main():
@@ -72,9 +108,16 @@ def main():
     while True:
 
         start = time.time()
-        incremented_count = increment_email_sub_deltas()
+        incremented_domains = increment_email_sub_deltas()
         print 'Incremented stats for {} domains in {} seconds.'.format(
-            incremented_count,
+            len(incremented_domains),
+            round(time.time() - start, 2)
+        )
+
+        start = time.time()
+        updated_count = update_windows(incremented_domains)
+        print 'Updated windows for {} domains in {} seconds.'.format(
+            updated_count,
             round(time.time() - start, 2)
         )
 
