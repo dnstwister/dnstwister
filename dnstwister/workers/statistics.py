@@ -73,7 +73,7 @@ def update_windows(skip_list, now=None):
     Skip those updated already, as the window is updated as part of the
     increment process too.
     """
-    updated = 0
+    updated_count = 0
 
     if now is None:
         now = datetime.datetime.now()
@@ -104,9 +104,9 @@ def update_windows(skip_list, now=None):
         statistics_repository.set_noise_stat(stat)
         statistics_repository.mark_noise_stat_as_updated(domain)
 
-        updated += 1
+        updated_count += 1
 
-    return updated
+    return updated_count
 
 
 def main():
