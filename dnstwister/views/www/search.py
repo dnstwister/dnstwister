@@ -143,26 +143,33 @@ def search_post():
     return flask.redirect('/search/{}'.format(search_parameter))
 
 
-def handle_invalid_domain(search_domain):
+def handle_invalid_domain(search_term_as_hex):
     """Called when no valid domain found in GET param, creates a suggestion
     to return to the user.
     """
-    suggestion = tools.suggest_domain(search_domain)
-    if suggestion is not None:
-        app.logger.info(
-            'Not a valid domain in GET: {}, suggesting: {}'.format(
-                search_domain, suggestion
+    decoded_search = None
+    try:
+        decoded_search = binascii.unhexlify(search_term_as_hex)
+    except:
+        pass
+
+    if decoded_search is not None:
+        suggestion = tools.suggest_domain(decoded_search)
+        if suggestion is not None:
+            app.logger.info(
+                'Not a valid domain in GET: {}, suggesting: {}'.format(
+                    search_term_as_hex, suggestion
+                )
             )
-        )
-        encoded_suggestion = binascii.hexlify(suggestion)
-        return flask.redirect(
-            '/error/0?suggestion={}'.format(encoded_suggestion)
-        )
-    else:
-        app.logger.info(
-            'Not a valid domain in GET: {}'.format(search_domain)
-        )
-        return flask.redirect('/error/0')
+            encoded_suggestion = binascii.hexlify(suggestion)
+            return flask.redirect(
+                '/error/0?suggestion={}'.format(encoded_suggestion)
+            )
+
+    app.logger.info(
+        'Not a valid domain in GET: {}'.format(search_term_as_hex)
+    )
+    return flask.redirect('/error/0')
 
 
 @app.route('/search/<search_domain>')

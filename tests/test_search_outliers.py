@@ -38,11 +38,16 @@ def test_empty_domains_key(webapp):
 
 
 def test_no_valid_domains(webapp):
-    """Test that submitting no valid domains fails."""
+    """Test that submitting no valid domains fails after a GET to the
+    redirect.
+    """
     response = webapp.post('/search', {'domains': '...'})
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/0'
+
+    second_response = response.follow()
+    assert second_response.status_code == 302
+    assert second_response.headers['location'] == 'http://localhost:80/error/0'
 
 
 def test_suggestion(webapp):
