@@ -12,7 +12,6 @@ import dnstwister.tools.email as email_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
-ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
 
 
 def get_noisy_domains(candidate_domains):
@@ -79,17 +78,6 @@ def process_sub(sub_id, detail):
             email_address, domain
         )
         return
-
-    # Add analysis links
-    if new is not None:
-        new = [(dom, ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
-               for (dom, ip)
-               in new]
-
-    if updated is not None:
-        updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
-                   for (dom, old_ip, new_ip)
-                   in updated]
 
     # Get noisy domains
     delta_domains = delta_reports.extract_domains(delta)

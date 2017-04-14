@@ -1,55 +1,61 @@
+<style type="text/css">
+    td,th {
+        padding-right: 10px;
+        text-align: left;
+    }
+</style>
 <h1>dnstwister report for '{{ domain | domain_format }}'</h1>
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>
-{% if report.alertable %}{% if report.alertable.new %}<h2>New registrations ({{ report.alertable.new | count }})</h2>
+{% if report.new %}<h2>New registrations ({{ report.new | count }})</h2>
 <table>
     <thead>
         <tr>
-            <th>Registered Domain</th>
-            <th>Resolved IP</th>
+            <th>Domain</th>
+            <th>IP address</th>
             <th>Tools</th>
         </tr>
     </thead>
-    <tbody>{% for (dom, ip, analysis_link) in report.alertable.new | sort %}
+    <tbody>{% for (dom, ip) in report.new | sort %}
         <tr>
             <td>
                 {{ dom | domain_format }}
             </td>
             <td>{{ ip }}</td>
-            <td><a href="{{ analysis_link }}">analyse</a></td>
+            <td><a href="{{ dom | analysis_url }}">analyse</a></td>
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if report.alertable.updated %}<h2>Updated registrations ({{ report.alertable.updated | count }})</h2>
+{% endif %}{% if report.updated %}<h2>Updated registrations ({{ report.updated | count }})</h2>
 <table>
     <thead>
         <tr>
-            <th>Registered Domain</th>
-            <th>Previously Resolved IP</th>
-            <th>Currently Resolved IP</th>
+            <th>Domain</th>
+            <th>Old IP address</th>
+            <th>New IP address</th>
             <th>Tools</th>
         </tr>
     </thead>
-    <tbody>{% for (dom, old_ip, new_ip, analysis_link) in report.alertable.updated | sort %}
+    <tbody>{% for (dom, old_ip, new_ip) in report.updated | sort %}
         <tr>
             <td>
                 {{ dom | domain_format }}
             </td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
-            <td><a href="{{ analysis_link }}">analyse</a></td>
+            <td><a href="{{ dom | analysis_url }}">analyse</a></td>
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if report.alertable.deleted %}<h2>Deleted registrations ({{ report.alertable.deleted | count }}) </h2>
+{% endif %}{% if report.deleted %}<h2>Deleted registrations ({{ report.deleted | count }})</h2>
 <table>
     <thead>
         <tr>
-            <th>Previously Registered Domain</th>
+            <th>Domain</th>
         </tr>
     </thead>
-    <tbody>{% for dom in report.alertable.deleted | sort %}
+    <tbody>{% for dom in report.deleted | sort %}
         <tr>
             <td>
                 {{ dom | domain_format }}
@@ -57,68 +63,27 @@
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% endif %}{%if report.noisy %}<hr />
-<h3>Noisy changes</h3>
+{% endif %}{%if report.noisy %}<h2>Noisy domains ({{ report.noisy | count }})</h2>
 <p>
-    Domains that change IP or are registered and unregistered regularly are
-    considered "noisy" and are listed below. Most subscriptions will have one
-    or more "noisy" domains.
+    The following domains continually change IP or fail then succeed IP
+    resolution.
 </p>
-{% if report.noisy.new %}<h4>New registrations</h3>
 <table>
     <thead>
         <tr>
-            <th>Registered Domain</th>
-            <th>Resolved IP</th>
+            <th>Domain</th>
             <th>Tools</th>
         </tr>
     </thead>
-    <tbody>{% for (dom, ip, analysis_link) in report.noisy.new | sort %}
+    <tbody>{% for dom in report.noisy | sort %}
         <tr>
             <td>
                 {{ dom | domain_format }}
             </td>
-            <td>{{ ip }}</td>
-            <td><a href="{{ analysis_link }}">analyse</a></td>
+            <td><a href="{{ dom | analysis_url }}">analyse</a></td>
         </tr>{% endfor %}
     </tbody>
 </table>
-{% endif %}{% if report.noisy.updated %}<h4>Updated registrations</h4>
-<table>
-    <thead>
-        <tr>
-            <th>Registered Domain</th>
-            <th>Previously Resolved IP</th>
-            <th>Currently Resolved IP</th>
-            <th>Tools</th>
-        </tr>
-    </thead>
-    <tbody>{% for (dom, old_ip, new_ip, analysis_link) in report.noisy.updated | sort %}
-        <tr>
-            <td>
-                {{ dom | domain_format }}
-            </td>
-            <td>{{ old_ip }}</td>
-            <td>{{ new_ip }}</td>
-            <td><a href="{{ analysis_link }}">analyse</a></td>
-        </tr>{% endfor %}
-    </tbody>
-</table>
-{% endif %}{% if report.noisy.deleted %}<h4>Deleted registrations</h4>
-<table>
-    <thead>
-        <tr>
-            <th>Previously Registered Domain</th>
-        </tr>
-    </thead>
-    <tbody>{% for dom in report.noisy.deleted | sort %}
-        <tr>
-            <td>
-                {{ dom | domain_format }}
-            </td>
-        </tr>{% endfor %}
-    </tbody>
-</table>
-{% endif %}{% endif %}<p>
+{% endif %}<p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>

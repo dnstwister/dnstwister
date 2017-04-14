@@ -1,5 +1,4 @@
-"""View models for rendering the email template."""
-import collections
+"""View model for rendering the email template."""
 
 
 class EmailReport(object):
@@ -11,57 +10,37 @@ class EmailReport(object):
         self._noisy = noisy
 
     @property
-    def alertable(self):
-        """Return the non-noisy results we want to alert on."""
-        filtered = collections.defaultdict(None)
-        if self._new is not None:
-            filtered['new'] = [record
-                               for record
-                               in self._new
-                               if record[0] not in self._noisy]
+    def new(self):
+        """Return the new non-noisy results we want to alert on."""
+        if self._new is not None and len(self._new) > 0:
+            try:
+                return [(domain, ip)
+                        for (domain, ip)
+                        in self._new
+                        if domain not in self._noisy]
+            except:
+                import pdb; pdb.set_trace()
 
-        if self._updated is not None:
-            filtered['updated'] = [record
-                                   for record
-                                   in self._updated
-                                   if record[0] not in self._noisy]
+    @property
+    def updated(self):
+        """Return the updated non-noisy results we want to alert on."""
+        if self._updated is not None and len(self._updated) > 0:
+            return [(domain, ip1, ip2)
+                    for (domain, ip1, ip2)
+                    in self._updated
+                    if domain not in self._noisy]
 
-        if self._deleted is not None:
-            filtered['deleted'] = [domain
-                                   for domain
-                                   in self._deleted
-                                   if domain not in self._noisy]
-
-        # Return None if no results in any operation.
-        if sum(map(len, filtered.values())) == 0:
-            return None
-
-        return filtered
+    @property
+    def deleted(self):
+        """Return the deleted non-noisy results we want to alert on."""
+        if self._deleted is not None and len(self._deleted) > 0:
+            return [domain
+                    for domain
+                    in self._deleted
+                    if domain not in self._noisy]
 
     @property
     def noisy(self):
         """Return the noisy results."""
-        filtered = collections.defaultdict(None)
-        if self._new is not None:
-            filtered['new'] = [record
-                               for record
-                               in self._new
-                               if record[0] in self._noisy]
-
-        if self._updated is not None:
-            filtered['updated'] = [record
-                                   for record
-                                   in self._updated
-                                   if record[0] in self._noisy]
-
-        if self._deleted is not None:
-            filtered['deleted'] = [domain
-                                   for domain
-                                   in self._deleted
-                                   if domain in self._noisy]
-
-        # Return None if no results in any operation.
-        if sum(map(len, filtered.values())) == 0:
-            return None
-
-        return filtered
+        if self._noisy is not None and len(self._noisy) > 0:
+            return list(self._noisy)

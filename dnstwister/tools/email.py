@@ -1,4 +1,5 @@
 """Email tools."""
+import binascii
 import jinja2
 
 
@@ -17,7 +18,14 @@ def domain_format(domain):
     return domain
 
 
+def analysis_url(domain):
+    """Format a domain as an analysis link."""
+    return 'https://dnstwister.report/analyse/{}'.format(binascii.hexlify(domain))
+
+
+
 TEMPLATES.filters['domain_format'] = domain_format
+TEMPLATES.filters['analysis_url'] = analysis_url
 
 
 def render_email(template, **kwargs):
