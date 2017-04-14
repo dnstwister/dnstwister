@@ -48,26 +48,13 @@ def analyse(domain):
 
 
 def parse_post_data(post_data):
-    """Parse post data to return a set of domain candidates."""
-    data = re.sub(r'[\t\r ]', '\n', post_data)
-
-    # Filter out blank lines, leading/trailing whitespace
-    data = filter(
-        None, map(string.strip, data.split('\n'))
-    )
+    """Parse post data to return a domain."""
 
     # Remove HTTP(s) schemes and trailing slashes.
-    data = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
-            for domain
-            in data]
+    domain = re.sub('(^http(s)?://)|(/$)', '', post_data, re.IGNORECASE)
 
-    # Strip leading/trailing whitespace again.
-    data = filter(None, map(string.strip, data))
-
-    # Make all lower-case
-    data = map(string.lower, data)
-
-    return data
+    # Parse through the normal process.
+    return parse_domain(domain.strip())
 
 
 def parse_domain(encoded_domain):
@@ -91,8 +78,10 @@ def parse_domain(encoded_domain):
             pass
 
 
-def suggest_domain(search_terms):
+def suggest_domain(search_domain):
     """Suggest a domain based on the search fields."""
+
+    search_terms = search_domain.split(' ')
 
     # Check for a simple common typo first - putting comma instead of period
     # in-between the second- and top-level domains.

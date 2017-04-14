@@ -7,9 +7,9 @@ import dnstwister.tools as tools
 
 # Possible rendered errors, indexed by integer in 'error' GET param.
 ERRORS = (
-    'No valid domains submitted.',
+    'Invalid domain submitted.',
     'Invalid report URL.',
-    'No domains submitted.',
+    'No domain submitted.',
     'Unfortunately Unicode domains are not currently supported.',
 )
 
