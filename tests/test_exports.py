@@ -73,8 +73,8 @@ def test_json_export(webapp, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
 
-    domains = ('a.com', 'b.com')
-    path = ','.join(map(binascii.hexlify, domains))
+    domain = 'a.com'
+    path = binascii.hexlify(domain)
 
     response = webapp.get('/search/{}/json'.format(path))
 
@@ -94,28 +94,6 @@ def test_json_export(webapp, monkeypatch):
                     u'domain-name': u'a.co',
                     u'fuzzer': u'Pretend',
                     u'hex': u'612e636f',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
-                    }
-                }
-            ]
-        },
-        u'b.com': {
-            u'fuzzy_domains': [
-                {
-                    u'domain-name': u'b.com',
-                    u'fuzzer': u'Original*',
-                    u'hex': u'622e636f6d',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
-                    }
-                },
-                {
-                    u'domain-name': u'b.co',
-                    u'fuzzer': u'Pretend',
-                    u'hex': u'622e636f',
                     u'resolution': {
                         u'error': False,
                         u'ip': u'999.999.999.999'
@@ -207,8 +185,8 @@ def test_json_export_formatting(webapp, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
 
-    domains = ('a.com', 'b.com')
-    path = ','.join(map(binascii.hexlify, domains))
+    domain = 'a.com'
+    path = binascii.hexlify(domain)
 
     response = webapp.get('/search/{}/json'.format(path))
 
@@ -229,28 +207,6 @@ def test_json_export_formatting(webapp, monkeypatch):
                         "domain-name": "a.co",
                         "fuzzer": "Pretend",
                         "hex": "612e636f",
-                        "resolution": {
-                            "error": false,
-                            "ip": "999.999.999.999"
-                        }
-                    }
-                ]
-            },
-            "b.com": {
-                "fuzzy_domains": [
-                    {
-                        "domain-name": "b.com",
-                        "fuzzer": "Original*",
-                        "hex": "622e636f6d",
-                        "resolution": {
-                            "error": false,
-                            "ip": "999.999.999.999"
-                        }
-                    },
-                    {
-                        "domain-name": "b.co",
-                        "fuzzer": "Pretend",
-                        "hex": "622e636f",
                         "resolution": {
                             "error": false,
                             "ip": "999.999.999.999"
