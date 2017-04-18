@@ -1,10 +1,13 @@
 """Test resolving IPs."""
+import binascii
 import socket
 
 
 def test_resolve(webapp):
     """Test we can resolve IP addresses."""
-    response = webapp.get('/api/ip/646e73747769737465722e7265706f7274')
+    domain = 'dnstwister.report'
+    hexdomain = binascii.hexlify(domain)
+    response = webapp.get('/api/ip/{}'.format(hexdomain))
 
     assert response.status_code == 200
 
@@ -14,14 +17,14 @@ def test_resolve(webapp):
 
     assert payload == {
         u'domain': u'dnstwister.report',
-        u'domain_as_hexadecimal': u'646e73747769737465722e7265706f7274',
+        u'domain_as_hexadecimal': hexdomain,
         u'error': False,
-        u'fuzz_url': u'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
-        u'parked_score_url': u'http://localhost:80/api/parked/646e73747769737465722e7265706f7274',
-        u'url': u'http://localhost:80/api/ip/646e73747769737465722e7265706f7274'
+        u'fuzz_url': u'http://localhost:80/api/fuzz/{}'.format(hexdomain),
+        u'parked_score_url': u'http://localhost:80/api/parked/{}'.format(hexdomain),
+        u'url': u'http://localhost:80/api/ip/{}'.format(hexdomain),
     }
 
-    # Will throw if invalid IP
+    # Will throw socket.error exception if this is not a valid IP address.
     socket.inet_aton(ip_addr)
 
 
@@ -29,8 +32,8 @@ def test_failed_resolve(webapp):
     """Test basic failure to resolve an IP for a domain - because it's
     unregistered.
     """
-    host = 'imprettysurethatthisdomaindoesnotexist.com'
-    response = webapp.get('/api/ip/{}'.format(host))
+    domain = 'imprettysurethatthisdomaindoesnotexist.com'
+    response = webapp.get('/api/ip/{}'.format(binascii.hexlify(domain)))
 
     assert response.status_code == 200
     assert response.json['ip'] is False
