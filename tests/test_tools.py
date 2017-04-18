@@ -1,6 +1,5 @@
 """Tests of the tools module."""
 import binascii
-import base64
 import operator
 import unittest
 
@@ -52,13 +51,6 @@ class TestTools(unittest.TestCase):
             'www.example.com',
             tools.parse_domain(domain_data),
             'hex-decodable valid domain data should be returned'
-        )
-
-        domain_data = base64.b64encode(domain)
-        self.assertEqual(
-            'www.example.com',
-            tools.parse_domain(domain_data),
-            'Old b64-style domain data is also processable.'
         )
 
     def test_analyse(self):

@@ -53,9 +53,9 @@ def test_no_valid_domains(webapp):
 def test_suggestion(webapp):
     """Test that submitting no valid domains fails.
 
-    Where a domain could be suggested, it is.
+    Where a domain could be reasonably suggested, it is.
     """
-    response = webapp.post('/search', {'domains': 'example'})
+    response = webapp.post('/search', {'domains': 'example'}).follow()
 
     assert response.status_code == 302
 
@@ -65,28 +65,10 @@ def test_suggestion(webapp):
     assert response.headers['location'] == expected_redirect
 
 
-def test_no_suggestion_long_words(webapp):
-    """Test long search terms are dropped in suggestions."""
-    query = 'jsdfijsdlfkjsoijsldjlsdkjflskdjfoewjfsdfldkishgisuehgdsfsdkf'
-    response = webapp.post('/search', {'domains': query})
-
-    assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/0'
-
-    query = (
-        'jsdfijsdlfkjsoijsldjlsdkjflskdjfoewjfsdfldkishgisuehgdsfs dkf'
-    )
-    response = webapp.post('/search', {'domains': query})
-
-    assert response.status_code == 302
-    assert response.headers['location'].endswith('=646b662e636f6d')
-    assert binascii.unhexlify('646b662e636f6d') == 'dkf.com'
-
-
 def test_no_valid_domains_only(webapp):
     """Test invalid domains not in suggestions."""
     query = 'abc ?@<>.'
-    response = webapp.post('/search', {'domains': query})
+    response = webapp.post('/search', {'domains': query}).follow()
 
     assert response.status_code == 302
     assert response.headers['location'].endswith('=6162632e636f6d')
@@ -95,7 +77,7 @@ def test_no_valid_domains_only(webapp):
 
 def test_suggestion_rendered(webapp):
     """Test suggestion rendered on index."""
-    response = webapp.post('/search', {'domains': 'example'}).follow()
+    response = webapp.post('/search', {'domains': 'example'}).follow().follow()
 
     assert 'example.com' in response.body
 
@@ -111,7 +93,7 @@ def test_get_errors(webapp):
 def test_no_suggestion_many_words(webapp):
     """Test many search terms are dropped in suggestions."""
     query = 'j s d f i j s'
-    response = webapp.post('/search', {'domains': query})
+    response = webapp.post('/search', {'domains': query}).follow()
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost:80/error/0'
@@ -142,7 +124,7 @@ def test_fix_comma_typo(webapp):
     malformed_domain = 'example,com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
 
@@ -153,7 +135,7 @@ def test_fix_slash_typo(webapp):
     malformed_domain = 'example/com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
 
@@ -164,6 +146,6 @@ def test_fix_space_typo(webapp):
     malformed_domain = 'example com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
