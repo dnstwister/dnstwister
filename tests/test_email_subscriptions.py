@@ -24,8 +24,8 @@ def test_bad_domains_fail(webapp):
 
 def test_bad_error_codes(webapp):
     """Test the email error codes being weird doesn't break the page."""
-    normal_html = webapp.get('/email/subscribe/www.example.com').html
-    assert webapp.get('/email/subscribe/www.example.com/9').html == normal_html
+    normal_html = webapp.get('/email/subscribe/7777772e6578616d706c652e636f6d').html
+    assert webapp.get('/email/subscribe/7777772e6578616d706c652e636f6d/9').html == normal_html
 
 
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
