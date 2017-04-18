@@ -29,7 +29,9 @@ def test_successful_domain():
 
 
 def test_failure_to_resolve(f_httpretty):
-    """Bringing in httpretty breaks requests, this is intentional."""
+    """Bringing in httpretty breaks requests, this is intentional for this
+    test.
+    """
     domain = 'dnstwister.report'
     ip_addr, error = tools.google_resolve(domain)
 
