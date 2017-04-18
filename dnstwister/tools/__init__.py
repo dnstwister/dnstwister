@@ -211,7 +211,7 @@ def google_resolve(domain):
                         return ip_addr, False
         return False, False
     except Exception as ex:
-        app.logger.info(
+        app.logger.error(
             'Failed to resolve IP via Google Public DNS: {}'.format(ex)
         )
         return False, True
