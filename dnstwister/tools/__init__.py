@@ -214,12 +214,7 @@ def google_resolve(domain):
         app.logger.error(
             'Failed to resolve IP via Google Public DNS: {}'.format(ex)
         )
-        # TODO: Remove this. As this is under evaluation, showing the user
-        # errors in domain resolution when it may just be a rate limit I've
-        # hit isn't helpful. Testing will show what errors I can ignore or not
-        # and I'll refine the exceptions then.
-        return False, False
-        #return False, True
+        return False, True
 
 
 def random_id(n_bytes=32):
