@@ -12,6 +12,7 @@ import dns.resolver
 import flask
 import requests
 
+from dnstwister import app
 from dnstwister import cache
 from dnstwister.tools import tld_db
 import dnstwister.dnstwist as dnstwist
@@ -209,7 +210,10 @@ def google_resolve(domain):
                     if is_valid_ip(ip_addr):
                         return ip_addr, False
         return False, False
-    except:
+    except Exception as ex:
+        app.logger.info(
+            'Failed to resolve IP via Google Public DNS: {}'.format(ex)
+        )
         return False, True
 
 
