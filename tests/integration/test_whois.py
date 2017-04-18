@@ -3,6 +3,7 @@ import binascii
 
 
 def test_whois_query(webapp):
+    """Test the whois lookup."""
     domain = 'dnstwister.report'
     hexdomain = binascii.hexlify(domain)
     request = webapp.get('/api/whois/{}'.format(hexdomain))
