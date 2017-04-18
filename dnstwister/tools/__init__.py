@@ -1,5 +1,4 @@
-""" Generic tools.
-"""
+"""Generic tools."""
 import base64
 import binascii
 import os
@@ -11,7 +10,9 @@ import urlparse
 
 import dns.resolver
 import flask
+import requests
 
+from dnstwister import app
 from dnstwister import cache
 from dnstwister.tools import tld_db
 import dnstwister.dnstwist as dnstwist
@@ -20,6 +21,10 @@ import dnstwister.dnstwist as dnstwist
 RESOLVER = dns.resolver.Resolver()
 RESOLVER.lifetime = 0.1
 RESOLVER.timeout = 0.1
+
+GOOGLEDNS = 'https://dns.google.com/resolve?name={}'
+GOOGLEDNS_SUCCESS = 0
+GOOGLEDNS_A_RECORD = 1
 
 
 def fuzzy_domains(domain):
@@ -152,6 +157,15 @@ def suggest_domain(search_terms):
     return random.choice(valid_suggestions)
 
 
+def is_valid_ip(ip_string):
+    """Matches valid ipv4 IP addresses."""
+    try:
+        socket.inet_aton(ip_string)
+        return True
+    except socket.error:
+        return False
+
+
 @cache.memoize(3600)
 def resolve(domain):
     """Resolves a domain to an IP.
@@ -162,6 +176,9 @@ def resolve(domain):
 
     Cached to 1 hour.
     """
+    if dnstwist.validate_domain(domain) is None:
+        return False, True
+
     # Try for an 'A' record.
     try:
         ip_addr = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
@@ -172,12 +189,31 @@ def resolve(domain):
     # Try for a simple resolution if the 'A' record request failed
     try:
         ip_addr = socket.gethostbyname(domain)
-        return ip_addr, False
-    except socket.gaierror:
-        # Indicates failure to resolve to IP address, not an error in
-        # the attempt.
-        return False, False
+        # Weird-ass edge case that sometimes happens?!?!
+        if ip_addr != '127.0.0.1':
+            return ip_addr, False
     except:
+        pass
+
+    return google_resolve(domain)
+
+
+def google_resolve(domain):
+    """Google's Public DNS resolver."""
+    try:
+        response = requests.get(GOOGLEDNS.format(domain)).json()
+        if response['Status'] == GOOGLEDNS_SUCCESS:
+            if 'Answer' in response.keys():
+                answer = response['Answer'][0]
+                if answer['type'] == GOOGLEDNS_A_RECORD:
+                    ip_addr = answer['data']
+                    if is_valid_ip(ip_addr):
+                        return ip_addr, False
+        return False, False
+    except Exception as ex:
+        app.logger.error(
+            'Failed to resolve IP via Google Public DNS: {}'.format(ex)
+        )
         return False, True
 
 
