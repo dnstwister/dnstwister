@@ -2,4 +2,5 @@
 omit =
     *.html
     dnstwister/storage/pg_database.py
+    dnstwister/storage/pg_kv_database.py
     dnstwister/mail/sendgridservice.py
