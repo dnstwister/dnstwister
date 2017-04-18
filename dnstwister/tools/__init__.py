@@ -163,14 +163,18 @@ def resolve(domain):
     # Try for an 'A' record.
     try:
         ip_addr = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
-        return ip_addr, False
+
+        # Weird edge case that sometimes happens?!?!
+        if ip_addr != '127.0.0.1':
+            return ip_addr, False
     except:
         pass
 
     # Try for a simple resolution if the 'A' record request failed
     try:
         ip_addr = socket.gethostbyname(domain)
-        # Weird-ass edge case that sometimes happens?!?!
+
+        # Weird edge case that sometimes happens?!?!
         if ip_addr != '127.0.0.1':
             return ip_addr, False
     except:
