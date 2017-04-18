@@ -90,3 +90,12 @@ class TestTools(unittest.TestCase):
             None, tools.analyse('\\.38iusd-s-da   aswd?'),
             'Invalid domains return None'
         )
+
+
+
+def test_valid_domain():
+    """Test the helper to validate IPv4 addresses."""
+    assert tools.is_valid_ip('127.0.0.1')
+
+    assert not tools.is_valid_ip('99.99.299.99')
+    assert not tools.is_valid_ip('12kljasdksdhfkjsdhf')
