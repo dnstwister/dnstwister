@@ -1,5 +1,4 @@
 """Generic tools."""
-import base64
 import binascii
 import os
 import re
