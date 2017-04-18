@@ -1,11 +1,25 @@
 """Atom syndication."""
+import base64
 import binascii
 import datetime
 import flask
 import werkzeug.contrib.atom
 
 from dnstwister import app, repository
+import dnstwister.dnstwist as dnstwist
 import dnstwister.tools
+
+
+def _base64_redirect(encoded_domain):
+    """Try to parse a domain into base64, return a redirect to the hex version
+    if successful, otherwise None.
+    """
+    try:
+        decoded_domain = base64.b64decode(encoded_domain)
+        if dnstwist.validate_domain(decoded_domain):
+            return '/atom/{}'.format(binascii.hexlify(decoded_domain))
+    except:
+        pass
 
 
 @app.route('/atom/<hexdomain>')
@@ -13,8 +27,16 @@ def view(hexdomain):
     """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
     domain = dnstwister.tools.parse_domain(hexdomain)
+
+    # Redirect old base64 requests to the new format.
     if domain is None:
-        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
+        redirect_url = _base64_redirect(hexdomain)
+        if redirect_url is not None:
+            return flask.redirect(redirect_url, code=302)
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
