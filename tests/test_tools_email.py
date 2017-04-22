@@ -13,7 +13,13 @@ def test_email_renderer():
     deleted = ('www.examplle.com',)
     noisy = ('www.examplle.com',)
 
-    report = EmailReport(new, updated, deleted, noisy)
+    delta_report = {
+        'new': new,
+        'updated': updated,
+        'deleted': deleted,
+    }
+
+    report = EmailReport(delta_report, noisy, include_noisy_domains=True)
 
     template = email_tools.render_email(
         'report.html',
@@ -113,7 +119,13 @@ def test_email_renderer_domain_sorting():
     deleted = []
     noisy = []
 
-    report = EmailReport(new, updated, deleted, noisy)
+    delta_report = {
+        'new': new,
+        'updated': updated,
+        'deleted': deleted,
+    }
+
+    report = EmailReport(delta_report, noisy, include_noisy_domains=True)
 
     template = email_tools.render_email(
         'report.html',
@@ -121,8 +133,6 @@ def test_email_renderer_domain_sorting():
         report=report,
         unsubscribe_link='https://dnstwister.report/...',
     )
-
-    print template
 
     assert template.strip() == textwrap.dedent("""
         <style type="text/css">

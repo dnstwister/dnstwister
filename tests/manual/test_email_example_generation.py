@@ -13,7 +13,7 @@ FORMATTING = """
 """
 
 def test_generate_example_email():
-    """Not actually a test, but it is nice to write out an example email."""
+    """Generic email report."""
     new = (
         ('www.examp1e.com', '127.0.0.1'),
     )
@@ -27,9 +27,15 @@ def test_generate_example_email():
     )
     noisy = (
         'www.examplle.com',
-        )
+    )
 
-    report = EmailReport(new, updated, deleted, noisy)
+    delta_report = {
+        'new': new,
+        'updated': updated,
+        'deleted': deleted,
+    }
+
+    report = EmailReport(delta_report, noisy, include_noisy_domains=True)
 
     template = email_tools.render_email(
         'report.html',
@@ -41,6 +47,44 @@ def test_generate_example_email():
     with open('tests/manual/example_email.html', 'wb') as email_f:
         email_f.write(FORMATTING)
         email_f.write(template)
+
+
+def test_generate_example_noisy_not_included():
+    """Noisy domains, but they are not included."""
+    new = (
+        ('www.examp1e.com', '127.0.0.1'),
+    )
+    updated = (
+        ('www.exampl3.com', '127.0.0.1', '127.0.0.2'),
+    )
+    deleted = (
+        'www.examplle.com',
+        'www.eeexamplez.com',
+        'wwwexample.com',
+    )
+    noisy = (
+        'www.examplle.com',
+    )
+
+    delta_report = {
+        'new': new,
+        'updated': updated,
+        'deleted': deleted,
+    }
+
+    report = EmailReport(delta_report, noisy, include_noisy_domains=False)
+
+    template = email_tools.render_email(
+        'report.html',
+        domain='www.example.com',
+        report=report,
+        unsubscribe_link='https://dnstwister.report/...',
+    )
+
+    with open('tests/manual/example_email_noisy_excluded.html', 'wb') as email_f:
+        email_f.write(FORMATTING)
+        email_f.write(template)
+
 
 
 def test_generate_example_email_no_noisy():
@@ -58,7 +102,13 @@ def test_generate_example_email_no_noisy():
     )
     noisy = set()
 
-    report = EmailReport(new, updated, deleted, noisy)
+    delta_report = {
+        'new': new,
+        'updated': updated,
+        'deleted': deleted,
+    }
+
+    report = EmailReport(delta_report, noisy, include_noisy_domains=True)
 
     template = email_tools.render_email(
         'report.html',
@@ -83,7 +133,13 @@ def test_generate_example_all_noisy():
         'wwwexample.com',
     )
 
-    report = EmailReport(new, updated, deleted, noisy)
+    delta_report = {
+        'new': new,
+        'updated': updated,
+        'deleted': deleted,
+    }
+
+    report = EmailReport(delta_report, noisy, include_noisy_domains=True)
 
     template = email_tools.render_email(
         'report.html',

@@ -23,8 +23,8 @@ def get_noisy_domains(candidate_domains):
     return results
 
 
-def send_noisy_domains():
-    """Only send noisy domains on Mondays UTC."""
+def include_noisy_domains():
+    """Only include noisy domains on Mondays UTC."""
     return datetime.datetime.today().weekday() == 0
 
 
@@ -66,8 +66,8 @@ def process_sub(sub_id, detail):
             )
             return
 
-    delta = repository.get_delta_report(domain)
-    if delta is None:
+    delta_report = repository.get_delta_report(domain)
+    if delta_report is None:
         print 'Skipping {} + {}, no delta report yet'.format(
             email_address, domain
         )
@@ -86,31 +86,20 @@ def process_sub(sub_id, detail):
             )
             return
 
-    delta_domains = delta_reports.extract_domains(delta)
-    if len(delta_domains) == 0:
-        print 'Skipping {} + {}, no changes'.format(
+    delta_domains = delta_reports.extract_domains(delta_report)
+    noisy_domains = get_noisy_domains(delta_domains)
+
+    report = EmailReport(
+        delta_report,
+        noisy_domains,
+        include_noisy_domains=include_noisy_domains()
+    )
+
+    if not report.has_results():
+        print 'Skipping {} + {}, no results to put in email'.format(
             email_address, domain
         )
         return
-
-    noisy_domains = get_noisy_domains(delta_domains)
-    if not send_noisy_domains():
-        # If all the domains are noisy, and we're not sending noisy domains
-        # today, don't send an email.
-        if len(delta_domains) == len(noisy_domains):
-            print 'Skipping {} + {}, only noisy domains and not a Monday'.format(
-                email_address, domain
-            )
-            return
-
-        noisy_domains = set()
-
-    report = EmailReport(
-        delta['new'],
-        delta['updated'],
-        delta['deleted'],
-        noisy_domains
-    )
 
     try:
         send_email(domain, email_address, sub_id, report)
