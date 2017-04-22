@@ -1,5 +1,4 @@
-"""Updates atom feeds."""
-import binascii
+"""Sends emails to subscribers."""
 import datetime
 import time
 import traceback
@@ -24,6 +23,27 @@ def get_noisy_domains(candidate_domains):
     return results
 
 
+def send_noisy_domains():
+    """Only send noisy domains on Mondays UTC."""
+    return datetime.datetime.today().weekday() == 0
+
+
+def send_email(domain, email_address, sub_id, report):
+    """Format and send an email."""
+    body = email_tools.render_email(
+        'report.html',
+        domain=domain,
+        report=report,
+        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
+    )
+
+    emailer.send(
+        email_address, 'dnstwister report for {}'.format(domain), body
+    )
+
+    print 'Emailed delta for {} to {}'.format(domain, email_address)
+
+
 def process_sub(sub_id, detail):
     """Process a subscription."""
 
@@ -46,7 +66,6 @@ def process_sub(sub_id, detail):
             )
             return
 
-    # Grab the delta
     delta = repository.get_delta_report(domain)
     if delta is None:
         print 'Skipping {} + {}, no delta report yet'.format(
@@ -54,7 +73,6 @@ def process_sub(sub_id, detail):
         )
         return
 
-    # Grab the delta report update time.
     delta_updated = repository.delta_report_updated(domain)
 
     # If the delta report was updated > 23 hours ago, we're too close to the
@@ -68,39 +86,44 @@ def process_sub(sub_id, detail):
             )
             return
 
-    # Don't email if no changes
-    new = delta['new'] if len(delta['new']) > 0 else None
-    updated = delta['updated'] if len(delta['updated']) > 0 else None
-    deleted = delta['deleted'] if len(delta['deleted']) > 0 else None
-
-    if new is updated is deleted is None:
+    delta_domains = delta_reports.extract_domains(delta)
+    if len(delta_domains) == 0:
         print 'Skipping {} + {}, no changes'.format(
             email_address, domain
         )
         return
 
-    # Get noisy domains
-    delta_domains = delta_reports.extract_domains(delta)
     noisy_domains = get_noisy_domains(delta_domains)
+    if not send_noisy_domains():
+        # If all the domains are noisy, and we're not sending noisy domains
+        # today, don't send an email.
+        if len(delta_domains) == len(noisy_domains):
+            print 'Skipping {} + {}, only noisy domains and not a Monday'.format(
+                email_address, domain
+            )
+            return
 
-    report = EmailReport(new, updated, deleted, noisy_domains)
+        noisy_domains = set()
 
-    # Email
-    body = email_tools.render_email(
-        'report.html',
-        domain=domain,
-        report=report,
-        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
+    report = EmailReport(
+        delta['new'],
+        delta['updated'],
+        delta['deleted'],
+        noisy_domains
     )
 
-    # Mark as emailed to ensure we don't flood if there's an error after the
-    # actual email has been sent.
-    repository.update_last_email_sub_sent_date(sub_id)
+    try:
+        send_email(domain, email_address, sub_id, report)
 
-    emailer.send(
-        email_address, 'dnstwister report for {}'.format(domain), body
-    )
-    print 'Emailed delta for {} to {}'.format(domain, email_address)
+    except:
+        print 'Failed to send email for {}:\n {}'.format(
+            domain, traceback.format_exc()
+        )
+
+    finally:
+        # Mark as emailed to ensure we don't flood if there's an error after
+        # the actual email has been sent.
+        repository.update_last_email_sub_sent_date(sub_id)
 
 
 def main():
