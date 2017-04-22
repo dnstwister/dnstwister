@@ -72,8 +72,6 @@ def test_generate_example_email_no_noisy():
         email_f.write(template)
 
 
-
-
 def test_generate_example_all_noisy():
     """Email when just noisy domains."""
     new = set()
