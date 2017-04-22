@@ -3,4 +3,4 @@
 brand/*.psd
 _build*
 .coverage
-tests/manual/example_email.html
+tests/manual/example_email*.html
