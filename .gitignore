@@ -4,4 +4,3 @@ brand/*.psd
 _build*
 .coverage
 tests/manual/example_email.html
-venv/
