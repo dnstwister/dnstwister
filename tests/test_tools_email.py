@@ -82,7 +82,7 @@ def test_email_renderer():
         <h2>Noisy domains (1)</h2>
         <p>
             The following domains continually change IP or fail then succeed IP
-            resolution.
+            resolution. We'll only send you these once a week.
         </p>
         <table>
             <thead>
