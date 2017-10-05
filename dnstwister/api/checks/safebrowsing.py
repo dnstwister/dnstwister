@@ -4,7 +4,7 @@ import re
 import requests
 
 
-API_URL = 'https://www.google.com/safebrowsing/diagnostic'
+API_URL = 'https://www.google.com/transparencyreport/api/v3/safebrowsing/status'
 
 
 def get_report(domain):
@@ -15,17 +15,22 @@ def get_report(domain):
     Returns a count of matches.
     """
     data = {
-        'output': 'jsonp',
         'site': domain
     }
 
     result = requests.get(API_URL, params=data)
 
-    json_result = json.loads(re.search(r'({.*})', result.text).groups()[0])
+    result_array = re.search(
+        r'(\["sb.ssr".*\])',
+        result.text,
+        flags=re.MULTILINE).groups()[0]
 
-    status = json_result['website']['malwareListStatus']
+    payload = r'{{"result": {}}}'.format(
+        result_array
+    )
 
-    if status == 'unlisted':
+    # TODO: Work out detailed meaning of these values.
+    if json.loads(payload)['result'][2:-1] == [0, 0, 0, 0, 0, 0]:
         return 0
 
     return 1
