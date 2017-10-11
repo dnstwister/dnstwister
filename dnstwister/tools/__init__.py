@@ -192,12 +192,13 @@ def resolve(domain):
     except:
         pass
 
-    return google_resolve(idna_domain)
+    return google_resolve(domain)
 
 
-def google_resolve(idna_domain):
+def google_resolve(domain):
     """Google's Public DNS resolver."""
     try:
+        idna_domain = domain.encode('idna')
         response = requests.get(GOOGLEDNS.format(idna_domain)).json()
         if response['Status'] == GOOGLEDNS_SUCCESS:
             if 'Answer' in response.keys():
