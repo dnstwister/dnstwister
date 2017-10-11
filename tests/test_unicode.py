@@ -1,7 +1,7 @@
 """Testing Unicode."""
 import binascii
 
-import dnstwister.tools as tools
+from dnstwister import dnstwist, tools
 
 
 def test_encode_ascii_domain():
@@ -36,3 +36,14 @@ def test_decode_encoded_unicode_punycoded_domain():
 
     # www.xn--xampl-91ef.com in hex
     assert tools.decode_domain('7777772e786e2d2d78616d706c2d393165662e636f6d') == u'www.\u0454xampl\u0454.com'
+
+
+def test_dnstwist_validations():
+    """dnstwist validates domains internally, including unicode."""
+    assert dnstwist.dnstwist.validate_domain('www.example1.com')
+    assert dnstwist.dnstwist.validate_domain(u'www.\u0454xampl\u0454.com')
+    assert dnstwist.dnstwist.validate_domain(u'www.\u0454xampl\u0454.com')
+
+    assert not dnstwist.dnstwist.validate_domain('www.\u0454xampl\u0454.com')
+    assert not dnstwist.dnstwist.validate_domain(u'example1')
+    assert not dnstwist.dnstwist.validate_domain('example1')
