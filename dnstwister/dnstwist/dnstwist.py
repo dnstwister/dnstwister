@@ -51,10 +51,12 @@ class InvalidDomain(Exception):
 
 def validate_domain(domain):
     """ Validate a domain name."""
-    if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
+    if len(domain) > 255:
         return False
-    allowed = re.compile('(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
-    return allowed.match(domain.encode('idna'))
+    if domain[-1] == '.':
+        domain = domain[:-1]
+    allowed = re.compile('\A([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\Z', re.IGNORECASE)
+    return allowed.match(domain)
 
 
 class fuzz_domain(object):
@@ -108,12 +110,21 @@ class fuzz_domain(object):
 
         return domain[0] + '.' + domain[1], domain[2]
 
+    def __validate_domain(self, domain):
+        try:
+            if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
+                return False
+        except UnicodeError:
+            return False
+        allowed = re.compile('(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
+        return allowed.match(domain.encode('idna'))
+
     def __filter_domains(self):
         seen = set()
         filtered = []
 
         for d in self.domains:
-            if validate_domain(d['domain-name']) and d['domain-name'] not in seen:
+            if self.__validate_domain(d['domain-name']) and d['domain-name'] not in seen:
                 seen.add(d['domain-name'])
                 filtered.append(d)
 
