@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # dnstwist
 #
@@ -18,13 +19,13 @@
 # limitations under the License.
 
 #
-# dnstwist 1.02 modified by Robert Wallhead (robert@thisismyrobot.com) for use
-# in https://dnstwister.report - all functionality except fuzzing removed and
-# various changes made to support usage in Heroku.
+# dnstwist 1.04b modified by Robert Wallhead (robert@thisismyrobot.com) for
+# use in https://dnstwister.report - all functionality except fuzzing removed
+# and various changes made to support usage in Heroku.
 #
 
 __author__ = 'Marcin Ulikowski'
-__version__ = '1.02'
+__version__ = '1.04b'
 __email__ = 'marcin@ulikowski.pl'
 
 import re
@@ -49,16 +50,11 @@ class InvalidDomain(Exception):
 
 
 def validate_domain(domain):
-    """ Validate a domain name.
-    """
-    if len(domain) > 255 or len(domain) == 0:
+    """ Validate a domain name."""
+    if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
         return False
-    if domain[-1] == '.':
-        domain = domain[:-1]
-    allowed = re.compile(
-        r'\A([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\Z', re.IGNORECASE
-    )
-    return allowed.match(domain)
+    allowed = re.compile('(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
+    return allowed.match(domain.encode('idna'))
 
 
 class fuzz_domain(object):
@@ -138,10 +134,34 @@ class fuzz_domain(object):
 
     def __homoglyph(self):
         glyphs = {
-        'd': ['b', 'cl', 'dl', 'di'], 'm': ['n', 'nn', 'rn', 'rr'], 'l': ['1', 'i'],
-        'o': ['0'], 'k': ['lk', 'ik', 'lc'], 'h': ['lh', 'ih'], 'w': ['vv'],
-        'n': ['m', 'r'], 'b': ['d', 'lb', 'ib'], 'i': ['1', 'l'], 'g': ['q'], 'q': ['g']
+            'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
+            'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
+            'c': [u'ϲ', u'с', u'ƈ', u'ċ', u'ć', u'ç'],
+            'd': ['b', 'cl', 'dl', 'di', u'ԁ', u'ժ', u'ɗ', u'đ'],
+            'e': [u'é', u'ê', u'ë', u'ē', u'ĕ', u'ě', u'ė', u'е', u'ẹ', u'ę', u'є', u'ϵ', u'ҽ'],
+            'f': [u'Ϝ', u'ƒ', u'Ғ'],
+            'g': ['q', u'ɢ', u'ɡ', u'Ԍ', u'Ԍ', u'ġ', u'ğ', u'ց', u'ǵ', u'ģ'],
+            'h': ['lh', 'ih', u'һ', u'հ', u'Ꮒ', u'н'],
+            'i': ['1', 'l', u'Ꭵ', u'í', u'ï', u'ı', u'ɩ', u'ι', u'ꙇ', u'ǐ', u'ĭ'],
+            'j': [u'ј', u'ʝ', u'ϳ', u'ɉ'],
+            'k': ['lk', 'ik', 'lc', u'κ', u'ⲕ', u'κ'],
+            'l': ['1', 'i', u'ɫ', u'ł'],
+            'm': ['n', 'nn', 'rn', 'rr', u'ṃ', u'ᴍ', u'м', u'ɱ'],
+            'n': ['m', 'r', u'ń'],
+            'o': ['0', u'Ο', u'ο', u'О', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
+            'p': [u'ρ', u'р', u'ƿ', u'Ϸ', u'Þ'],
+            'q': ['g', u'զ', u'ԛ', u'գ', u'ʠ'],
+            'r': [u'ʀ', u'Г', u'ᴦ', u'ɼ', u'ɽ'],
+            's': [u'Ⴝ', u'Ꮪ', u'ʂ', u'ś', u'ѕ'],
+            't': [u'τ', u'т', u'ţ'],
+            'u': [u'μ', u'υ', u'Ս', u'ս', u'ц', u'ᴜ', u'ǔ', u'ŭ'],
+            'v': [u'ѵ', u'ν', u'v̇'],
+            'w': ['vv', u'ѡ', u'ա', u'ԝ'],
+            'x': [u'х', u'ҳ', u'ẋ'],
+            'y': [u'ʏ', u'γ', u'у', u'Ү', u'ý'],
+            'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
+
         result = []
 
         for ws in range(0, len(self.domain)):
@@ -165,8 +185,7 @@ class fuzz_domain(object):
         result = []
 
         for i in range(1, len(self.domain)):
-            if self.domain[i] not in ['-', '.'] and self.domain[i-1] not in ['-', '.']:
-                result.append(self.domain[:i] + '-' + self.domain[i:])
+            result.append(self.domain[:i] + '-' + self.domain[i:])
 
         return result
 
