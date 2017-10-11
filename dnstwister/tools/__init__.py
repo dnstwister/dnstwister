@@ -35,18 +35,25 @@ def encode_domain(domain):
         # If already ascii or punycoded
         return binascii.hexlify(domain)
     except UnicodeError:
-        domain_pc = domain.encode('punycode')
+        domain_pc = 'xn--{}'.format(domain.encode('punycode'))
         return binascii.hexlify(domain_pc)
 
 
 def decode_domain(encoded_domain):
-    """Return a domain from hex."""
-    domain_pc = binascii.unhexlify(encoded_domain)
-    try:
-        return domain_pc.decode('punycode')
-    except UnicodeError:
-        # Not a punycoded domain
-        return domain_pc
+    """Return a domain from ascii hex.
+
+    Domain may have unicode chars in it."""
+    encoded_domain_ascii = encoded_domain.encode('ascii', errors='ignore')
+    domain_pc = binascii.unhexlify(encoded_domain_ascii)
+
+    if domain_pc.startswith('xn--'):
+        try:
+            return domain_pc[4:].decode('punycode')
+        except UnicodeError:
+            pass
+
+    # Not a punycoded domain
+    return domain_pc
 
 
 def fuzzy_domains(domain):

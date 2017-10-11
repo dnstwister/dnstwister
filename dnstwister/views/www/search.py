@@ -1,5 +1,4 @@
 """Search/report page."""
-import binascii
 import json
 
 import flask
@@ -130,16 +129,8 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
-    # We currently don't support Unicode in searches.
-    try:
-        post_data.decode('ascii')
-    except UnicodeEncodeError:
-        app.logger.info(
-            'Unicode search requested'
-        )
-        return flask.redirect('/error/3')
-
     search_parameter = tools.encode_domain(post_data)
+
     return flask.redirect('/search/{}'.format(search_parameter))
 
 
@@ -176,17 +167,8 @@ def handle_invalid_domain(search_term_as_hex):
 @app.route('/search/<search_domain>/<fmt>')
 def search(search_domain, fmt=None):
     """Handle redirect from form submit."""
-
-    # We currently don't support Unicode in searches.
-    try:
-        search_domain.decode('ascii')
-    except UnicodeEncodeError:
-        app.logger.info(
-            'Unicode search requested'
-        )
-        return flask.redirect('/error/3')
-
     domain = tools.parse_post_data(search_domain)
+
     if domain is None:
         return handle_invalid_domain(search_domain)
 
