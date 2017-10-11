@@ -68,7 +68,7 @@ def analyse(domain):
     # do this because the same people who may use this app already have
     # blocking on things like www.exampl0e.com in URLs...
     for result in results:
-        result['hex'] = binascii.hexlify(result['domain-name'])
+        result['hex'] = encode_domain(result['domain-name'])
     data['fuzzy_domains'] = results
 
     return (domain, data)
@@ -91,7 +91,7 @@ def parse_domain(encoded_domain):
     Return None on un-decodable or invalid domain.
     """
     try:
-        decoded_domain = binascii.unhexlify(encoded_domain)
+        decoded_domain = decode_domain(encoded_domain)
         if dnstwist.validate_domain(decoded_domain):
             return decoded_domain.lower()
     except:

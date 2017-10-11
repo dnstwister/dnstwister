@@ -34,7 +34,7 @@ def api_definition():
 def standard_api_values(domain, skip=''):
     """Return the set of key-value pairs for the api inter-relationships."""
     payload = {}
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = tools.encode_domain(domain)
     for endpoint in ENDPOINTS:
         if endpoint == skip:
             continue
@@ -133,7 +133,7 @@ def resolve_ip(hexdomain):
 @app.route('/to_hex/<domain>')
 def domain_to_hex(domain):
     """Helps you convert domains to hex."""
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = tools.encode_domain(domain)
     if tools.parse_domain(hexdomain) is None:
         flask.abort(400, 'Malformed domain.')
 

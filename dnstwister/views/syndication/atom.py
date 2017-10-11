@@ -5,9 +5,8 @@ import datetime
 import flask
 import werkzeug.contrib.atom
 
-from dnstwister import app, repository
+from dnstwister import app, repository, tools
 import dnstwister.dnstwist as dnstwist
-import dnstwister.tools
 
 
 def _base64_redirect(encoded_domain):
@@ -17,7 +16,7 @@ def _base64_redirect(encoded_domain):
     try:
         decoded_domain = base64.b64decode(encoded_domain)
         if dnstwist.validate_domain(decoded_domain):
-            return '/atom/{}'.format(binascii.hexlify(decoded_domain))
+            return '/atom/{}'.format(tools.encode_domain(decoded_domain))
     except:
         pass
 
@@ -26,7 +25,7 @@ def _base64_redirect(encoded_domain):
 def view(hexdomain):
     """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
-    domain = dnstwister.tools.parse_domain(hexdomain)
+    domain = tools.parse_domain(hexdomain)
 
     # Redirect old base64 requests to the new format.
     if domain is None:
@@ -100,7 +99,7 @@ def view(hexdomain):
                 title='NEW: {}'.format(dom),
                 content=flask.render_template(
                     'syndication/atom/new.html',
-                    ip=ip, hexdomain=binascii.hexlify(dom)
+                    ip=ip, hexdomain=tools.encode_domain(dom)
                 ),
                 id='new:{}:{}:{}'.format(dom, ip, id_24hr),
                 **common_kwargs
@@ -112,7 +111,7 @@ def view(hexdomain):
                 content=flask.render_template(
                     'syndication/atom/updated.html',
                     new_ip=new_ip, old_ip=old_ip,
-                    hexdomain=binascii.hexlify(dom),
+                    hexdomain=tools.encode_domain(dom),
                 ),
                 id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
                 **common_kwargs

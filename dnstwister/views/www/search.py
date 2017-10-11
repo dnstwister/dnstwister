@@ -15,7 +15,7 @@ def html_render(domain):
     return flask.render_template(
         'www/report.html',
         reports=reports,
-        atoms=dict([(domain, binascii.hexlify(domain))]),
+        atoms=dict([(domain, tools.encode_domain(domain))]),
         exports={'json': 'json', 'csv': 'csv'},
         search=[domain],
     )
@@ -139,7 +139,7 @@ def search_post():
         )
         return flask.redirect('/error/3')
 
-    search_parameter = binascii.hexlify(post_data)
+    search_parameter = tools.encode_domain(post_data)
     return flask.redirect('/search/{}'.format(search_parameter))
 
 
@@ -149,7 +149,7 @@ def handle_invalid_domain(search_term_as_hex):
     """
     decoded_search = None
     try:
-        decoded_search = binascii.unhexlify(search_term_as_hex)
+        decoded_search = tools.decode_domain(search_term_as_hex)
     except:
         pass
 
@@ -161,7 +161,7 @@ def handle_invalid_domain(search_term_as_hex):
                     search_term_as_hex, suggestion
                 )
             )
-            encoded_suggestion = binascii.hexlify(suggestion)
+            encoded_suggestion = tools.encode_domain(suggestion)
             return flask.redirect(
                 '/error/0?suggestion={}'.format(encoded_suggestion)
             )

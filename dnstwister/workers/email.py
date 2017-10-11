@@ -4,7 +4,7 @@ import datetime
 import time
 import traceback
 
-from dnstwister import emailer, repository
+from dnstwister import emailer, repository, tools
 from dnstwister.tools import delta_reports
 import dnstwister.repository.statistics as statistics_repository
 import dnstwister.tools.email as email_tools
@@ -81,12 +81,12 @@ def process_sub(sub_id, detail):
 
     # Add analysis links
     if new is not None:
-        new = [(dom, ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+        new = [(dom, ip, ANALYSIS_ROOT.format(tools.encode_domain(dom)))
                for (dom, ip)
                in new]
 
     if updated is not None:
-        updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+        updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(tools.encode_domain(dom)))
                    for (dom, old_ip, new_ip)
                    in updated]
 
