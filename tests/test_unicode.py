@@ -4,23 +4,6 @@ import binascii
 import dnstwister.tools as tools
 
 
-def test_unicode_detection():
-    assert not tools.contains_unicode('www.example.com')
-    assert not tools.contains_unicode(u'www.example.com')
-    assert not tools.contains_unicode('www.\u0454xampl\u0454.com')
-
-    assert tools.contains_unicode(u'www.\u0454xampl\u0454.com')
-
-
-def test_punycode_encoding_detection():
-    assert not tools.is_punycode_encoded('www.example.com')
-
-    assert tools.is_punycode_encoded('xn--www.xampl.com-ehlf')
-
-    # A Chinese TLD.
-    assert tools.is_punycode_encoded('xn--fiqs8s')
-
-
 def test_encode_ascii_domain():
     assert tools.encode_domain('www.example.com') == '7777772e6578616d706c652e636f6d'
 

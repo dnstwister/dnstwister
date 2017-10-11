@@ -26,55 +26,14 @@ GOOGLEDNS_SUCCESS = 0
 GOOGLEDNS_A_RECORD = 1
 
 
-def contains_unicode(text):
-    """As it says on the box."""
-    return any(ord(c) > 128 for c in text)
-
-
-def is_punycode_encoded(text):
-    """The string looks like it's Punycoded."""
-    return text.startswith('xn--') and not contains_unicode(text)
-
-
-def conditionally_punycode(text):
-    """Encode with Punycode if the text contains Unicode."""
-    if not contains_unicode(text):
-        return text
-
-    return 'xn--{}'.format(text.encode('punycode'))
-
-
-def conditionally_punycode_decode(text):
-    """Decode from Punycode if the text appears to be in Punycode."""
-    if not is_punycode_encoded(text):
-        return text
-
-    return text[4:].decode('punycode')
-
-
 def encode_domain(domain):
-    """Given a domain with possible Unicode chars, encode it to hex.
-
-    This is done by Punycoding the domain levels with Unicode chars. Then hex
-    encoding the lot.
-    """
-    parts = [conditionally_punycode(part)
-             for part
-             in domain.split('.')]
-    return binascii.hexlify('.'.join(parts))
+    """Given a domain with possible Unicode chars, encode it to hex."""
+    return binascii.hexlify(domain.encode('idna'))
 
 
 def decode_domain(encoded_domain):
     """Return a domain from hex."""
-    domain = binascii.unhexlify(
-        encoded_domain.encode('ascii', errors='ignore')
-    )
-
-    parts = [conditionally_punycode_decode(part)
-             for part
-             in domain.split('.')]
-
-    return '.'.join(parts)
+    return binascii.unhexlify(encoded_domain).decode('idna')
 
 
 def fuzzy_domains(domain):
