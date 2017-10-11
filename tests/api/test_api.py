@@ -39,7 +39,7 @@ def test_unicode_domain_passthrough(webapp):
 
     I'm using: u'www.\u0454xampl\u0454.com'
 
-    Which is xn--www.xampl.com-ehlf in punycode.
+    Which is www.xn--xampl-91ef.com in IDN encoding.
     """
     return
 

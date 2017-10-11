@@ -170,9 +170,11 @@ def resolve(domain):
     if dnstwist.validate_domain(domain) is None:
         return False, True
 
+    idna_domain = domain.encode('idna')
+
     # Try for an 'A' record.
     try:
-        ip_addr = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
+        ip_addr = str(sorted(RESOLVER.query(idna_domain, 'A'))[0].address)
 
         # Weird edge case that sometimes happens?!?!
         if ip_addr != '127.0.0.1':
@@ -182,7 +184,7 @@ def resolve(domain):
 
     # Try for a simple resolution if the 'A' record request failed
     try:
-        ip_addr = socket.gethostbyname(domain)
+        ip_addr = socket.gethostbyname(idna_domain)
 
         # Weird edge case that sometimes happens?!?!
         if ip_addr != '127.0.0.1':
@@ -190,13 +192,13 @@ def resolve(domain):
     except:
         pass
 
-    return google_resolve(domain)
+    return google_resolve(idna_domain)
 
 
-def google_resolve(domain):
+def google_resolve(idna_domain):
     """Google's Public DNS resolver."""
     try:
-        response = requests.get(GOOGLEDNS.format(domain)).json()
+        response = requests.get(GOOGLEDNS.format(idna_domain)).json()
         if response['Status'] == GOOGLEDNS_SUCCESS:
             if 'Answer' in response.keys():
                 answer = response['Answer'][0]

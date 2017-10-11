@@ -48,7 +48,7 @@ def standard_api_values(domain, skip=''):
         payload['url'] = flask.request.base_url
 
     if skip != 'domain':
-        payload['domain'] = domain
+        payload['domain'] = domain.encode('idna')
 
     if skip != 'domain_as_hexadecimal':
         payload['domain_as_hexadecimal'] = hexdomain

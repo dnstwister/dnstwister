@@ -2,6 +2,8 @@
 import binascii
 import socket
 
+from dnstwister import tools
+
 
 def test_resolve(webapp):
     """Test we can resolve IP addresses."""
@@ -22,6 +24,34 @@ def test_resolve(webapp):
         u'fuzz_url': u'http://localhost:80/api/fuzz/{}'.format(hexdomain),
         u'parked_score_url': u'http://localhost:80/api/parked/{}'.format(hexdomain),
         u'url': u'http://localhost:80/api/ip/{}'.format(hexdomain),
+    }
+
+    # Will throw socket.error exception if this is not a valid IP address.
+    socket.inet_aton(ip_addr)
+
+
+def test_unicode_resolve(webapp):
+    """Check we can resolve a unicode domain.
+
+    xn--sterreich-z7a.icom.museum
+    """
+    domain = u'\xf6sterreich.icom.museum'
+    hexdomain = tools.encode_domain(domain)
+    response = webapp.get('/api/ip/{}'.format(hexdomain))
+
+    assert response.status_code == 200
+
+    payload = response.json
+    ip_addr = payload['ip']
+    del payload['ip']
+
+    assert payload == {
+        u'domain': u'xn--sterreich-z7a.icom.museum',
+        u'domain_as_hexadecimal': u'786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'error': False,
+        u'fuzz_url': u'http://localhost:80/api/fuzz/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'parked_score_url': u'http://localhost:80/api/parked/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'url': u'http://localhost:80/api/ip/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d'
     }
 
     # Will throw socket.error exception if this is not a valid IP address.
