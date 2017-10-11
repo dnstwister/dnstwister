@@ -10,12 +10,12 @@ def test_encode_ascii_domain():
 
 def test_encode_unicode_domain():
     unicode_domain = u'www.\u0454xampl\u0454.com'
-    punycode_domain = unicode_domain.encode('punycode')
+    punycode_domain = 'www.xn--{}.com'.format(unicode_domain.encode('punycode'))
 
-    assert punycode_domain == 'www.xampl.com-ehlf'
-    assert binascii.hexlify(punycode_domain) == '7777772e78616d706c2e636f6d2d65686c66'
+    assert punycode_domain == 'www.xn--www.xampl.com-ehlf.com'
+    assert binascii.hexlify(punycode_domain) == '7777772e786e2d2d7777772e78616d706c2e636f6d2d65686c662e636f6d'
 
-    assert tools.encode_domain(unicode_domain) == '786e2d2d7777772e78616d706c2e636f6d2d65686c66'
+    assert tools.encode_domain(unicode_domain) == '7777772e786e2d2d7777772e78616d706c2e636f6d2d65686c662e636f6d'
 
 
 def test_encode_punycoded_domain():

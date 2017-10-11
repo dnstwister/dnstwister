@@ -32,3 +32,20 @@ def test_api_domain_validation(webapp):
         with pytest.raises(webtest.app.AppError) as err:
             webapp.get('/api/{}/{}'.format(endpoint, malformed_domain))
         assert '400 BAD REQUEST' in err.value.message
+
+
+def test_unicode_domain_passthrough(webapp):
+    """Unicode is mean.
+
+    I'm using: u'www.\u0454xampl\u0454.com'
+
+    Which is xn--www.xampl.com-ehlf in punycode.
+    """
+    return
+
+    malformed_domain = '786e2d2d7777772e78616d706c2e636f6d2d65686c66'
+    endpoints = ('fuzz', 'to_hex', 'ip', 'parked', 'safebrowsing', 'whois')
+    for endpoint in endpoints:
+        with pytest.raises(webtest.app.AppError) as err:
+            webapp.get('/api/{}/{}'.format(endpoint, malformed_domain))
+        assert '400 BAD REQUEST' in err.value.message

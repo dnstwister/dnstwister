@@ -31,12 +31,17 @@ def encode_domain(domain):
 
     This is done by first Punycoding it.
     """
-    try:
-        # If already ascii or punycoded
-        return binascii.hexlify(domain)
-    except UnicodeError:
-        domain_pc = 'xn--{}'.format(domain.encode('punycode'))
-        return binascii.hexlify(domain_pc)
+    parts = []
+    for part in domain.split('.'):
+        try:
+            # If already ascii this will work
+            binascii.hexlify(part)
+            parts.append(part)
+        except UnicodeError:
+            part_pc = 'xn--{}'.format(part.encode('punycode'))
+            parts.append(part_pc)
+
+    return binascii.hexlify('.'.join(parts))
 
 
 def decode_domain(encoded_domain):
@@ -46,14 +51,19 @@ def decode_domain(encoded_domain):
     encoded_domain_ascii = encoded_domain.encode('ascii', errors='ignore')
     domain_pc = binascii.unhexlify(encoded_domain_ascii)
 
-    if domain_pc.startswith('xn--'):
-        try:
-            return domain_pc[4:].decode('punycode')
-        except UnicodeError:
-            pass
+    parts = []
+    for part in domain_pc.split('.'):
 
-    # Not a punycoded domain
-    return domain_pc
+        if part.startswith('xn--'):
+            try:
+                parts.append(domain_pc[4:].decode('punycode'))
+            except UnicodeError:
+                pass
+
+        # Not a punycoded domain part
+        parts.append(part)
+
+    return '.'.join(parts)
 
 
 def fuzzy_domains(domain):
