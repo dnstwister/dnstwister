@@ -26,6 +26,29 @@ GOOGLEDNS_SUCCESS = 0
 GOOGLEDNS_A_RECORD = 1
 
 
+def encode_domain(domain):
+    """Given a domain with possible unicode chars, encode it to hex.
+
+    This is done by first Punycoding it.
+    """
+    try:
+        # If already ascii or punycoded
+        return binascii.hexlify(domain)
+    except UnicodeError:
+        domain_pc = domain.encode('punycode')
+        return binascii.hexlify(domain_pc)
+
+
+def decode_domain(encoded_domain):
+    """Return a domain from hex."""
+    domain_pc = binascii.unhexlify(encoded_domain)
+    try:
+        return domain_pc.decode('punycode')
+    except UnicodeError:
+        # Not a punycoded domain
+        return domain_pc
+
+
 def fuzzy_domains(domain):
     """Return the fuzzy domains."""
     fuzzer = dnstwist.DomainFuzzer(domain)
