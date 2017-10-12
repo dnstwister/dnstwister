@@ -30,7 +30,7 @@ def test_successful_domain():
 
 def test_successful_unicode_domain():
     """Check Google's happy with Unicode."""
-    domain = u'\xf6sterreich.icom.museum'
+    domain = u'\x94sterreich.icom.museum'
     ip_addr, error = tools.google_resolve(domain)
 
     assert _is_valid_ip(ip_addr)

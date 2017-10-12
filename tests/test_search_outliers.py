@@ -1,4 +1,5 @@
 """Test of weird search behaviours."""
+# -*- coding: utf-8 -*-
 import binascii
 
 
@@ -117,3 +118,23 @@ def test_fix_space_typo(webapp):
     response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
+
+
+def test_post_unicode(webapp):
+    """Test of end-to-end unicode."""
+    unicode_domain = 'höt.com'
+
+    assert unicode_domain == 'h\xc3\xb6t.com'
+
+    expected_punycode = 'xn--ht-fka.com'
+    expected_hex = binascii.hexlify(expected_punycode)
+
+    assert expected_hex == '786e2d2d68742d666b612e636f6d'
+
+    response = webapp.post('/search', {'domains': unicode_domain}).follow()
+
+    assert response.status_code == 200
+    assert response.request.url == 'http://localhost/search/{}'.format(expected_hex)
+    assert unicode_domain in response.body
+
+    assert response.body == ''

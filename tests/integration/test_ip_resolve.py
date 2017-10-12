@@ -35,7 +35,7 @@ def test_unicode_resolve(webapp):
 
     xn--sterreich-z7a.icom.museum
     """
-    domain = u'\xf6sterreich.icom.museum'
+    domain = u'\x94sterreich.icom.museum'
     hexdomain = tools.encode_domain(domain)
     response = webapp.get('/api/ip/{}'.format(hexdomain))
 
