@@ -2,6 +2,65 @@
 import dnstwister.dnstwist.dnstwist as dnstwist
 
 
+def test_unicode_fuzzing():
+    """Test can fuzz and generate unicode."""
+    unicode_domain = 'xn--domain.com'.decode('idna')
+
+    fuzzer = dnstwist.fuzz_domain(unicode_domain)
+    fuzzer.fuzz()
+
+    assert sorted([d['domain-name'] for d in fuzzer.domains]) == [
+        u'www-\u3bd9\u3bdc\u3bd9\u3bdf.com',
+        u'www\u3bd9\u3bdc\u3bd9\u3bdf.com',
+        u'ww\u3bd9\u3bdc\u3bd9\u3bdf.com',
+        u'\u3bd9-\u3bdc\u3bd9\u3bdf.com',
+        u'\u3bd9.\u3bdc\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bd9\u3bdc\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bd9\u3bdc\u3bdf.com',
+        u'\u3bd9\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bdc-\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bdc.\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bd9-\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bd9.com',
+        u'\u3bd9\u3bdc\u3bd9.\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfa.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfb.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfc.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfcom.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfd.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfe.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdff.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfg.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfh.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfi.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfj.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfk.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfl.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfm.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfn.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfo.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfp.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfq.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfr.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfs.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdft.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfu.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfv.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfw.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfx.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfy.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdfz.com',
+        u'\u3bd9\u3bdc\u3bd9\u3bdf\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bdc\u3bd9\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bdf.com',
+        u'\u3bd9\u3bdc\u3bdf\u3bd9.com',
+        u'\u3bdc\u3bd9\u3bd9\u3bdf.com',
+        u'\u3bdc\u3bd9\u3bdf.com',
+    ]
+
+
 def test_top_level_domains_db_is_loaded():
     """The TLD database should be loaded."""
     assert dnstwist.DB_TLD

@@ -131,6 +131,11 @@ class fuzz_domain(object):
         for i in range(0, len(self.domain)):
             c = self.domain[i]
             for j in range(0, len(masks)):
+
+                # Deal with Unicode later...
+                if ord(c) > 255:
+                    continue
+
                 b = chr(ord(c) ^ masks[j])
                 o = ord(b)
                 if (o >= 48 and o <= 57) or (o >= 97 and o <= 122) or o == 45:
