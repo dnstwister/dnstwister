@@ -131,6 +131,12 @@ def search_post():
 
     search_parameter = tools.encode_domain(post_data)
 
+    if search_parameter is None:
+        app.logger.info(
+            'Invalid POST Unicode data:{}'.format(repr(post_data))
+        )
+        return flask.redirect('/error/0')
+
     return flask.redirect('/search/{}'.format(search_parameter))
 
 

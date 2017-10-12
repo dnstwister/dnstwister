@@ -28,7 +28,11 @@ GOOGLEDNS_A_RECORD = 1
 
 def encode_domain(domain):
     """Given a domain with possible Unicode chars, encode it to hex."""
-    return binascii.hexlify(domain.encode('idna'))
+    try:
+        return binascii.hexlify(domain.encode('idna'))
+    except UnicodeError:
+        # Some strange invalid Unicode domains
+        return None
 
 
 def decode_domain(encoded_domain):
