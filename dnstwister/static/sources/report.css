@@ -21,7 +21,6 @@
 
 .domains h5 {
     display: inline;
-    white-space: nowrap;
 }
 
 .ico {
@@ -34,6 +33,7 @@
 .domain_nav {
     float: left;
     margin-right: 15px;
+    white-space: nowrap;
 }
 
 .ico:hover {
