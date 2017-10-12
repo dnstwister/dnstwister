@@ -13,7 +13,7 @@
                 <div class="domain_nav">
                     <a alt="rss subscription link" title="subscribe to rss alerts" href="/atom/{{ hex }}"><img class="ico" src="/static/feed.png"/></a>
                     <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ hex }}"><img class="ico" src="/static/email.png"/></a>
-                    <h5>{{ domain }}</h5>
+                    <h5>{{ domain | domain_renderer }}</h5>
                 </div>
             {% endfor %}
             <div style="clear: both"></div>
@@ -42,7 +42,6 @@
             <table class="report u-full-width">
                 <thead>
                     <tr>
-                        <th>Domain</th>
                         <th>Tweak</th>
                         <th>Type</th>
                         <th>IP</th>
@@ -53,8 +52,7 @@
                     {% for domain, data in reports.items() %}
                         {% for entry in data.fuzzy_domains %}
                             <tr class="domain-row">
-                                <td>{{ domain }}</td>
-                                <td>{{ entry['domain-name'] }}</td>
+                                <td>{{ entry['domain-name'] | domain_renderer }}</td>
                                 <td>{{ entry.fuzzer }}</td>
                                 <td class="resolvable" data-hex="{{ entry.hex }}" data-ip="{{ entry.ip }}">...</td>
                                 <td class="tools">

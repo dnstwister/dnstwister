@@ -230,3 +230,12 @@ def api_url(view, var_pretty_name):
         flask.request.url_root,
         path
     )
+
+
+def domain_renderer(domain):
+    """Add IDNA values beside Unicode domains."""
+    idna_domain = domain.encode('idna')
+    if idna_domain == domain:
+        return domain
+
+    return domain + ' ({})'.format(idna_domain)

@@ -38,3 +38,6 @@ import views.www.help
 import views.www.index
 import views.www.search
 import views.www.status
+
+# Filters
+app.jinja_env.filters['domain_renderer'] = tools.domain_renderer

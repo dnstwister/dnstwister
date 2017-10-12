@@ -32,10 +32,8 @@ def test_resolve(webapp):
 
 def test_unicode_resolve(webapp):
     """Check we can resolve a unicode domain.
-
-    xn--sterreich-z7a.icom.museum
     """
-    domain = u'\x94sterreich.icom.museum'
+    domain = 'xn--sterreich-z7a.icom.museum'.decode('idna')
     hexdomain = tools.encode_domain(domain)
     response = webapp.get('/api/ip/{}'.format(hexdomain))
 

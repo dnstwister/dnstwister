@@ -137,4 +137,4 @@ def test_post_unicode(webapp):
     assert response.request.url == 'http://localhost/search/{}'.format(expected_hex)
     assert unicode_domain in response.body
 
-    assert response.body == ''
+    assert 'höt.com (xn--ht-fka.com)' in response.body
