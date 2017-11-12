@@ -32,12 +32,13 @@ CONTENT_MAX = 1024 * 100
 
 def _domain_redirects(domain, path=''):
     """Returns whether a domain (and optional path) redirects to another."""
+    idna_domain = domain.encode('idna')
     req = requests.get(
-        'http://{}/{}'.format(domain, path),
+        'http://{}/{}'.format(idna_domain, path),
         **shared.REQ_KWARGS
     )
     landed_domain = shared.get_domain(req.url)
-    return landed_domain != domain, landed_domain, req.content[:CONTENT_MAX]
+    return landed_domain != idna_domain, landed_domain, req.content[:CONTENT_MAX]
 
 
 def get_text(score):

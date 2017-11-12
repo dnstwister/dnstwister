@@ -67,7 +67,8 @@ def whois(hexdomain):
         )
     payload = standard_api_values(domain, skip='whois')
     try:
-        payload['whois_text'] = whois_mod.whois(domain).text.strip()
+        idna_domain = domain.encode('idna')
+        payload['whois_text'] = whois_mod.whois(idna_domain).text.strip()
         if payload['whois_text'] == '':
             raise Exception('No whois data retrieved')
     except Exception as ex:

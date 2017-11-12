@@ -2,6 +2,8 @@
 import pytest
 import webtest.app
 
+from dnstwister import tools
+
 
 def test_api_root(webapp):
     """Test the API root."""
@@ -32,3 +34,15 @@ def test_api_domain_validation(webapp):
         with pytest.raises(webtest.app.AppError) as err:
             webapp.get('/api/{}/{}'.format(endpoint, malformed_domain))
         assert '400 BAD REQUEST' in err.value.message
+
+
+def test_unicode_basics(webapp):
+    """Test that Unicode domains work on all endpoints."""
+    unicode_domain = 'xn--sterreich-z7a.icom.museum'.decode('idna')
+    endpoints = ('fuzz', 'ip', 'parked', 'safebrowsing', 'whois')
+    for endpoint in endpoints:
+        webapp.get('/api/{}/{}'.format(
+            endpoint,
+            tools.encode_domain(unicode_domain),
+        ))
+    webapp.get('/api/to_hex/{}'.format(unicode_domain.encode('idna')))

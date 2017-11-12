@@ -14,8 +14,9 @@ def get_report(domain):
 
     Returns a count of matches.
     """
+    idna_domain = domain.encode('idna')
     data = {
-        'site': domain
+        'site': idna_domain
     }
 
     result = requests.get(API_URL, params=data)
