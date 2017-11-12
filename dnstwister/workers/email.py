@@ -1,11 +1,9 @@
 """Updates atom feeds."""
-import binascii
 import datetime
 import time
 import traceback
 
 from dnstwister import emailer, repository, tools
-from dnstwister.tools import delta_reports
 import dnstwister.tools.email as email_tools
 
 # Time in seconds between sending emails for a subscription.
