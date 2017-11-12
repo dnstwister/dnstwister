@@ -6,22 +6,11 @@ import traceback
 
 from dnstwister import emailer, repository, tools
 from dnstwister.tools import delta_reports
-import dnstwister.repository.statistics as statistics_repository
 import dnstwister.tools.email as email_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
 ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
-
-
-def get_noisy_domains(candidate_domains):
-    """Filter list of domains to those that are noisy."""
-    results = []
-    for domain in candidate_domains:
-        noise_stat = statistics_repository.get_noise_stat(domain)
-        if noise_stat is not None and noise_stat.is_noisy is True:
-            results.append(domain)
-    return results
 
 
 def process_sub(sub_id, detail):
@@ -90,10 +79,6 @@ def process_sub(sub_id, detail):
                    for (dom, old_ip, new_ip)
                    in updated]
 
-    # Get noisy domains
-    delta_domains = delta_reports.extract_domains(delta)
-    noisy_domains = get_noisy_domains(delta_domains)
-
     # Email
     body = email_tools.render_email(
         'report.html',
@@ -101,7 +86,6 @@ def process_sub(sub_id, detail):
         new=new,
         updated=updated,
         deleted=deleted,
-        noisy=noisy_domains,
         unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
     )
 
