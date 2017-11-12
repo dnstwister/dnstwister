@@ -99,3 +99,9 @@ def test_valid_domain():
 
     assert not tools.is_valid_ip('99.99.299.99')
     assert not tools.is_valid_ip('12kljasdksdhfkjsdhf')
+
+
+def test_encode_bonkers_unicode():
+    """Some unicode is not "valid"."""
+    unicode_domain = u'a\uDFFFa.com'
+    assert tools.encode_domain(unicode_domain) is None

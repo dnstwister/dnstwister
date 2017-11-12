@@ -32,7 +32,10 @@ def test_api_domain_validation(webapp):
     endpoints = ('fuzz', 'to_hex', 'ip', 'parked', 'safebrowsing', 'whois')
     for endpoint in endpoints:
         with pytest.raises(webtest.app.AppError) as err:
-            webapp.get('/api/{}/{}'.format(endpoint, malformed_domain))
+            webapp.get('/api/{}/{}'.format(
+                endpoint,
+                tools.encode_domain(malformed_domain)
+            ))
         assert '400 BAD REQUEST' in err.value.message
 
 
