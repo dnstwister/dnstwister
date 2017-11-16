@@ -225,3 +225,13 @@ def test_failed_export(webapp):
 
     response = webapp.get('/search/{}/xlsx'.format(hexdomain), expect_errors=True)
     assert response.status_code == 400
+
+
+def test_links_on_report(webapp):
+    """Make sure the export links are working."""
+    domain = 'a.com'
+    hexdomain = binascii.hexlify(domain)
+    page_html = webapp.get('/search/{}'.format(hexdomain)).body
+
+    assert '/search/{}/csv'.format(hexdomain) in page_html
+    assert '/search/{}/json'.format(hexdomain) in page_html

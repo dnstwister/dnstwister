@@ -16,7 +16,7 @@ def html_render(domain):
         reports=reports,
         atoms=dict([(domain, tools.encode_domain(domain))]),
         exports={'json': 'json', 'csv': 'csv'},
-        search=[domain],
+        domain_encoded=tools.encode_domain(domain),
     )
 
 
