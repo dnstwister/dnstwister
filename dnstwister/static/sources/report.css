@@ -47,14 +47,6 @@
     margin-right: 0;
 }
 
-tr td.tools a {
-    display: none;
-}
-
-tr.resolved td.tools a {
-    display: inline;
-}
-
 a.deep-search {
     text-decoration: none;
     margin-left: 5px;
