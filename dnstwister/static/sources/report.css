@@ -40,6 +40,13 @@
     opacity: 1;
 }
 
+.ico.mini {
+    height: 16px;
+    margin-left: 5px;
+    margin-bottom: -3px;
+    margin-right: 0;
+}
+
 tr td.tools a {
     display: none;
 }
