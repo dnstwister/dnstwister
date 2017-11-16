@@ -1,6 +1,5 @@
 """Testing Unicode."""
-import binascii
-
+# -*- coding: UTF-8 -*-
 from dnstwister import dnstwist, tools
 
 
@@ -47,3 +46,25 @@ def test_dnstwist_validations():
     assert not dnstwist.dnstwist.validate_domain('www.\u0454xampl\u0454.com')
     assert not dnstwist.dnstwist.validate_domain(u'example1')
     assert not dnstwist.dnstwist.validate_domain('example1')
+
+
+def test_idna_submit(webapp):
+    """Can submit idna encoded."""
+    idna_domain = 'xn--plnt-1na.com'  # 'plànt.com'
+
+    response = webapp.post('/search', {'domains': idna_domain})
+
+    assert response.headers['location'] == 'http://localhost:80/search/786e2d2d706c6e742d316e612e636f6d'
+
+
+def test_raw_unicode_submit(webapp):
+    """Can submit idna encoded."""
+    domain = u'pl\u00E0nt.com'  # 'plànt.com'
+
+    response = webapp.post(
+        '/search',
+        {'domains': domain},
+        content_type='application/x-www-form-urlencoded; charset=utf-8',
+    )
+
+    assert response.headers['location'] == 'http://localhost:80/search/786e2d2d706c6e742d316e612e636f6d'
