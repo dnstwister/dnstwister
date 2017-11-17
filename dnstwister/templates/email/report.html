@@ -1,4 +1,4 @@
-<h1>dnstwister report for '{{ domain | domain_format }}'</h1>
+<h1>dnstwister report for '{{ domain | domain_renderer }}'</h1>
 <p>
     <a href="{{ unsubscribe_link }}">Unsubscribe</a>
 </p>
@@ -14,7 +14,7 @@
     <tbody>{% for (dom, ip, analysis_link) in new | sort %}
         <tr>
             <td>
-                {{ dom | domain_format }}
+                {{ dom | domain_renderer }}
             </td>
             <td>{{ ip }}</td>
             <td><a href="{{ analysis_link }}">analyse</a></td>
@@ -34,7 +34,7 @@
     <tbody>{% for (dom, old_ip, new_ip, analysis_link) in updated | sort %}
         <tr>
             <td>
-                {{ dom | domain_format }}
+                {{ dom | domain_renderer }}
             </td>
             <td>{{ old_ip }}</td>
             <td>{{ new_ip }}</td>
@@ -52,7 +52,7 @@
     <tbody>{% for dom in deleted | sort %}
         <tr>
             <td>
-                {{ dom | domain_format }}
+                {{ dom | domain_renderer }}
             </td>
         </tr>{% endfor %}
     </tbody>
