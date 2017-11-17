@@ -96,34 +96,39 @@ def view(hexdomain):
 
         for (dom, ip) in delta_report['new']:
             feed.add(
-                title='NEW: {}'.format(dom),
+                title=u'NEW: {}'.format(tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/new.html',
                     ip=ip, hexdomain=tools.encode_domain(dom)
                 ),
-                id='new:{}:{}:{}'.format(dom, ip, id_24hr),
+                id='new:{}:{}:{}'.format(dom.encode('idna'), ip, id_24hr),
                 **common_kwargs
             )
 
         for (dom, old_ip, new_ip) in delta_report['updated']:
             feed.add(
-                title='UPDATED: {}'.format(dom),
+                title=u'UPDATED: {}'.format(tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/updated.html',
                     new_ip=new_ip, old_ip=old_ip,
                     hexdomain=tools.encode_domain(dom),
                 ),
-                id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
+                id='updated:{}:{}:{}:{}'.format(
+                    dom.encode('idna'),
+                    old_ip,
+                    new_ip,
+                    id_24hr
+                ),
                 **common_kwargs
             )
 
         for dom in delta_report['deleted']:
             feed.add(
-                title='DELETED: {}'.format(dom),
+                title=u'DELETED: {}'.format(tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/deleted.html',
                 ),
-                id='deleted:{}:{}'.format(dom, id_24hr),
+                id='deleted:{}:{}'.format(dom.encode('idna'), id_24hr),
                 **common_kwargs
             )
 

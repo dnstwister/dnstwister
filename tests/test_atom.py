@@ -396,29 +396,29 @@ class TestAtomUnicode(unittest.TestCase):
         dnstwister.cache.clear()
 
         # Until the first delta is actually created, this placeholder remains.
-        res = self.app.get('/atom/{}'.format(base64.b64encode(domain))).follow()
+        res = self.app.get('/atom/{}'.format(tools.encode_domain(domain)))
         assert str(res) == textwrap.dedent("""
             Response: 200 OK
             Content-Type: application/atom+xml; charset=utf-8
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
-              <title type="text">dnstwister report for www.example.com</title>
-              <id>http://localhost:80/atom/7777772e6578616d706c652e636f6d</id>
+              <title type="text">dnstwister report for www.\xd1\x94xample.com (www.xn--xample-9uf.com)</title>
+              <id>http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d</id>
               <updated>{date_today}</updated>
-              <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
-              <link href="http://localhost:80/atom/7777772e6578616d706c652e636f6d" rel="self" />
+              <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+              <link href="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="http://localhost:80/atom/7777772e6578616d706c652e636f6d">
-                <title type="text">No report yet for www.example.com</title>
-                <id>waiting:www.example.com</id>
+              <entry xml:base="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
+                <title type="text">No report yet for www.\xd1\x94xample.com (www.xn--xample-9uf.com)</title>
+                <id>waiting:www.\xd1\x94xample.com (www.xn--xample-9uf.com)</id>
                 <updated>{date_today}</updated>
                 <published>{date_today}</published>
-                <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
+                <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;p&gt;
-                This is the placeholder for your dnstwister report for www.example.com.
+                This is the placeholder for your dnstwister report for www.\xd1\x94xample.com (www.xn--xample-9uf.com).
             &lt;/p&gt;
             &lt;p&gt;
                 Your first report will be generated within 24 hours with all entries
@@ -441,7 +441,7 @@ class TestAtomUnicode(unittest.TestCase):
         update_date = datetime.datetime(2016, 2, 28, 11, 10, 34)
         repository.update_delta_report(
             domain, {
-                'new': [('www.examp1e.com', '127.0.0.1')],
+                'new': [(u'www.\u0454xampl\u0454.com', '127.0.0.1')],
                 'updated': [],
                 'deleted': [],
             },
@@ -451,29 +451,29 @@ class TestAtomUnicode(unittest.TestCase):
         # Clear the webapp cache
         dnstwister.cache.clear()
 
-        res = self.app.get('/atom/{}'.format(base64.b64encode(domain))).follow()
+        res = self.app.get('/atom/{}'.format(tools.encode_domain(domain)))
         assert str(res) == textwrap.dedent("""
             Response: 200 OK
             Content-Type: application/atom+xml; charset=utf-8
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
-              <title type="text">dnstwister report for www.example.com</title>
-              <id>http://localhost:80/atom/7777772e6578616d706c652e636f6d</id>
+              <title type="text">dnstwister report for www.\xd1\x94xample.com (www.xn--xample-9uf.com)</title>
+              <id>http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d</id>
               <updated>2016-02-28T11:10:34Z</updated>
-              <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
-              <link href="http://localhost:80/atom/7777772e6578616d706c652e636f6d" rel="self" />
+              <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+              <link href="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="http://localhost:80/atom/7777772e6578616d706c652e636f6d">
-                <title type="text">NEW: www.examp1e.com</title>
-                <id>new:www.examp1e.com:127.0.0.1:1456657834.0</id>
+              <entry xml:base="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
+                <title type="text">NEW: www.\xd1\x94xampl\xd1\x94.com (www.xn--xampl-91ef.com)</title>
+                <id>new:www.xn--xampl-91ef.com:127.0.0.1:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
+                <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;h1&gt;IP: 127.0.0.1&lt;/h1&gt;
-            &lt;a href=&quot;https://dnstwister.report/analyse/7777772e6578616d7031652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
+            &lt;a href=&quot;https://dnstwister.report/analyse/7777772e786e2d2d78616d706c2d393165662e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
             </feed>
         """).strip()
