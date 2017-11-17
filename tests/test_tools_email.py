@@ -16,7 +16,7 @@ def test_email_renderer():
     )
 
     assert template.strip() == textwrap.dedent("""
-        <h1>dnstwister report for 'www<span>.</span>example<span>.</span>com'</h1>
+        <h1>dnstwister report for <strong>www<span>.</span>example<span>.</span>com</strong></h1>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
@@ -99,7 +99,7 @@ def test_email_renderer_domain_sorting():
     )
 
     assert template.strip() == textwrap.dedent("""
-        <h1>dnstwister report for 'www<span>.</span>example<span>.</span>com'</h1>
+        <h1>dnstwister report for <strong>www<span>.</span>example<span>.</span>com</strong></h1>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
