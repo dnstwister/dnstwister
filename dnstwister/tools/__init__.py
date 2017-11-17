@@ -4,7 +4,6 @@ import os
 import re
 import random
 import socket
-import string
 import urlparse
 
 import dns.resolver
@@ -108,7 +107,7 @@ def suggest_domain(search_domain):
             return candidate
 
     # Attempt to make a domain from the terms.
-    joiners = ('', '-') # for now, also trialling ('', '-', '.')
+    joiners = ('', '-')  # for now, also trialling ('', '-', '.')
     tlds = ('com',)  # for now
     suggestions = []
 
