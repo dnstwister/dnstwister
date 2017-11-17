@@ -28,6 +28,15 @@ def test_successful_domain():
     assert not error
 
 
+def test_successful_unicode_domain():
+    """Check Google's happy with Unicode."""
+    domain = 'xn--sterreich-z7a.icom.museum'.decode('idna')
+    ip_addr, error = tools.google_resolve(domain)
+
+    assert _is_valid_ip(ip_addr)
+    assert not error
+
+
 def test_failure_to_resolve(f_httpretty):
     """Bringing in httpretty breaks requests, this is intentional for this
     test.

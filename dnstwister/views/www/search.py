@@ -1,5 +1,4 @@
 """Search/report page."""
-import binascii
 import json
 
 import flask
@@ -15,9 +14,9 @@ def html_render(domain):
     return flask.render_template(
         'www/report.html',
         reports=reports,
-        atoms=dict([(domain, binascii.hexlify(domain))]),
+        atoms=dict([(domain, tools.encode_domain(domain))]),
         exports={'json': 'json', 'csv': 'csv'},
-        search=[domain],
+        domain_encoded=tools.encode_domain(domain),
     )
 
 
@@ -35,7 +34,8 @@ def json_render(domain):
 
         yield '{\n'
 
-        for (i, (dom, rept)) in enumerate(reports.items()):
+        # TODO: We only have one domain now, simplify this.
+        for (dom, rept) in reports.items():
 
             yield indent + '"' + dom + '": {\n'
             yield indent * 2 + '"fuzzy_domains": [\n'
@@ -69,8 +69,6 @@ def json_render(domain):
 
             yield indent * 2 + ']\n'
             yield indent + '}'
-            if i < len(reports) - 1:
-                yield ','
             yield '\n'
 
         yield '}\n'
@@ -130,16 +128,14 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
-    # We currently don't support Unicode in searches.
-    try:
-        post_data.decode('ascii')
-    except UnicodeEncodeError:
-        app.logger.info(
-            'Unicode search requested'
-        )
-        return flask.redirect('/error/3')
+    search_parameter = tools.encode_domain(post_data)
 
-    search_parameter = binascii.hexlify(post_data)
+    if search_parameter is None:
+        app.logger.info(
+            'Invalid POST Unicode data:{}'.format(repr(post_data))
+        )
+        return flask.redirect('/error/0')
+
     return flask.redirect('/search/{}'.format(search_parameter))
 
 
@@ -149,7 +145,7 @@ def handle_invalid_domain(search_term_as_hex):
     """
     decoded_search = None
     try:
-        decoded_search = binascii.unhexlify(search_term_as_hex)
+        decoded_search = tools.decode_domain(search_term_as_hex)
     except:
         pass
 
@@ -161,7 +157,7 @@ def handle_invalid_domain(search_term_as_hex):
                     search_term_as_hex, suggestion
                 )
             )
-            encoded_suggestion = binascii.hexlify(suggestion)
+            encoded_suggestion = tools.encode_domain(suggestion)
             return flask.redirect(
                 '/error/0?suggestion={}'.format(encoded_suggestion)
             )
@@ -176,17 +172,8 @@ def handle_invalid_domain(search_term_as_hex):
 @app.route('/search/<search_domain>/<fmt>')
 def search(search_domain, fmt=None):
     """Handle redirect from form submit."""
-
-    # We currently don't support Unicode in searches.
-    try:
-        search_domain.decode('ascii')
-    except UnicodeEncodeError:
-        app.logger.info(
-            'Unicode search requested'
-        )
-        return flask.redirect('/error/3')
-
     domain = tools.parse_post_data(search_domain)
+
     if domain is None:
         return handle_invalid_domain(search_domain)
 

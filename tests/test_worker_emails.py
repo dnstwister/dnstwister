@@ -53,10 +53,6 @@ def test_dont_send_too_often(capsys, monkeypatch):
         patches.SimpleKVDatabase()
     )
     monkeypatch.setattr(
-        'dnstwister.repository.statistics.db',
-        patches.SimpleKVDatabase()
-    )
-    monkeypatch.setattr(
         'dnstwister.tools.dnstwist.DomainFuzzer',
         patches.SimpleFuzzer
     )
@@ -108,10 +104,6 @@ def test_subscription_email_timing(capsys, monkeypatch):
     # Patch away
     monkeypatch.setattr(
         'dnstwister.repository.db',
-        patches.SimpleKVDatabase()
-    )
-    monkeypatch.setattr(
-        'dnstwister.repository.statistics.db',
         patches.SimpleKVDatabase()
     )
     monkeypatch.setattr(

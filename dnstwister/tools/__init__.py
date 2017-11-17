@@ -26,6 +26,20 @@ GOOGLEDNS_SUCCESS = 0
 GOOGLEDNS_A_RECORD = 1
 
 
+def encode_domain(domain):
+    """Given a domain with possible Unicode chars, encode it to hex."""
+    try:
+        return binascii.hexlify(domain.encode('idna'))
+    except UnicodeError:
+        # Some strange invalid Unicode domains
+        return None
+
+
+def decode_domain(encoded_domain):
+    """Return a domain from hex."""
+    return binascii.unhexlify(encoded_domain).decode('idna')
+
+
 def fuzzy_domains(domain):
     """Return the fuzzy domains."""
     fuzzer = dnstwist.DomainFuzzer(domain)
@@ -45,7 +59,7 @@ def analyse(domain):
     # do this because the same people who may use this app already have
     # blocking on things like www.exampl0e.com in URLs...
     for result in results:
-        result['hex'] = binascii.hexlify(result['domain-name'])
+        result['hex'] = encode_domain(result['domain-name'])
     data['fuzzy_domains'] = results
 
     return (domain, data)
@@ -68,7 +82,7 @@ def parse_domain(encoded_domain):
     Return None on un-decodable or invalid domain.
     """
     try:
-        decoded_domain = binascii.unhexlify(encoded_domain)
+        decoded_domain = decode_domain(encoded_domain)
         if dnstwist.validate_domain(decoded_domain):
             return decoded_domain.lower()
     except:
@@ -160,9 +174,11 @@ def resolve(domain):
     if dnstwist.validate_domain(domain) is None:
         return False, True
 
+    idna_domain = domain.encode('idna')
+
     # Try for an 'A' record.
     try:
-        ip_addr = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
+        ip_addr = str(sorted(RESOLVER.query(idna_domain, 'A'))[0].address)
 
         # Weird edge case that sometimes happens?!?!
         if ip_addr != '127.0.0.1':
@@ -172,7 +188,7 @@ def resolve(domain):
 
     # Try for a simple resolution if the 'A' record request failed
     try:
-        ip_addr = socket.gethostbyname(domain)
+        ip_addr = socket.gethostbyname(idna_domain)
 
         # Weird edge case that sometimes happens?!?!
         if ip_addr != '127.0.0.1':
@@ -186,7 +202,8 @@ def resolve(domain):
 def google_resolve(domain):
     """Google's Public DNS resolver."""
     try:
-        response = requests.get(GOOGLEDNS.format(domain)).json()
+        idna_domain = domain.encode('idna')
+        response = requests.get(GOOGLEDNS.format(idna_domain)).json()
         if response['Status'] == GOOGLEDNS_SUCCESS:
             if 'Answer' in response.keys():
                 answer = response['Answer'][0]
@@ -217,3 +234,12 @@ def api_url(view, var_pretty_name):
         flask.request.url_root,
         path
     )
+
+
+def domain_renderer(domain):
+    """Add IDNA values beside Unicode domains."""
+    idna_domain = domain.encode('idna')
+    if idna_domain == domain:
+        return domain
+
+    return domain + ' ({})'.format(idna_domain)

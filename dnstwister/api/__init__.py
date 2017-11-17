@@ -34,7 +34,7 @@ def api_definition():
 def standard_api_values(domain, skip=''):
     """Return the set of key-value pairs for the api inter-relationships."""
     payload = {}
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = tools.encode_domain(domain)
     for endpoint in ENDPOINTS:
         if endpoint == skip:
             continue
@@ -48,7 +48,7 @@ def standard_api_values(domain, skip=''):
         payload['url'] = flask.request.base_url
 
     if skip != 'domain':
-        payload['domain'] = domain
+        payload['domain'] = domain.encode('idna')
 
     if skip != 'domain_as_hexadecimal':
         payload['domain_as_hexadecimal'] = hexdomain
@@ -67,7 +67,8 @@ def whois(hexdomain):
         )
     payload = standard_api_values(domain, skip='whois')
     try:
-        payload['whois_text'] = whois_mod.whois(domain).text.strip()
+        idna_domain = domain.encode('idna')
+        payload['whois_text'] = whois_mod.whois(idna_domain).text.strip()
         if payload['whois_text'] == '':
             raise Exception('No whois data retrieved')
     except Exception as ex:
@@ -133,7 +134,7 @@ def resolve_ip(hexdomain):
 @app.route('/to_hex/<domain>')
 def domain_to_hex(domain):
     """Helps you convert domains to hex."""
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = tools.encode_domain(domain)
     if tools.parse_domain(hexdomain) is None:
         flask.abort(400, 'Malformed domain.')
 

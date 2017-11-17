@@ -1,24 +1,6 @@
-# -*- coding: utf-8 -*-
 """Test of weird search behaviours."""
+# -*- coding: utf-8 -*-
 import binascii
-
-
-def test_unicode_post_search(webapp):
-    """Test POSTing Unicode will fail.
-
-    GET cannot be tested through webtest but has been tested manually to
-    ensure it has the same behaviour - using url:
-        http://localhost:5000/search/www.example.新加坡
-    """
-    # TLD is Singapore/Chinese: 新加坡 OR xn--yfro4i67o
-    domain = u'www.example.\u65b0\u52a0\u5761'
-    response = webapp.post(
-        '/search', {'domains': domain},
-        content_type='application/x-www-form-urlencoded; charset=utf-8'
-    )
-
-    assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/3'
 
 
 def test_no_domains_key(webapp):
@@ -35,19 +17,6 @@ def test_empty_domains_key(webapp):
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost:80/error/2'
-
-
-def test_no_valid_domains(webapp):
-    """Test that submitting no valid domains fails after a GET to the
-    redirect.
-    """
-    response = webapp.post('/search', {'domains': '...'})
-
-    assert response.status_code == 302
-
-    second_response = response.follow()
-    assert second_response.status_code == 302
-    assert second_response.headers['location'] == 'http://localhost:80/error/0'
 
 
 def test_suggestion(webapp):
@@ -149,3 +118,23 @@ def test_fix_space_typo(webapp):
     response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
+
+
+def test_post_unicode(webapp):
+    """Test of end-to-end unicode."""
+    unicode_domain = 'höt.com'
+
+    assert unicode_domain == 'h\xc3\xb6t.com'
+
+    expected_punycode = 'xn--ht-fka.com'
+    expected_hex = binascii.hexlify(expected_punycode)
+
+    assert expected_hex == '786e2d2d68742d666b612e636f6d'
+
+    response = webapp.post('/search', {'domains': unicode_domain}).follow()
+
+    assert response.status_code == 200
+    assert response.request.url == 'http://localhost/search/{}'.format(expected_hex)
+    assert unicode_domain in response.body
+
+    assert 'höt.com (xn--ht-fka.com)' in response.body

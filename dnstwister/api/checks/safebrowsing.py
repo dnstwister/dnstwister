@@ -10,16 +10,20 @@ API_URL = 'https://www.google.com/transparencyreport/api/v3/safebrowsing/status'
 def get_report(domain):
     """Returns a Google Safe Browsing API report.
 
-    Currently built against v4 of their API.
+    Hits the same endpoint as:
 
-    Returns a count of matches.
+        https://transparencyreport.google.com/safe-browsing/search
+
+    Returns 1 if there's an issue with the domain, 0 if not.
     """
+    idna_domain = domain.encode('idna')
     data = {
-        'site': domain
+        'site': idna_domain
     }
 
     result = requests.get(API_URL, params=data)
 
+    # Yep, this is gross, the response value is very strangely formatted.
     result_array = re.search(
         r'(\["sb.ssr".*\])',
         result.text,
@@ -30,7 +34,7 @@ def get_report(domain):
     )
 
     # TODO: Work out detailed meaning of these values.
-    if json.loads(payload)['result'][2:-1] == [0, 0, 0, 0, 0, 0]:
+    if json.loads(payload)['result'][2:-2] == [0, 0, 0, 0, 0]:
         return 0
 
     return 1
