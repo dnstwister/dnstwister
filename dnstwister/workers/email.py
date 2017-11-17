@@ -28,16 +28,16 @@ def process_sub(sub_id, detail):
     if last_sent is not None:
         age_last_sent = datetime.datetime.now() - last_sent
         if age_last_sent < datetime.timedelta(seconds=PERIOD):
-            print u'Skipping {} + {}, < 24h hours'.format(
-                email_address, tools.domain_renderer(domain)
+            print 'Skipping {} + {}, < 24h hours'.format(
+                email_address, domain.encode('idna')
             )
             return
 
     # Grab the delta
     delta = repository.get_delta_report(domain)
     if delta is None:
-        print u'Skipping {} + {}, no delta report yet'.format(
-            email_address, tools.domain_renderer(domain)
+        print 'Skipping {} + {}, no delta report yet'.format(
+            email_address, domain.encode('idna')
         )
         return
 
@@ -50,8 +50,8 @@ def process_sub(sub_id, detail):
     if delta_updated is not None:
         age_delta_updated = datetime.datetime.now() - delta_updated
         if age_delta_updated > datetime.timedelta(hours=23):
-            print u'Skipping {} + {}, delta > 23h hours old'.format(
-                email_address, tools.domain_renderer(domain)
+            print 'Skipping {} + {}, delta > 23h hours old'.format(
+                email_address, domain.encode('idna')
             )
             return
 
@@ -61,8 +61,8 @@ def process_sub(sub_id, detail):
     deleted = delta['deleted'] if len(delta['deleted']) > 0 else None
 
     if new is updated is deleted is None:
-        print u'Skipping {} + {}, no changes'.format(
-            email_address, tools.domain_renderer(domain)
+        print 'Skipping {} + {}, no changes'.format(
+            email_address, domain.encode('idna')
         )
         return
 
@@ -96,8 +96,8 @@ def process_sub(sub_id, detail):
         u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
         body
     )
-    print u'Emailed delta for {} to {}'.format(
-        tools.domain_renderer(domain),
+    print 'Emailed delta for {} to {}'.format(
+        domain.encode('idna'),
         email_address
     )
 
