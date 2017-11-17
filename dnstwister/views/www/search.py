@@ -34,7 +34,8 @@ def json_render(domain):
 
         yield '{\n'
 
-        for (i, (dom, rept)) in enumerate(reports.items()):
+        # TODO: We only have one domain now, simplify this.
+        for (dom, rept) in reports.items():
 
             yield indent + '"' + dom + '": {\n'
             yield indent * 2 + '"fuzzy_domains": [\n'
@@ -68,8 +69,6 @@ def json_render(domain):
 
             yield indent * 2 + ']\n'
             yield indent + '}'
-            if i < len(reports) - 1:
-                yield ','
             yield '\n'
 
         yield '}\n'
