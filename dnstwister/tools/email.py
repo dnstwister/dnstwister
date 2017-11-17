@@ -1,23 +1,26 @@
 """Email tools."""
 import jinja2
 
+from dnstwister import tools
+
 
 TEMPLATES = jinja2.Environment(
     loader=jinja2.PackageLoader('dnstwister', 'templates')
 )
 
 
-def domain_format(domain):
+def domain_renderer(domain):
     """Given a domain in plain text format, render it in a manner that will
     prevent auto-linking/interception in an email.
 
     Testing suggests the span wrapping is the best so far.
     """
+    domain = tools.domain_renderer(domain)
     domain = domain.replace('.', '<span>.</span>')
     return domain
 
 
-TEMPLATES.filters['domain_format'] = domain_format
+TEMPLATES.filters['domain_renderer'] = domain_renderer
 
 
 def render_email(template, **kwargs):
