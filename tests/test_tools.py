@@ -92,8 +92,12 @@ class TestTools(unittest.TestCase):
         )
 
 
+def test_resolve_validation():
+    """Resolve validates first."""
+    assert tools.resolve(',saoi9w3k490q2k4') == (False, True)
 
-def test_valid_domain():
+
+def test_ip_validation():
     """Test the helper to validate IPv4 addresses."""
     assert tools.is_valid_ip('127.0.0.1')
 
