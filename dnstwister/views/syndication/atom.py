@@ -39,7 +39,7 @@ def view(hexdomain):
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
-        title='dnstwister report for {}'.format(domain),
+        title=u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
         feed_url='{}atom/{}'.format(flask.request.url_root, hexdomain),
         url='{}search/{}'.format(flask.request.url_root, hexdomain),
     )
@@ -60,7 +60,7 @@ def view(hexdomain):
     # If we don't have a delta report yet, show the placeholder.
     if delta_report is None:
         feed.add(
-            title='No report yet for {}'.format(domain),
+            title=u'No report yet for {}'.format(tools.domain_renderer(domain)),
             title_type='text',
             content=flask.render_template(
                 'syndication/atom/placeholder.html', domain=domain
@@ -69,7 +69,7 @@ def view(hexdomain):
             author='dnstwister',
             updated=today,
             published=today,
-            id='waiting:{}'.format(domain),
+            id=u'waiting:{}'.format(tools.domain_renderer(domain)),
             url=feed.url,
         )
 

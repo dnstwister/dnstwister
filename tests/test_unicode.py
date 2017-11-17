@@ -1,4 +1,4 @@
-"""Testing Unicode."""
+"""Testing Unicode basics."""
 # -*- coding: UTF-8 -*-
 from dnstwister import dnstwist, tools
 
