@@ -83,7 +83,7 @@ class PGDatabase(object):
                 if row is None:
                     break
                 if row[0].startswith(prefix + ':'):
-                    yield row[0].split(prefix + ':')[1]
+                    yield row[0].split(prefix + ':')[1].decode('utf-8')
 
     @resetonfail
     def delete(self, prefix, key):
