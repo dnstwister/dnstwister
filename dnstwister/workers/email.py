@@ -28,16 +28,16 @@ def process_sub(sub_id, detail):
     if last_sent is not None:
         age_last_sent = datetime.datetime.now() - last_sent
         if age_last_sent < datetime.timedelta(seconds=PERIOD):
-            print 'Skipping {} + {}, < 24h hours'.format(
-                email_address, domain
+            print u'Skipping {} + {}, < 24h hours'.format(
+                email_address, tools.domain_renderer(domain)
             )
             return
 
     # Grab the delta
     delta = repository.get_delta_report(domain)
     if delta is None:
-        print 'Skipping {} + {}, no delta report yet'.format(
-            email_address, domain
+        print u'Skipping {} + {}, no delta report yet'.format(
+            email_address, tools.domain_renderer(domain)
         )
         return
 
@@ -50,8 +50,8 @@ def process_sub(sub_id, detail):
     if delta_updated is not None:
         age_delta_updated = datetime.datetime.now() - delta_updated
         if age_delta_updated > datetime.timedelta(hours=23):
-            print 'Skipping {} + {}, delta > 23h hours old'.format(
-                email_address, domain
+            print u'Skipping {} + {}, delta > 23h hours old'.format(
+                email_address, tools.domain_renderer(domain)
             )
             return
 
@@ -61,8 +61,8 @@ def process_sub(sub_id, detail):
     deleted = delta['deleted'] if len(delta['deleted']) > 0 else None
 
     if new is updated is deleted is None:
-        print 'Skipping {} + {}, no changes'.format(
-            email_address, domain
+        print u'Skipping {} + {}, no changes'.format(
+            email_address, tools.domain_renderer(domain)
         )
         return
 
@@ -92,9 +92,14 @@ def process_sub(sub_id, detail):
     repository.update_last_email_sub_sent_date(sub_id)
 
     emailer.send(
-        email_address, 'dnstwister report for {}'.format(domain), body
+        email_address,
+        u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
+        body
     )
-    print 'Emailed delta for {} to {}'.format(domain, email_address)
+    print u'Emailed delta for {} to {}'.format(
+        tools.domain_renderer(domain),
+        email_address
+    )
 
 
 def main():
@@ -123,7 +128,7 @@ def main():
             try:
                 process_sub(sub_id, sub_detail)
             except:
-                print 'Skipping {}, exception:\n {}'.format(
+                print u'Skipping {}, exception:\n {}'.format(
                     sub_id, traceback.format_exc()
                 )
 
