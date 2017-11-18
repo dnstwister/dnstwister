@@ -6,7 +6,7 @@
 {% endblock %}
 {% block header %}
         <h2>Domain analysis</h2>
-        <h5>Use these tools to safely analyse {{ domain }}</h5>
+        <h5>Use these tools to safely analyse <strong>{{ domain | domain_renderer }}</strong>.</h5>
 {% endblock %}
 {% block body %}
         <section class="local_tools">
@@ -36,7 +36,7 @@
                     <h5>WHOIS lookup</h5>
                     <p>
 
-                        Perform a WHOIS lookup for "{{ domain }}" - this will
+                        Perform a WHOIS lookup for <strong>{{ domain | domain_renderer }}</strong> - this will
                         often return information about the domain owner.
 
                     </p>
