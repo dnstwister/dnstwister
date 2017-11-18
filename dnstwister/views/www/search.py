@@ -37,7 +37,7 @@ def json_render(domain):
         # TODO: We only have one domain now, simplify this.
         for (dom, rept) in reports.items():
 
-            yield indent + '"' + dom + '": {\n'
+            yield indent + '"' + dom.encode('idna') + '": {\n'
             yield indent * 2 + '"fuzzy_domains": [\n'
 
             fuzzy_domains = rept['fuzzy_domains']
@@ -45,7 +45,7 @@ def json_render(domain):
 
                 ip_addr, error = tools.resolve(entry['domain-name'])
                 data = {
-                    'domain-name': entry['domain-name'],
+                    'domain-name': entry['domain-name'].encode('idna'),
                     'fuzzer': entry['fuzzer'],
                     'hex': entry['hex'],
                     'resolution': {
@@ -93,14 +93,16 @@ def csv_render(domain):
         for (domain, rept) in reports.items():
             for entry in rept['fuzzy_domains']:
                 ip_addr, error = tools.resolve(entry['domain-name'])
-                row = map(str, (
-                    domain,
+
+                row = (
+                    domain.encode('idna'),
                     entry['fuzzer'],
-                    entry['domain-name'],
-                    ip_addr,
-                    error,
-                ))
-                yield ','.join(row) + '\n'
+                    entry['domain-name'].encode('idna'),
+                    str(ip_addr),
+                    str(error),
+                )
+                # comma not possible in any of the row values.
+                yield u','.join(row) + '\n'
 
     return flask.Response(
         generate(),
