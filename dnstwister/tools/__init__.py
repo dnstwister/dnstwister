@@ -195,7 +195,11 @@ def resolve(domain):
     except:
         pass
 
-    return google_resolve(domain)
+    ip_addr, error = google_resolve(domain)
+    if ip_addr == '127.0.0.1':
+        return False, True
+
+    return ip_addr, error
 
 
 def google_resolve(domain):
