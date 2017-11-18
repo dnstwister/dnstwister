@@ -33,16 +33,25 @@
 .domain_nav {
     float: left;
     margin-right: 15px;
+    white-space: nowrap;
 }
 
 .ico:hover {
     opacity: 1;
 }
 
-tr td.tools a {
-    display: none;
+.ico.mini {
+    height: 16px;
+    margin-left: 5px;
+    margin-bottom: -3px;
+    margin-right: 0;
 }
 
-tr.resolved td.tools a {
-    display: inline;
+a.deep-search {
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.error .tools {
+    font-weight: normal;
 }

@@ -1,6 +1,5 @@
 """Tests of the tools module."""
 import binascii
-import base64
 import operator
 import unittest
 
@@ -54,13 +53,6 @@ class TestTools(unittest.TestCase):
             'hex-decodable valid domain data should be returned'
         )
 
-        domain_data = base64.b64encode(domain)
-        self.assertEqual(
-            'www.example.com',
-            tools.parse_domain(domain_data),
-            'Old b64-style domain data is also processable.'
-        )
-
     def test_analyse(self):
         """Test the tool that generates the reports."""
         domain = 'a.com'
@@ -98,3 +90,22 @@ class TestTools(unittest.TestCase):
             None, tools.analyse('\\.38iusd-s-da   aswd?'),
             'Invalid domains return None'
         )
+
+
+def test_resolve_validation():
+    """Resolve validates first."""
+    assert tools.resolve(',saoi9w3k490q2k4') == (False, True)
+
+
+def test_ip_validation():
+    """Test the helper to validate IPv4 addresses."""
+    assert tools.is_valid_ip('127.0.0.1')
+
+    assert not tools.is_valid_ip('99.99.299.99')
+    assert not tools.is_valid_ip('12kljasdksdhfkjsdhf')
+
+
+def test_encode_bonkers_unicode():
+    """Some unicode is not "valid"."""
+    unicode_domain = u'a\uDFFFa.com'
+    assert tools.encode_domain(unicode_domain) is None

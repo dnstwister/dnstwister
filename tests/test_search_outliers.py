@@ -1,24 +1,6 @@
-# -*- coding: utf-8 -*-
 """Test of weird search behaviours."""
+# -*- coding: utf-8 -*-
 import binascii
-
-
-def test_unicode_post_search(webapp):
-    """Test POSTing Unicode will fail.
-
-    GET cannot be tested through webtest but has been tested manually to
-    ensure it has the same behaviour - using url:
-        http://localhost:5000/search/www.example.新加坡
-    """
-    # TLD is Singapore/Chinese: 新加坡 OR xn--yfro4i67o
-    domain = u'www.example.\u65b0\u52a0\u5761'
-    response = webapp.post(
-        '/search', {'domains': domain},
-        content_type='application/x-www-form-urlencoded; charset=utf-8'
-    )
-
-    assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/3'
 
 
 def test_no_domains_key(webapp):
@@ -37,20 +19,12 @@ def test_empty_domains_key(webapp):
     assert response.headers['location'] == 'http://localhost:80/error/2'
 
 
-def test_no_valid_domains(webapp):
-    """Test that submitting no valid domains fails."""
-    response = webapp.post('/search', {'domains': '...'})
-
-    assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/0'
-
-
 def test_suggestion(webapp):
     """Test that submitting no valid domains fails.
 
-    Where a domain could be suggested, it is.
+    Where a domain could be reasonably suggested, it is.
     """
-    response = webapp.post('/search', {'domains': 'example'})
+    response = webapp.post('/search', {'domains': 'example'}).follow()
 
     assert response.status_code == 302
 
@@ -60,28 +34,10 @@ def test_suggestion(webapp):
     assert response.headers['location'] == expected_redirect
 
 
-def test_no_suggestion_long_words(webapp):
-    """Test long search terms are dropped in suggestions."""
-    query = 'jsdfijsdlfkjsoijsldjlsdkjflskdjfoewjfsdfldkishgisuehgdsfsdkf'
-    response = webapp.post('/search', {'domains': query})
-
-    assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/0'
-
-    query = (
-        'jsdfijsdlfkjsoijsldjlsdkjflskdjfoewjfsdfldkishgisuehgdsfs dkf'
-    )
-    response = webapp.post('/search', {'domains': query})
-
-    assert response.status_code == 302
-    assert response.headers['location'].endswith('=646b662e636f6d')
-    assert binascii.unhexlify('646b662e636f6d') == 'dkf.com'
-
-
 def test_no_valid_domains_only(webapp):
     """Test invalid domains not in suggestions."""
     query = 'abc ?@<>.'
-    response = webapp.post('/search', {'domains': query})
+    response = webapp.post('/search', {'domains': query}).follow()
 
     assert response.status_code == 302
     assert response.headers['location'].endswith('=6162632e636f6d')
@@ -90,7 +46,7 @@ def test_no_valid_domains_only(webapp):
 
 def test_suggestion_rendered(webapp):
     """Test suggestion rendered on index."""
-    response = webapp.post('/search', {'domains': 'example'}).follow()
+    response = webapp.post('/search', {'domains': 'example'}).follow().follow()
 
     assert 'example.com' in response.body
 
@@ -106,7 +62,7 @@ def test_get_errors(webapp):
 def test_no_suggestion_many_words(webapp):
     """Test many search terms are dropped in suggestions."""
     query = 'j s d f i j s'
-    response = webapp.post('/search', {'domains': query})
+    response = webapp.post('/search', {'domains': query}).follow()
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost:80/error/0'
@@ -137,7 +93,7 @@ def test_fix_comma_typo(webapp):
     malformed_domain = 'example,com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
 
@@ -148,7 +104,7 @@ def test_fix_slash_typo(webapp):
     malformed_domain = 'example/com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
 
@@ -159,6 +115,26 @@ def test_fix_space_typo(webapp):
     malformed_domain = 'example com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
 
     assert expected_suggestion in response.body
+
+
+def test_post_unicode(webapp):
+    """Test of end-to-end unicode."""
+    unicode_domain = 'höt.com'
+
+    assert unicode_domain == 'h\xc3\xb6t.com'
+
+    expected_punycode = 'xn--ht-fka.com'
+    expected_hex = binascii.hexlify(expected_punycode)
+
+    assert expected_hex == '786e2d2d68742d666b612e636f6d'
+
+    response = webapp.post('/search', {'domains': unicode_domain}).follow()
+
+    assert response.status_code == 200
+    assert response.request.url == 'http://localhost/search/{}'.format(expected_hex)
+    assert unicode_domain in response.body
+
+    assert 'höt.com (xn--ht-fka.com)' in response.body

@@ -1,5 +1,4 @@
 """Search/report page."""
-import binascii
 import json
 
 import flask
@@ -8,32 +7,25 @@ from dnstwister import app
 import dnstwister.tools as tools
 
 
-def html_render(qry_domains, search_domains=None):
+def html_render(domain):
     """Render and return the html report."""
-    reports = dict(filter(None, map(tools.analyse, qry_domains)))
-
-    # Handle no valid domains by redirecting to GET page.
-    if len(reports) == 0:
-        app.logger.info(
-            'No valid domains found in {}'.format(qry_domains)
-        )
-        return flask.redirect('/error/0')
+    reports = dict([tools.analyse(domain)])
 
     return flask.render_template(
         'www/report.html',
         reports=reports,
-        atoms=dict(zip(qry_domains, map(binascii.hexlify, qry_domains))),
+        atoms=dict([(domain, tools.encode_domain(domain))]),
         exports={'json': 'json', 'csv': 'csv'},
-        search=search_domains,
+        domain_encoded=tools.encode_domain(domain),
     )
 
 
-def json_render(qry_domains):
+def json_render(domain):
     """Render and return the json-formatted report.
 
     The hand-assembly is due to the streaming of the response.
     """
-    reports = dict(filter(None, map(tools.analyse, qry_domains)))
+    reports = dict([tools.analyse(domain)])
 
     def generate():
         """Streaming download generator."""
@@ -42,9 +34,10 @@ def json_render(qry_domains):
 
         yield '{\n'
 
-        for (i, (dom, rept)) in enumerate(reports.items()):
+        # TODO: We only have one domain now, simplify this.
+        for (dom, rept) in reports.items():
 
-            yield indent + '"' + dom + '": {\n'
+            yield indent + '"' + dom.encode('idna') + '": {\n'
             yield indent * 2 + '"fuzzy_domains": [\n'
 
             fuzzy_domains = rept['fuzzy_domains']
@@ -52,7 +45,7 @@ def json_render(qry_domains):
 
                 ip_addr, error = tools.resolve(entry['domain-name'])
                 data = {
-                    'domain-name': entry['domain-name'],
+                    'domain-name': entry['domain-name'].encode('idna'),
                     'fuzzer': entry['fuzzer'],
                     'hex': entry['hex'],
                     'resolution': {
@@ -76,8 +69,6 @@ def json_render(qry_domains):
 
             yield indent * 2 + ']\n'
             yield indent + '}'
-            if i < len(reports) - 1:
-                yield ','
             yield '\n'
 
         yield '}\n'
@@ -91,10 +82,10 @@ def json_render(qry_domains):
     )
 
 
-def csv_render(qry_domains):
+def csv_render(domain):
     """Render and return the csv-formatted report."""
     headers = ('Domain', 'Type', 'Tweak', 'IP', 'Error')
-    reports = dict(filter(None, map(tools.analyse, qry_domains)))
+    reports = dict([tools.analyse(domain)])
 
     def generate():
         """Streaming download generator."""
@@ -102,14 +93,16 @@ def csv_render(qry_domains):
         for (domain, rept) in reports.items():
             for entry in rept['fuzzy_domains']:
                 ip_addr, error = tools.resolve(entry['domain-name'])
-                row = map(str, (
-                    domain,
+
+                row = (
+                    domain.encode('idna'),
                     entry['fuzzer'],
-                    entry['domain-name'],
-                    ip_addr,
-                    error,
-                ))
-                yield ','.join(row) + '\n'
+                    entry['domain-name'].encode('idna'),
+                    str(ip_addr),
+                    str(error),
+                )
+                # comma not possible in any of the row values.
+                yield u','.join(row) + '\n'
 
     return flask.Response(
         generate(),
@@ -137,85 +130,61 @@ def search_post():
         )
         return flask.redirect('/error/2')
 
-    # We currently don't support Unicode in searches.
-    try:
-        post_data.decode('ascii')
-    except UnicodeEncodeError:
-        app.logger.info(
-            'Unicode search requested'
-        )
-        return flask.redirect('/error/3')
+    search_parameter = tools.encode_domain(post_data)
 
-    search_domains = tools.parse_post_data(post_data)
-
-    valid_domains = sorted(list(set(filter(None, map(tools.parse_domain, search_domains)))))
-    if len(valid_domains) == 0:
+    if search_parameter is None:
         app.logger.info(
-            'No valid domains in POST {}'.format(flask.request.form)
+            'Invalid POST Unicode data:{}'.format(repr(post_data))
         )
-        suggestion = tools.suggest_domain(search_domains)
-        if suggestion is not None:
-            encoded_suggestion = binascii.hexlify(suggestion)
-            return flask.redirect(
-                '/error/0?suggestion={}'.format(encoded_suggestion)
-            )
         return flask.redirect('/error/0')
 
-    # Attempt to create a <= 200 character GET parameter from the domains so
-    # we can redirect to that (allows bookmarking). As in '/api/analysis/ip'
-    # we use hex to hide the domains from firewalls that already block some of
-    # them.
-    path = ','.join(map(binascii.hexlify, search_domains))
-
-    if len(path) <= 200:
-        return flask.redirect('/search/{}'.format(path))
-
-    # If there's a ton of domains, just to the report.
-    return html_render(search_domains)
+    return flask.redirect('/search/{}'.format(search_parameter))
 
 
-@app.route('/search/<search_domains>')
-@app.route('/search/<search_domains>/<fmt>')
-def search(search_domains, fmt=None):
-    """Handle redirect from form submit."""
-
-    # We currently don't support Unicode in searches.
+def handle_invalid_domain(search_term_as_hex):
+    """Called when no valid domain found in GET param, creates a suggestion
+    to return to the user.
+    """
+    decoded_search = None
     try:
-        search_domains.decode('ascii')
-    except UnicodeEncodeError:
-        app.logger.info(
-            'Unicode search requested'
-        )
-        return flask.redirect('/error/3')
-
-    # Try to parse out the list of domains
-    try:
-        valid_domains = sorted(list(set(filter(None, map(
-            tools.parse_domain, search_domains.split(',')
-        )))))
+        decoded_search = tools.decode_domain(search_term_as_hex)
     except:
-        app.logger.info('Unable to decode valid domains from path')
-        return flask.redirect('/error/0')
+        pass
 
-    if len(valid_domains) == 0:
-        app.logger.info(
-            'No valid domains in GET'
-        )
-        suggestion = tools.suggest_domain(search_domains.split(','))
+    if decoded_search is not None:
+        suggestion = tools.suggest_domain(decoded_search)
         if suggestion is not None:
-            encoded_suggestion = binascii.hexlify(suggestion)
+            app.logger.info(
+                'Not a valid domain in GET: {}, suggesting: {}'.format(
+                    search_term_as_hex, suggestion
+                )
+            )
+            encoded_suggestion = tools.encode_domain(suggestion)
             return flask.redirect(
                 '/error/0?suggestion={}'.format(encoded_suggestion)
             )
 
-        return flask.redirect('/error/0')
+    app.logger.info(
+        'Not a valid domain in GET: {}'.format(search_term_as_hex)
+    )
+    return flask.redirect('/error/0')
+
+
+@app.route('/search/<search_domain>')
+@app.route('/search/<search_domain>/<fmt>')
+def search(search_domain, fmt=None):
+    """Handle redirect from form submit."""
+    domain = tools.parse_post_data(search_domain)
+
+    if domain is None:
+        return handle_invalid_domain(search_domain)
 
     if fmt is None:
-        return html_render(valid_domains, search_domains)
+        return html_render(domain)
     elif fmt == 'json':
-        return json_render(valid_domains)
+        return json_render(domain)
     elif fmt == 'csv':
-        return csv_render(valid_domains)
+        return csv_render(domain)
     else:
         flask.abort(400, 'Unknown export format: {}'.format(fmt))
 

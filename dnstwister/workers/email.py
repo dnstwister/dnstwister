@@ -1,27 +1,14 @@
 """Updates atom feeds."""
-import binascii
 import datetime
 import time
 import traceback
 
-from dnstwister import emailer, repository
-from dnstwister.tools import delta_reports
-import dnstwister.repository.statistics as statistics_repository
+from dnstwister import emailer, repository, tools
 import dnstwister.tools.email as email_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
 ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
-
-
-def get_noisy_domains(candidate_domains):
-    """Filter list of domains to those that are noisy."""
-    results = []
-    for domain in candidate_domains:
-        noise_stat = statistics_repository.get_noise_stat(domain)
-        if noise_stat is not None and noise_stat.is_noisy is True:
-            results.append(domain)
-    return results
 
 
 def process_sub(sub_id, detail):
@@ -42,7 +29,7 @@ def process_sub(sub_id, detail):
         age_last_sent = datetime.datetime.now() - last_sent
         if age_last_sent < datetime.timedelta(seconds=PERIOD):
             print 'Skipping {} + {}, < 24h hours'.format(
-                email_address, domain
+                email_address, domain.encode('idna')
             )
             return
 
@@ -50,7 +37,7 @@ def process_sub(sub_id, detail):
     delta = repository.get_delta_report(domain)
     if delta is None:
         print 'Skipping {} + {}, no delta report yet'.format(
-            email_address, domain
+            email_address, domain.encode('idna')
         )
         return
 
@@ -64,7 +51,7 @@ def process_sub(sub_id, detail):
         age_delta_updated = datetime.datetime.now() - delta_updated
         if age_delta_updated > datetime.timedelta(hours=23):
             print 'Skipping {} + {}, delta > 23h hours old'.format(
-                email_address, domain
+                email_address, domain.encode('idna')
             )
             return
 
@@ -75,24 +62,20 @@ def process_sub(sub_id, detail):
 
     if new is updated is deleted is None:
         print 'Skipping {} + {}, no changes'.format(
-            email_address, domain
+            email_address, domain.encode('idna')
         )
         return
 
     # Add analysis links
     if new is not None:
-        new = [(dom, ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+        new = [(dom, ip, ANALYSIS_ROOT.format(tools.encode_domain(dom)))
                for (dom, ip)
                in new]
 
     if updated is not None:
-        updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(binascii.hexlify(dom)))
+        updated = [(dom, old_ip, new_ip, ANALYSIS_ROOT.format(tools.encode_domain(dom)))
                    for (dom, old_ip, new_ip)
                    in updated]
-
-    # Get noisy domains
-    delta_domains = delta_reports.extract_domains(delta)
-    noisy_domains = get_noisy_domains(delta_domains)
 
     # Email
     body = email_tools.render_email(
@@ -101,7 +84,6 @@ def process_sub(sub_id, detail):
         new=new,
         updated=updated,
         deleted=deleted,
-        noisy=noisy_domains,
         unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
     )
 
@@ -110,9 +92,14 @@ def process_sub(sub_id, detail):
     repository.update_last_email_sub_sent_date(sub_id)
 
     emailer.send(
-        email_address, 'dnstwister report for {}'.format(domain), body
+        email_address,
+        u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
+        body
     )
-    print 'Emailed delta for {} to {}'.format(domain, email_address)
+    print 'Emailed delta for {} to {}'.format(
+        domain.encode('idna'),
+        email_address
+    )
 
 
 def main():
@@ -141,7 +128,7 @@ def main():
             try:
                 process_sub(sub_id, sub_detail)
             except:
-                print 'Skipping {}, exception:\n {}'.format(
+                print u'Skipping {}, exception:\n {}'.format(
                     sub_id, traceback.format_exc()
                 )
 

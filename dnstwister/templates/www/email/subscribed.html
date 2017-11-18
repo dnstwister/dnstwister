@@ -8,6 +8,6 @@
 {% endblock %}
 {% block body %}
         <section>
-            <p>You are now subscribed to updates for '{{ domain }}'.</p>
+            <p>You are now subscribed to updates for <strong>{{ domain | domain_renderer }}</strong>.</p>
         </section>
 {% endblock %}

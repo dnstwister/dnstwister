@@ -1,17 +1,16 @@
-""" Generic tools.
-"""
-import base64
+"""Generic tools."""
 import binascii
 import os
 import re
 import random
 import socket
-import string
 import urlparse
 
 import dns.resolver
 import flask
+import requests
 
+from dnstwister import app
 from dnstwister import cache
 from dnstwister.tools import tld_db
 import dnstwister.dnstwist as dnstwist
@@ -20,6 +19,24 @@ import dnstwister.dnstwist as dnstwist
 RESOLVER = dns.resolver.Resolver()
 RESOLVER.lifetime = 0.1
 RESOLVER.timeout = 0.1
+
+GOOGLEDNS = 'https://dns.google.com/resolve?name={}'
+GOOGLEDNS_SUCCESS = 0
+GOOGLEDNS_A_RECORD = 1
+
+
+def encode_domain(domain):
+    """Given a domain with possible Unicode chars, encode it to hex."""
+    try:
+        return binascii.hexlify(domain.encode('idna'))
+    except UnicodeError:
+        # Some strange invalid Unicode domains
+        return None
+
+
+def decode_domain(encoded_domain):
+    """Return a domain from hex."""
+    return binascii.unhexlify(encoded_domain).decode('idna')
 
 
 def fuzzy_domains(domain):
@@ -41,58 +58,40 @@ def analyse(domain):
     # do this because the same people who may use this app already have
     # blocking on things like www.exampl0e.com in URLs...
     for result in results:
-        result['hex'] = binascii.hexlify(result['domain-name'])
+        result['hex'] = encode_domain(result['domain-name'])
     data['fuzzy_domains'] = results
 
     return (domain, data)
 
 
 def parse_post_data(post_data):
-    """Parse post data to return a set of domain candidates."""
-    data = re.sub(r'[\t\r ]', '\n', post_data)
-
-    # Filter out blank lines, leading/trailing whitespace
-    data = filter(
-        None, map(string.strip, data.split('\n'))
-    )
+    """Parse post data to return a domain."""
 
     # Remove HTTP(s) schemes and trailing slashes.
-    data = [re.sub('(^http(s)?://)|(/$)', '', domain, re.IGNORECASE)
-            for domain
-            in data]
+    domain = re.sub('(^http(s)?://)|(/$)', '', post_data, re.IGNORECASE)
 
-    # Strip leading/trailing whitespace again.
-    data = filter(None, map(string.strip, data))
-
-    # Make all lower-case
-    data = map(string.lower, data)
-
-    return data
+    # Parse through the normal process.
+    return parse_domain(domain.strip())
 
 
 def parse_domain(encoded_domain):
-    """Given a plain, b64- or hex-encoded string, try to decode and validate
-    it and if it is valid, return it.
+    """Given a hex-encoded string, try to decode and validate it and if it is
+    a valid domain, return it.
 
     Return None on un-decodable or invalid domain.
     """
-    decoders = (
-        str,  # Plain text (breaks on a lot of firewalls).
-        binascii.unhexlify,  # The current hex-encoding scheme.
-        base64.b64decode,  # The predecessor to the hex version.
-    )
-
-    for decoder in decoders:
-        try:
-            decoded = decoder(encoded_domain)
-            if dnstwist.validate_domain(decoded):
-                return decoded.lower()
-        except:
-            pass
+    try:
+        decoded_domain = decode_domain(encoded_domain)
+        if dnstwist.validate_domain(decoded_domain):
+            return decoded_domain.lower()
+    except:
+        pass
 
 
-def suggest_domain(search_terms):
+def suggest_domain(search_domain):
     """Suggest a domain based on the search fields."""
+
+    search_terms = search_domain.split(' ')
 
     # Check for a simple common typo first - putting comma instead of period
     # in-between the second- and top-level domains.
@@ -108,7 +107,7 @@ def suggest_domain(search_terms):
             return candidate
 
     # Attempt to make a domain from the terms.
-    joiners = ('', '-') # for now, also trialling ('', '-', '.')
+    joiners = ('', '-')  # for now, also trialling ('', '-', '.')
     tlds = ('com',)  # for now
     suggestions = []
 
@@ -152,6 +151,15 @@ def suggest_domain(search_terms):
     return random.choice(valid_suggestions)
 
 
+def is_valid_ip(ip_string):
+    """Matches valid ipv4 IP addresses."""
+    try:
+        socket.inet_aton(ip_string)
+        return True
+    except socket.error:
+        return False
+
+
 @cache.memoize(3600)
 def resolve(domain):
     """Resolves a domain to an IP.
@@ -162,22 +170,55 @@ def resolve(domain):
 
     Cached to 1 hour.
     """
+    if dnstwist.validate_domain(domain) is None:
+        return False, True
+
+    idna_domain = domain.encode('idna')
+
     # Try for an 'A' record.
     try:
-        ip_addr = str(sorted(RESOLVER.query(domain, 'A'))[0].address)
-        return ip_addr, False
+        ip_addr = str(sorted(RESOLVER.query(idna_domain, 'A'))[0].address)
+
+        # Weird edge case that sometimes happens?!?!
+        if ip_addr != '127.0.0.1':
+            return ip_addr, False
     except:
         pass
 
     # Try for a simple resolution if the 'A' record request failed
     try:
-        ip_addr = socket.gethostbyname(domain)
-        return ip_addr, False
-    except socket.gaierror:
-        # Indicates failure to resolve to IP address, not an error in
-        # the attempt.
-        return False, False
+        ip_addr = socket.gethostbyname(idna_domain)
+
+        # Weird edge case that sometimes happens?!?!
+        if ip_addr != '127.0.0.1':
+            return ip_addr, False
     except:
+        pass
+
+    ip_addr, error = google_resolve(domain)
+    if ip_addr == '127.0.0.1':
+        return False, True
+
+    return ip_addr, error
+
+
+def google_resolve(domain):
+    """Google's Public DNS resolver."""
+    try:
+        idna_domain = domain.encode('idna')
+        response = requests.get(GOOGLEDNS.format(idna_domain)).json()
+        if response['Status'] == GOOGLEDNS_SUCCESS:
+            if 'Answer' in response.keys():
+                answer = response['Answer'][0]
+                if answer['type'] == GOOGLEDNS_A_RECORD:
+                    ip_addr = answer['data']
+                    if is_valid_ip(ip_addr):
+                        return ip_addr, False
+        return False, False
+    except Exception as ex:
+        app.logger.error(
+            'Failed to resolve IP via Google Public DNS: {}'.format(ex)
+        )
         return False, True
 
 
@@ -196,3 +237,12 @@ def api_url(view, var_pretty_name):
         flask.request.url_root,
         path
     )
+
+
+def domain_renderer(domain):
+    """Add IDNA values beside Unicode domains."""
+    idna_domain = domain.encode('idna')
+    if idna_domain == domain:
+        return domain
+
+    return domain + ' ({})'.format(idna_domain)

@@ -9,11 +9,11 @@
 {% endblock %}
 {% block body %}
         <section class="domains">
-            {% for domain, hex in atoms.items() %}
+            {% for (domain, domain_encoded) in atoms.items() %}
                 <div class="domain_nav">
-                    <a alt="rss subscription link" title="subscribe to rss alerts" href="/atom/{{ hex }}"><img class="ico" src="/static/feed.png"/></a>
-                    <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ hex }}"><img class="ico" src="/static/email.png"/></a>
-                    <h5>{{ domain }}</h5>
+                    <a alt="rss subscription link" title="subscribe to rss alerts" href="/atom/{{ domain_encoded }}"><img class="ico" src="/static/feed.png"/></a>
+                    <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ domain_encoded }}"><img class="ico" src="/static/email.png"/></a>
+                    <h5>{{ domain | domain_renderer }}</h5>
                 </div>
             {% endfor %}
             <div style="clear: both"></div>
@@ -29,20 +29,17 @@
         </section>
         <section>
             <button id="show_all">Show/hide unresolved domains</button>
-            {% if search %}
-                <section class="exports">
-                    export:
-                    {% for title, path in exports.items() %}
-                        <a href="/search/{{ search }}/{{ path }}">{{ title }}</a>
-                    {% endfor %}
-                </section>
-            {% endif %}
+            <section class="exports">
+                export:
+                {% for (title, format) in exports.items() %}
+                    <a href="/search/{{ domain_encoded }}/{{ format }}">{{ title }}</a>
+                {% endfor %}
+            </section>
         </section>
         <section>
             <table class="report u-full-width">
                 <thead>
                     <tr>
-                        <th>Domain</th>
                         <th>Tweak</th>
                         <th>Type</th>
                         <th>IP</th>
@@ -50,15 +47,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for domain, data in reports.items() %}
+                    {% for (domain, data) in reports.items() %}
                         {% for entry in data.fuzzy_domains %}
                             <tr class="domain-row">
-                                <td>{{ domain }}</td>
-                                <td>{{ entry['domain-name'] }}</td>
+                                <td>{{ entry['domain-name'] | domain_renderer }}</td>
                                 <td>{{ entry.fuzzer }}</td>
                                 <td class="resolvable" data-hex="{{ entry.hex }}" data-ip="{{ entry.ip }}">...</td>
                                 <td class="tools">
                                     <a href="/analyse/{{ entry.hex }}">analyse</a>
+                                    <a class="deep-search" href="/search/{{ entry.hex }}">&#128270;</a>
+                                    <a href="/atom/{{ entry.hex }}"><img class="ico mini" src="/static/feed.png"/></a>
+                                    <a href="/email/subscribe/{{ entry.hex }}"><img class="ico mini" src="/static/email.png"/></a>
                                 </td>
                             </tr>
                         {% endfor %}

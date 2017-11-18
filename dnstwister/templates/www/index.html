@@ -13,7 +13,7 @@
             <form action="/search" method="post">
                 <div class="row">
                     <div class="ten columns offset-by-one input_field">
-                        <input type="text" autocapitalize="none" name="domains" placeholder="Enter one or more domains" class="u-full-width" {% if suggestion is not none %}value="{{ suggestion }}"{% endif %} />
+                        <input type="text" autocapitalize="none" name="domains" placeholder="Enter a domain" class="u-full-width" {% if suggestion is not none %}value="{{ suggestion }}"{% endif %} />
                     </div>
                     <div class="one columns submit">
                         <input type="submit" value="&#128270;" class="button-primary" alt="search" />

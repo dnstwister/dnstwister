@@ -1,10 +1,15 @@
 """Test resolving IPs."""
+import binascii
 import socket
+
+from dnstwister import tools
 
 
 def test_resolve(webapp):
     """Test we can resolve IP addresses."""
-    response = webapp.get('/api/ip/646e73747769737465722e7265706f7274')
+    domain = 'dnstwister.report'
+    hexdomain = binascii.hexlify(domain)
+    response = webapp.get('/api/ip/{}'.format(hexdomain))
 
     assert response.status_code == 200
 
@@ -14,14 +19,40 @@ def test_resolve(webapp):
 
     assert payload == {
         u'domain': u'dnstwister.report',
-        u'domain_as_hexadecimal': u'646e73747769737465722e7265706f7274',
+        u'domain_as_hexadecimal': hexdomain,
         u'error': False,
-        u'fuzz_url': u'http://localhost:80/api/fuzz/646e73747769737465722e7265706f7274',
-        u'parked_score_url': u'http://localhost:80/api/parked/646e73747769737465722e7265706f7274',
-        u'url': u'http://localhost:80/api/ip/646e73747769737465722e7265706f7274'
+        u'fuzz_url': u'http://localhost:80/api/fuzz/{}'.format(hexdomain),
+        u'parked_score_url': u'http://localhost:80/api/parked/{}'.format(hexdomain),
+        u'url': u'http://localhost:80/api/ip/{}'.format(hexdomain),
     }
 
-    # Will throw if invalid IP
+    # Will throw socket.error exception if this is not a valid IP address.
+    socket.inet_aton(ip_addr)
+
+
+def test_unicode_resolve(webapp):
+    """Check we can resolve a unicode domain.
+    """
+    domain = 'xn--sterreich-z7a.icom.museum'.decode('idna')
+    hexdomain = tools.encode_domain(domain)
+    response = webapp.get('/api/ip/{}'.format(hexdomain))
+
+    assert response.status_code == 200
+
+    payload = response.json
+    ip_addr = payload['ip']
+    del payload['ip']
+
+    assert payload == {
+        u'domain': u'xn--sterreich-z7a.icom.museum',
+        u'domain_as_hexadecimal': u'786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'error': False,
+        u'fuzz_url': u'http://localhost:80/api/fuzz/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'parked_score_url': u'http://localhost:80/api/parked/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'url': u'http://localhost:80/api/ip/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d'
+    }
+
+    # Will throw socket.error exception if this is not a valid IP address.
     socket.inet_aton(ip_addr)
 
 
@@ -29,8 +60,8 @@ def test_failed_resolve(webapp):
     """Test basic failure to resolve an IP for a domain - because it's
     unregistered.
     """
-    host = 'imprettysurethatthisdomaindoesnotexist.com'
-    response = webapp.get('/api/ip/{}'.format(host))
+    domain = 'imprettysurethatthisdomaindoesnotexist.com'
+    response = webapp.get('/api/ip/{}'.format(binascii.hexlify(domain)))
 
     assert response.status_code == 200
     assert response.json['ip'] is False

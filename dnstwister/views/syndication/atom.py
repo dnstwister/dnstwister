@@ -1,24 +1,45 @@
 """Atom syndication."""
+import base64
 import binascii
 import datetime
 import flask
 import werkzeug.contrib.atom
 
-from dnstwister import app, repository
-import dnstwister.tools
+from dnstwister import app, repository, tools
+import dnstwister.dnstwist as dnstwist
+
+
+def _base64_redirect(encoded_domain):
+    """Try to parse a domain into base64, return a redirect to the hex version
+    if successful, otherwise None.
+    """
+    try:
+        decoded_domain = base64.b64decode(encoded_domain)
+        if dnstwist.validate_domain(decoded_domain):
+            return '/atom/{}'.format(tools.encode_domain(decoded_domain))
+    except:
+        pass
 
 
 @app.route('/atom/<hexdomain>')
 def view(hexdomain):
     """Return new atom items for changes in resolved domains."""
     # Parse out the requested domain
-    domain = dnstwister.tools.parse_domain(hexdomain)
+    domain = tools.parse_domain(hexdomain)
+
+    # Redirect old base64 requests to the new format.
     if domain is None:
-        flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
+        redirect_url = _base64_redirect(hexdomain)
+        if redirect_url is not None:
+            return flask.redirect(redirect_url, code=302)
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
-        title='dnstwister report for {}'.format(domain),
+        title=u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
         feed_url='{}atom/{}'.format(flask.request.url_root, hexdomain),
         url='{}search/{}'.format(flask.request.url_root, hexdomain),
     )
@@ -39,7 +60,7 @@ def view(hexdomain):
     # If we don't have a delta report yet, show the placeholder.
     if delta_report is None:
         feed.add(
-            title='No report yet for {}'.format(domain),
+            title=u'No report yet for {}'.format(tools.domain_renderer(domain)),
             title_type='text',
             content=flask.render_template(
                 'syndication/atom/placeholder.html', domain=domain
@@ -48,7 +69,7 @@ def view(hexdomain):
             author='dnstwister',
             updated=today,
             published=today,
-            id='waiting:{}'.format(domain),
+            id=u'waiting:{}'.format(tools.domain_renderer(domain)),
             url=feed.url,
         )
 
@@ -75,34 +96,39 @@ def view(hexdomain):
 
         for (dom, ip) in delta_report['new']:
             feed.add(
-                title='NEW: {}'.format(dom),
+                title=u'NEW: {}'.format(tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/new.html',
-                    ip=ip, hexdomain=binascii.hexlify(dom)
+                    ip=ip, hexdomain=tools.encode_domain(dom)
                 ),
-                id='new:{}:{}:{}'.format(dom, ip, id_24hr),
+                id='new:{}:{}:{}'.format(dom.encode('idna'), ip, id_24hr),
                 **common_kwargs
             )
 
         for (dom, old_ip, new_ip) in delta_report['updated']:
             feed.add(
-                title='UPDATED: {}'.format(dom),
+                title=u'UPDATED: {}'.format(tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/updated.html',
                     new_ip=new_ip, old_ip=old_ip,
-                    hexdomain=binascii.hexlify(dom),
+                    hexdomain=tools.encode_domain(dom),
                 ),
-                id='updated:{}:{}:{}:{}'.format(dom, old_ip, new_ip, id_24hr),
+                id='updated:{}:{}:{}:{}'.format(
+                    dom.encode('idna'),
+                    old_ip,
+                    new_ip,
+                    id_24hr
+                ),
                 **common_kwargs
             )
 
         for dom in delta_report['deleted']:
             feed.add(
-                title='DELETED: {}'.format(dom),
+                title=u'DELETED: {}'.format(tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/deleted.html',
                 ),
-                id='deleted:{}:{}'.format(dom, id_24hr),
+                id='deleted:{}:{}'.format(dom.encode('idna'), id_24hr),
                 **common_kwargs
             )
 

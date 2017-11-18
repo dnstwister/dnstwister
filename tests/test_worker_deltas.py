@@ -22,7 +22,9 @@ def test_invalid_domain_is_unregistered(capsys, monkeypatch):
     workers.deltas.process_domain(invalid_domain)
     assert not repository.is_domain_registered(invalid_domain)
 
-    expected_output = 'Unregistering (invalid) {}\n'.format(invalid_domain)
+    expected_output = 'Unregistering (invalid) {}\n'.format(
+        invalid_domain.encode('idna')
+    )
     assert capsys.readouterr()[0] == expected_output
 
 
@@ -37,7 +39,7 @@ def test_new_domain_is_marked_as_read(capsys, monkeypatch):
     )
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     assert repository.delta_report_updated(domain) is None
 
@@ -51,7 +53,7 @@ def test_old_domain_is_unregistered(capsys, monkeypatch):
     monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
     old_date = datetime.datetime.now() - datetime.timedelta(days=10)
 
     assert repository.delta_report_last_read(domain) is None
@@ -64,7 +66,9 @@ def test_old_domain_is_unregistered(capsys, monkeypatch):
     workers.deltas.process_domain(domain)
     assert repository.delta_report_last_read(domain) is None
 
-    expected_output = 'Unregistering (not read > 7 days) {}\n'.format(domain)
+    expected_output = 'Unregistering (not read > 7 days) {}\n'.format(
+        domain.encode('idna')
+    )
     assert capsys.readouterr()[0] == expected_output
 
 
@@ -79,20 +83,20 @@ def test_all_changes_are_new_on_first_delta(capsys, monkeypatch):
     )
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     workers.deltas.process_domain(domain)
     assert capsys.readouterr()[0] != ''
 
     resolution_report = repository.get_resolution_report(domain)
     assert resolution_report == {
-        'www.example.co': {'ip': '999.999.999.999', 'tweak': 'Pretend'}
+        u'www.\u0454xample.co': {'ip': '999.999.999.999', 'tweak': 'Pretend'}
     }
 
     delta_report = repository.get_delta_report(domain)
     assert delta_report == {
         'deleted': [],
-        'new': [('www.example.co', '999.999.999.999')],
+        'new': [(u'www.\u0454xample.co', '999.999.999.999')],
         'updated': []
     }
 
@@ -108,7 +112,7 @@ def test_updated_ip_is_noted_in_delta(capsys, monkeypatch):
     )
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     workers.deltas.process_domain(domain)
 
@@ -118,14 +122,14 @@ def test_updated_ip_is_noted_in_delta(capsys, monkeypatch):
 
     # Mark the entry as 'old' to ensure it is re-run
     old_date = datetime.datetime.now() - datetime.timedelta(days=10)
-    db_key = 'delta_report_updated:{}'.format(domain)
+    db_key = u'delta_report_updated:{}'.format(domain)
     repository.db._data[db_key] = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     workers.deltas.process_domain(domain)
     delta_report = repository.get_delta_report(domain)
     assert delta_report == {
         'deleted': [],
-        'updated': [('www.example.co', '999.999.999.999', '000.999.999.999')],
+        'updated': [(u'www.\u0454xample.co', '999.999.999.999', '000.999.999.999')],
         'new': []
     }
 
@@ -141,7 +145,7 @@ def test_deleted_domain_is_noted_in_delta(capsys, monkeypatch):
     )
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     workers.deltas.process_domain(domain)
 
@@ -151,13 +155,13 @@ def test_deleted_domain_is_noted_in_delta(capsys, monkeypatch):
 
     # Mark the entry as 'old' to ensure it is re-run
     old_date = datetime.datetime.now() - datetime.timedelta(days=10)
-    db_key = 'delta_report_updated:{}'.format(domain)
+    db_key = u'delta_report_updated:{}'.format(domain)
     repository.db._data[db_key] = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     workers.deltas.process_domain(domain)
     delta_report = repository.get_delta_report(domain)
     assert delta_report == {
-        'deleted': [('www.example.co')],
+        'deleted': [(u'www.\u0454xample.co')],
         'updated': [],
         'new': []
     }
@@ -174,18 +178,18 @@ def test_old_style_resolution_reports_are_updated(capsys, monkeypatch):
     )
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     # Pre-load an old-style resolution report
-    db_key = 'resolution_report:{}'.format(domain)
-    repository.db._data[db_key] = {'www.example.co': '127.0.0.1'}
+    db_key = u'resolution_report:{}'.format(domain)
+    repository.db._data[db_key] = {u'www.\u0454xample.co': '127.0.0.1'}
 
     workers.deltas.process_domain(domain)
 
     delta_report = repository.get_delta_report(domain)
     assert delta_report == {
         'deleted': [],
-        'updated': [('www.example.co', '127.0.0.1', '999.999.999.999')],
+        'updated': [(u'www.\u0454xample.co', '127.0.0.1', '999.999.999.999')],
         'new': []
     }
 
@@ -201,11 +205,11 @@ def test_domains_are_checked_once_a_day(capsys, monkeypatch):
     )
     repository = dnstwister.repository
 
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     workers.deltas.process_domain(domain)
 
-    last_updated_db_key = 'delta_report_updated:{}'.format(domain)
+    last_updated_db_key = u'delta_report_updated:{}'.format(domain)
     last_updated = repository.db._data[last_updated_db_key]
 
     # Process again not long after.
@@ -225,7 +229,7 @@ def test_domains_iter_lists_all_domains(capsys, monkeypatch):
     monkeypatch.setattr(
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
-    domain = 'www.example.com'
+    domain = u'www.\u0454xample.com'
 
     repository = dnstwister.repository
 

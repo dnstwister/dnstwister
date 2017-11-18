@@ -89,7 +89,8 @@ def update_resolution_report(domain, report, updated=None):
         updated = datetime.datetime.now()
     db.set('resolution_report', domain, report)
     db.set(
-        'resolution_report_updated', domain,
+        'resolution_report_updated',
+        domain,
         db.to_db_datetime(updated)
     )
 

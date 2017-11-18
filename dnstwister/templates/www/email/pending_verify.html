@@ -8,7 +8,7 @@
 {% endblock %}
 {% block body %}
         <section>
-            <p>Click the link in your verification email to confirm your subscription for '{{ domain }}'.</p>
+            <p>Click the link in your verification email to confirm your subscription for <strong>{{ domain | domain_renderer }}</strong>.</p>
             <p>Please ensure you can receive emails from <strong>alerts@dnstwister.report</strong>.</p>
         </section>
 {% endblock %}

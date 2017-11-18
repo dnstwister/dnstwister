@@ -2,6 +2,7 @@
 import binascii
 import textwrap
 
+import dnstwister.tools
 import patches
 
 
@@ -73,8 +74,8 @@ def test_json_export(webapp, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
 
-    domains = ('a.com', 'b.com')
-    path = ','.join(map(binascii.hexlify, domains))
+    domain = 'a.com'
+    path = binascii.hexlify(domain)
 
     response = webapp.get('/search/{}/json'.format(path))
 
@@ -94,28 +95,6 @@ def test_json_export(webapp, monkeypatch):
                     u'domain-name': u'a.co',
                     u'fuzzer': u'Pretend',
                     u'hex': u'612e636f',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
-                    }
-                }
-            ]
-        },
-        u'b.com': {
-            u'fuzzy_domains': [
-                {
-                    u'domain-name': u'b.com',
-                    u'fuzzer': u'Original*',
-                    u'hex': u'622e636f6d',
-                    u'resolution': {
-                        u'error': False,
-                        u'ip': u'999.999.999.999'
-                    }
-                },
-                {
-                    u'domain-name': u'b.co',
-                    u'fuzzer': u'Pretend',
-                    u'hex': u'622e636f',
                     u'resolution': {
                         u'error': False,
                         u'ip': u'999.999.999.999'
@@ -207,8 +186,8 @@ def test_json_export_formatting(webapp, monkeypatch):
         'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
     )
 
-    domains = ('a.com', 'b.com')
-    path = ','.join(map(binascii.hexlify, domains))
+    domain = 'a.com'
+    path = binascii.hexlify(domain)
 
     response = webapp.get('/search/{}/json'.format(path))
 
@@ -235,28 +214,6 @@ def test_json_export_formatting(webapp, monkeypatch):
                         }
                     }
                 ]
-            },
-            "b.com": {
-                "fuzzy_domains": [
-                    {
-                        "domain-name": "b.com",
-                        "fuzzer": "Original*",
-                        "hex": "622e636f6d",
-                        "resolution": {
-                            "error": false,
-                            "ip": "999.999.999.999"
-                        }
-                    },
-                    {
-                        "domain-name": "b.co",
-                        "fuzzer": "Pretend",
-                        "hex": "622e636f",
-                        "resolution": {
-                            "error": false,
-                            "ip": "999.999.999.999"
-                        }
-                    }
-                ]
             }
         }
     """).strip()
@@ -269,3 +226,132 @@ def test_failed_export(webapp):
 
     response = webapp.get('/search/{}/xlsx'.format(hexdomain), expect_errors=True)
     assert response.status_code == 400
+
+
+def test_links_on_report(webapp):
+    """Make sure the export links are working."""
+    domain = 'a.com'
+    hexdomain = binascii.hexlify(domain)
+    page_html = webapp.get('/search/{}'.format(hexdomain)).body
+
+    assert '/search/{}/csv'.format(hexdomain) in page_html
+    assert '/search/{}/json'.format(hexdomain) in page_html
+
+
+def test_json_export_unicode_domain(webapp, monkeypatch):
+    """Test JSON export when no reports"""
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+
+    domain = u'a\u00E0.com'  # almost 'aa.com'
+    hexdomain = dnstwister.tools.encode_domain(domain)
+
+    response = webapp.get('/search/{}/json'.format(hexdomain))
+
+    assert response.json == {
+        u'xn--a-sfa.com': {
+            u'fuzzy_domains': [
+                {
+                    u'domain-name': u'xn--a-sfa.com',
+                    u'fuzzer': u'Original*',
+                    u'hex': u'786e2d2d612d7366612e636f6d',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                },
+                {
+                    u'domain-name': u'xn--a-sfa.co',
+                    u'fuzzer': u'Pretend',
+                    u'hex': u'786e2d2d612d7366612e636f',
+                    u'resolution': {
+                        u'error': False,
+                        u'ip': u'999.999.999.999'
+                    }
+                }
+            ]
+        }
+    }
+
+
+def test_unicode_csv_export(webapp, monkeypatch):
+    """Test CSV export with Unicode"""
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve', lambda domain: ('999.999.999.999', False)
+    )
+
+    domain = u'a\u00E0.com'  # almost 'aa.com'
+    hexdomain = dnstwister.tools.encode_domain(domain)
+
+    response = webapp.get('/search/{}/csv'.format(hexdomain))
+
+    assert response.body.strip() == textwrap.dedent("""
+        Domain,Type,Tweak,IP,Error
+        xn--a-sfa.com,Original*,xn--a-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--aa-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ab-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ac-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ad-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ae-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--af-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ag-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ah-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ai-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--aj-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ak-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--al-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--am-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--an-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ao-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ap-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--aq-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ar-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--as-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--at-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--au-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--av-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--aw-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ax-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--ay-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Addition,xn--az-jia.com,999.999.999.999,False
+        xn--a-sfa.com,Bitsquatting,xn--c-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Bitsquatting,xn--e-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Bitsquatting,xn--i-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Bitsquatting,xn--q-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0cab.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caa.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca3e.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0cad.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca743m.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca98b.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caf.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caj.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0cah.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca15e.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca90o.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca76d.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca53r.com,999.999.999.999,False
+        xn--a-sfa.com,Hyphenation,xn--a--kia.com,999.999.999.999,False
+        xn--a-sfa.com,Omission,a.com,999.999.999.999,False
+        xn--a-sfa.com,Omission,xn--0ca.com,999.999.999.999,False
+        xn--a-sfa.com,Repetition,xn--a-sfaa.com,999.999.999.999,False
+        xn--a-sfa.com,Repetition,xn--aa-kia.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--1-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--w-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--y-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--z-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--2-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--s-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Subdomain,a.xn--0ca.com,999.999.999.999,False
+        xn--a-sfa.com,Transposition,xn--a-rfa.com,999.999.999.999,False
+        xn--a-sfa.com,Vowel swap,xn--o-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Vowel swap,xn--u-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Various,xn--wwa-cla.com,999.999.999.999,False
+        xn--a-sfa.com,Various,xn--wwwa-3na.com,999.999.999.999,False
+        xn--a-sfa.com,Various,xn--www-a-vqa.com,999.999.999.999,False
+        xn--a-sfa.com,Various,xn--acom-0na.com,999.999.999.999,False
+    """).strip()
