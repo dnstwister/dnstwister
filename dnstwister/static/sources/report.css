@@ -51,3 +51,7 @@ a.deep-search {
     text-decoration: none;
     margin-left: 5px;
 }
+
+.error .tools {
+    font-weight: normal;
+}
