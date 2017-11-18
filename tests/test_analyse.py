@@ -8,7 +8,7 @@ def test_analysis(webapp):
     response = webapp.get('/analyse/646e73747769737465722e7265706f7274')
 
     assert response.status_code == 200
-    assert 'Use these tools to safely analyse dnstwister.report' in response.body
+    assert 'Use these tools to safely analyse <strong>dnstwister.report</strong>' in response.body
 
 
 def test_bad_domain_fails(webapp):
