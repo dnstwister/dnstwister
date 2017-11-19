@@ -2,6 +2,25 @@
 
 Will be used to store a 7-day sliding window count of domains appearing in
 delta reports.
+
+Reads from Heroku Dataclip of domains in delta reports, writes to Redis.
+
+Dataclip is:
+
+    select distinct delta_value->0 as domain
+    from (
+      select
+        json_array_elements(data.value::json->'new')::jsonb as delta_value
+      from data
+      union all
+      select
+        json_array_elements(data.value::json->'updated')::jsonb as delta_value
+      from data
+      union all
+      select
+        json_array_elements(data.value::json->'deleted')::jsonb as delta_value
+      from data
+    ) as delta_values
 """
 import contextlib
 import os
