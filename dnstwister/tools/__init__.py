@@ -210,7 +210,6 @@ def google_resolve(domain):
             GOOGLEDNS.format(idna_domain),
             timeout=5,  # Seconds.
         ).json()
-        print response
         if response['Status'] == GOOGLEDNS_SUCCESS:
             if 'Answer' in response.keys():
                 answer = response['Answer'][0]
