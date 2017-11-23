@@ -7,10 +7,10 @@ import dnstwister.tools as tools
 import dnstwister.dnstwist as dnstwist
 
 # Time in seconds between re-processing a domain.
-PERIOD = 86400
+PERIOD = 86400  # 24 hours
 
 # Multiplier on period to unregister if not read.
-UNREGISTER = 7
+UNREGISTER = 3  # 3 days
 
 
 def process_domain(domain):
@@ -27,7 +27,7 @@ def process_domain(domain):
     else:
         age = datetime.datetime.now() - last_read
         if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
-            print 'Unregistering (not read > 7 days) {}'.format(domain.encode('idna'))
+            print 'Unregistering (not read > 3 days) {}'.format(domain.encode('idna'))
             repository.unregister_domain(domain)
             return
 
