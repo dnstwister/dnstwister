@@ -97,14 +97,6 @@ def test_resolve_validation():
     assert tools.resolve(',saoi9w3k490q2k4') == (False, True)
 
 
-def test_ip_validation():
-    """Test the helper to validate IPv4 addresses."""
-    assert tools.is_valid_ip('127.0.0.1')
-
-    assert not tools.is_valid_ip('99.99.299.99')
-    assert not tools.is_valid_ip('12kljasdksdhfkjsdhf')
-
-
 def test_encode_bonkers_unicode():
     """Some unicode is not "valid"."""
     unicode_domain = u'a\uDFFFa.com'
