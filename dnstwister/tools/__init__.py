@@ -151,15 +151,6 @@ def suggest_domain(search_domain):
     return random.choice(valid_suggestions)
 
 
-def is_valid_ip(ip_string):
-    """Matches valid ipv4 IP addresses."""
-    try:
-        socket.inet_aton(ip_string)
-        return True
-    except:
-        return False
-
-
 @cache.memoize(3600)
 def resolve(domain):
     """Resolves a domain to an IP.
@@ -192,40 +183,15 @@ def resolve(domain):
         # Weird edge case that sometimes happens?!?!
         if ip_addr != '127.0.0.1':
             return ip_addr, False
+    except socket.gaierror:
+        # Indicates failure to resolve to IP address, not an error in
+        # the attempt.
+        return False, False
     except:
         pass
 
-    ip_addr, error = google_resolve(domain)
-    if ip_addr == '127.0.0.1':
-        return False, True
-
-    return ip_addr, error
-
-
-def google_resolve(domain):
-    """Google's Public DNS resolver."""
-    try:
-        idna_domain = domain.encode('idna')
-        response = requests.get(
-            GOOGLEDNS.format(idna_domain),
-            timeout=5,  # Seconds.
-        ).json()
-        print response
-        if response['Status'] == GOOGLEDNS_SUCCESS:
-            if 'Answer' in response.keys():
-                answer = response['Answer'][0]
-                if answer['type'] == GOOGLEDNS_A_RECORD:
-                    ip_addr = answer['data']
-                    if is_valid_ip(ip_addr):
-                        return ip_addr, False
-        return False, False
-    except Exception as ex:
-        app.logger.error(
-            'Failed to resolve IP via Google Public DNS: {}'.format(ex)
-        )
-        # Deliberately don't call this an error as the infra sometimes does
-        # weird things that are nothing to do with the domain resolution.
-        return False, False
+    # Error due to exception of 127.0.0.1 issue.
+    return False, True
 
 
 def random_id(n_bytes=32):
