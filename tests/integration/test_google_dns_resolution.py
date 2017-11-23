@@ -6,6 +6,8 @@ from dnstwister import tools
 
 def _is_valid_ip(ip_string):
     """Throws socket.error if not a valid IP address."""
+    if not ip_string:
+        return False
     socket.inet_aton(ip_string)
     return True
 
@@ -45,4 +47,6 @@ def test_failure_to_resolve(f_httpretty):
     ip_addr, error = tools.google_resolve(domain)
 
     assert not ip_addr
-    assert error
+
+    # This lookup can be flaky, that's not a DNS error.
+    assert not error

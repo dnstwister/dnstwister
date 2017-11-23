@@ -156,7 +156,7 @@ def is_valid_ip(ip_string):
     try:
         socket.inet_aton(ip_string)
         return True
-    except socket.error:
+    except:
         return False
 
 
@@ -206,7 +206,11 @@ def google_resolve(domain):
     """Google's Public DNS resolver."""
     try:
         idna_domain = domain.encode('idna')
-        response = requests.get(GOOGLEDNS.format(idna_domain)).json()
+        response = requests.get(
+            GOOGLEDNS.format(idna_domain),
+            timeout=5,  # Seconds.
+        ).json()
+        print response
         if response['Status'] == GOOGLEDNS_SUCCESS:
             if 'Answer' in response.keys():
                 answer = response['Answer'][0]
@@ -219,7 +223,9 @@ def google_resolve(domain):
         app.logger.error(
             'Failed to resolve IP via Google Public DNS: {}'.format(ex)
         )
-        return False, True
+        # Deliberately don't call this an error as the infra sometimes does
+        # weird things that are nothing to do with the domain resolution.
+        return False, False
 
 
 def random_id(n_bytes=32):

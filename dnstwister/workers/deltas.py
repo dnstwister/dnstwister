@@ -98,6 +98,8 @@ def main():
     """Main code for worker."""
     while True:
 
+        print 'Starting delta processing...'
+
         start = time.time()
 
         domains_iter = repository.iregistered_domains()
