@@ -66,7 +66,7 @@ def test_old_domain_is_unregistered(capsys, monkeypatch):
     workers.deltas.process_domain(domain)
     assert repository.delta_report_last_read(domain) is None
 
-    expected_output = 'Unregistering (not read > 7 days) {}\n'.format(
+    expected_output = 'Unregistering (not read > 3 days) {}\n'.format(
         domain.encode('idna')
     )
     assert capsys.readouterr()[0] == expected_output
