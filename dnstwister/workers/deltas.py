@@ -116,7 +116,7 @@ def main():
             round(time.time() - start, 2)
         )
 
-        time.sleep(60)
+        time.sleep(datetime.timedelta(minutes=15).total_seconds())
 
 
 if __name__ == '__main__':
