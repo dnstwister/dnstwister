@@ -22,7 +22,6 @@ Dataclip is:
       from data
     ) as delta_values
     where delta_value->>0 != 'null'
-
 """
 import datetime
 import os
