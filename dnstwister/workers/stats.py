@@ -27,6 +27,11 @@ def main():
     """Main code for worker.
 
     Run as often as like on a schedule.
+
+    I'm doing it via a Heroku scheduler calling:
+
+        python -m dnstwister.workers.stats
+
     """
     start = time.time()
     store = redis_stats_store.RedisStatsStore()
@@ -35,7 +40,7 @@ def main():
     for domain in delta_domains:
         store.note(domain)
 
-    print 'Processed {} in {} seconds'.format(
+    print 'Processed stats for {} domains in {} seconds'.format(
         len(delta_domains),
         round(time.time() - start, 2)
     )
