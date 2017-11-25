@@ -30,6 +30,7 @@ def test_delta_domain_retriever_filters_invalid_domains(f_httpretty, monkeypatch
         'types': [25],
         'type_names': ['text'],
         'values': [
+            [None],
             ['??:SDmazon.com'],
             ['amazont.com'],
         ]
