@@ -16,7 +16,7 @@ def get_delta_domains(url=os.getenv('DELTAS_URL')):
     if url is None:
         raise Exception('Delta report URL configuration not set!')
 
-    json = requests.get(os.getenv('DELTAS_URL'), timeout=10).json()
+    json = requests.get(url, timeout=10).json()
     return [domain
             for (domain,)
             in json['values']
