@@ -25,21 +25,24 @@ Dataclip is:
 """
 import datetime
 import os
-import time
 
 import redis
 
 from dnstwister import dnstwist
 
 
-EXPIRY = 604800  # 7 days in seconds.
+EXPIRY = int(datetime.timedelta(days=7).total_seconds())
 
 
 class RedisStatsStore(object):
     """The store for the statistics."""
     def __init__(self):
         self._conn = None
-        self._url = os.getenv('REDIS_URL')
+
+        url = os.getenv('REDIS_URL')
+        if url is None:
+            raise Exception('REDIS connection configuration not set!')
+        self._url = url
 
     @property
     def r_conn(self):
@@ -60,18 +63,6 @@ class RedisStatsStore(object):
             pipe.incr(domain)
             pipe.expire(domain, EXPIRY)
             pipe.execute()
-
-    def all_noted(self):
-        """Record that all domains have been noted."""
-        now_ts = time.mktime(datetime.datetime.now().timetuple())
-        self.r_conn.set('meta:all_noted', now_ts)
-
-    def last_time_all_noted(self):
-        """Return the last time that all values were updated or epoch zero."""
-        last_all_noted = self.r_conn.get('meta:all_noted')
-        if last_all_noted is None:
-            return datetime.datetime.min
-        return datetime.datetime(*time.localtime(float(last_all_noted))[:6])
 
     def is_noisy(self, domain, threshold=3):
         """A domain is noisy if it changes more than threshold times over the
