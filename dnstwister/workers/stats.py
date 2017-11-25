@@ -1,6 +1,4 @@
-"""Records stats about the system.
-
-"""
+"""Records stats about the system."""
 import datetime
 import os
 import time
