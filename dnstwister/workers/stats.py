@@ -8,15 +8,16 @@ from dnstwister import dnstwist
 from dnstwister.storage import redis_stats_store
 
 
-def get_delta_domains(url=os.getenv('DELTAS_URL')):
+def get_delta_domains():
     """Return a list of all the domains in all the delta reports.
 
     If this stops scaling I'll switch to an iterator off a DB query.
     """
+    url = os.getenv('DELTAS_URL')
     if url is None:
         raise Exception('Delta report URL configuration not set!')
 
-    json = requests.get(os.getenv('DELTAS_URL'), timeout=10).json()
+    json = requests.get(url, timeout=10).json()
     return [domain
             for (domain,)
             in json['values']

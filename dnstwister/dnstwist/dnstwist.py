@@ -54,7 +54,7 @@ def validate_domain(domain):
     try:
         if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
             return False
-    except UnicodeError:
+    except (UnicodeError, TypeError):
         return False
     allowed = re.compile(r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
     return allowed.match(domain.encode('idna'))
