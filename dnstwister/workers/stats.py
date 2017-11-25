@@ -1,5 +1,4 @@
 """Records stats about the system."""
-import datetime
 import os
 import time
 
@@ -9,11 +8,14 @@ from dnstwister import dnstwist
 from dnstwister.storage import redis_stats_store
 
 
-CADENCE = datetime.timedelta(hours=24)
+def get_delta_domains(url=os.getenv('DELTAS_URL')):
+    """Return a list of all the domains in all the delta reports.
 
+    If this stops scaling I'll switch to an iterator off a DB query.
+    """
+    if url is None:
+        raise Exception('Delta report URL configuration not set!')
 
-def get_delta_domains():
-    """Return a list of all the domains in all the delta reports."""
     json = requests.get(os.getenv('DELTAS_URL'), timeout=10).json()
     return [domain
             for (domain,)
@@ -22,29 +24,21 @@ def get_delta_domains():
 
 
 def main():
-    """Main code for worker."""
-    while True:
+    """Main code for worker.
 
-        start = time.time()
+    Run as often as like on a schedule.
+    """
+    start = time.time()
+    store = redis_stats_store.RedisStatsStore()
 
-        store = redis_stats_store.RedisStatsStore()
+    delta_domains = get_delta_domains()
+    for domain in delta_domains:
+        store.note(domain)
 
-        last_run = store.last_time_all_noted()
-        age = datetime.datetime.now() - last_run
-        if age < CADENCE:
-            sleep_time = (CADENCE - age).total_seconds()
-            time.sleep(sleep_time)
-            continue
-
-        delta_domains = get_delta_domains()
-        for domain in delta_domains:
-            store.note(domain)
-        store.all_noted()
-
-        print 'Processed {} in {} seconds'.format(
-            len(delta_domains),
-            round(time.time() - start, 2)
-        )
+    print 'Processed {} in {} seconds'.format(
+        len(delta_domains),
+        round(time.time() - start, 2)
+    )
 
 
 if __name__ == '__main__':
