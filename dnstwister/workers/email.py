@@ -28,17 +28,13 @@ def process_sub(sub_id, detail):
     if last_sent is not None:
         age_last_sent = datetime.datetime.now() - last_sent
         if age_last_sent < datetime.timedelta(seconds=PERIOD):
-            print 'Skipping {} + {}, < 24h hours'.format(
-                email_address, domain.encode('idna')
-            )
+            print '< 24h: {}'.format(sub_id)
             return
 
     # Grab the delta
     delta = repository.get_delta_report(domain)
     if delta is None:
-        print 'Skipping {} + {}, no delta report yet'.format(
-            email_address, domain.encode('idna')
-        )
+        print 'No delta: {}'.format(sub_id)
         return
 
     # Grab the delta report update time.
@@ -50,9 +46,7 @@ def process_sub(sub_id, detail):
     if delta_updated is not None:
         age_delta_updated = datetime.datetime.now() - delta_updated
         if age_delta_updated > datetime.timedelta(hours=23):
-            print 'Skipping {} + {}, delta > 23h hours old'.format(
-                email_address, domain.encode('idna')
-            )
+            print '> 23h: {}'.format(sub_id)
             return
 
     # Don't email if no changes
@@ -61,9 +55,7 @@ def process_sub(sub_id, detail):
     deleted = delta['deleted'] if len(delta['deleted']) > 0 else None
 
     if new is updated is deleted is None:
-        print 'Skipping {} + {}, no changes'.format(
-            email_address, domain.encode('idna')
-        )
+        print 'Empty delta: {}'.format(sub_id)
         return
 
     # Add analysis links
@@ -96,10 +88,7 @@ def process_sub(sub_id, detail):
         u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
         body
     )
-    print 'Emailed delta for {} to {}'.format(
-        domain.encode('idna'),
-        email_address
-    )
+    print 'Emailed: {}'.format(sub_id)
 
 
 def main():
@@ -134,7 +123,7 @@ def main():
 
             time.sleep(1)
 
-        time.sleep(60)
+        time.sleep(datetime.timedelta(minutes=15).total_seconds())
 
 
 if __name__ == '__main__':
