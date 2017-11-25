@@ -9,7 +9,7 @@ from dnstwister import dnstwist
 from dnstwister.storage import redis_stats_store
 
 
-CADENCE = datetime.timedelta(seconds=86400)  # 24 hours
+CADENCE = datetime.timedelta(hours=24)
 
 
 def get_delta_domains():
@@ -26,22 +26,23 @@ def main():
     while True:
 
         start = time.time()
-        print 'Starting stats processing...'
 
         store = redis_stats_store.RedisStatsStore()
 
         last_run = store.last_time_all_noted()
         age = datetime.datetime.now() - last_run
         if age < CADENCE:
-            print 'Sleeping, < 24 hours since last run.'
-            time.sleep((CADENCE - age).total_seconds())
+            sleep_time = (CADENCE - age).total_seconds()
+            time.sleep(sleep_time)
             continue
 
-        for domain in get_delta_domains():
+        delta_domains = get_delta_domains()
+        for domain in delta_domains:
             store.note(domain)
         store.all_noted()
 
-        print 'All stats processed in {} seconds'.format(
+        print 'Processed {} in {} seconds'.format(
+            len(delta_domains),
             round(time.time() - start, 2)
         )
 
