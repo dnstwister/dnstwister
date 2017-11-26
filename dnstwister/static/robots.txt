@@ -3,3 +3,4 @@ Disallow: /atom/*
 Disallow: /search/*
 Disallow: /analyse/*
 Disallow: /api/*
+Disallow: /email/*
