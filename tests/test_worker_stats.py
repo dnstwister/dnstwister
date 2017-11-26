@@ -4,8 +4,9 @@ Also first crack at using a Given-When-Then syntax, may change it if it sucks.
 """
 import json
 
-import mock
 import fakeredis
+import mock
+import pytest
 
 import dnstwister.storage.redis_stats_store
 import dnstwister.workers.stats
@@ -57,6 +58,15 @@ def test_delta_domain_retriever_returns_domains_list(f_httpretty, monkeypatch):
     domains = when_the_delta_domains_are_retrieved()
 
     assert set(domains) == set(('mazon.com', 'amazont.com'))
+
+
+def test_delta_domain_retriever_requires_deltas_url(f_httpretty, monkeypatch):
+
+    # No DELTAS_URL set by default.
+
+    expected_message = 'Delta report URL configuration not set!'
+    with pytest.raises(Exception, message=expected_message):
+        when_the_delta_domains_are_retrieved()
 
 
 def test_delta_domain_retriever_filters_invalid_domains(f_httpretty, monkeypatch):
