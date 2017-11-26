@@ -16,7 +16,7 @@ UNREGISTER = 3  # 3 days
 def process_domain(domain):
     """Process a domain - generating resolution reports and deltas."""
     if dnstwist.validate_domain(domain) is None:
-        print 'Unregistering (invalid) {}'.format(domain.encode('idna'))
+        print 'Invalid: {}'.format(repr(domain))
         repository.unregister_domain(domain)
         return
 
@@ -27,7 +27,7 @@ def process_domain(domain):
     else:
         age = datetime.datetime.now() - last_read
         if age > datetime.timedelta(seconds=PERIOD*UNREGISTER):
-            print 'Unregistering (not read > 3 days) {}'.format(domain.encode('idna'))
+            print 'Expired: {}'.format(domain.encode('idna'))
             repository.unregister_domain(domain)
             return
 
@@ -36,7 +36,7 @@ def process_domain(domain):
     if delta_last_updated is not None:
         age = datetime.datetime.now() - delta_last_updated
         if age < datetime.timedelta(seconds=PERIOD):
-            print 'Skipping (recently updated) {}'.format(domain.encode('idna'))
+            print 'Skipping: {}'.format(domain.encode('idna'))
             return
 
     start = time.time()
@@ -89,7 +89,7 @@ def process_domain(domain):
 
     repository.update_delta_report(domain, delta_report)
 
-    print 'Updated deltas for {} in {} seconds'.format(
+    print 'Updated {} in {} seconds'.format(
         domain.encode('idna'), time.time() - start
     )
 
@@ -116,7 +116,7 @@ def main():
             round(time.time() - start, 2)
         )
 
-        time.sleep(60)
+        time.sleep(datetime.timedelta(minutes=15).total_seconds())
 
 
 if __name__ == '__main__':

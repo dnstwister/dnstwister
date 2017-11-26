@@ -22,7 +22,7 @@ def test_invalid_domain_is_unregistered(capsys, monkeypatch):
     workers.deltas.process_domain(invalid_domain)
     assert not repository.is_domain_registered(invalid_domain)
 
-    expected_output = 'Unregistering (invalid) {}\n'.format(
+    expected_output = 'Invalid: \'{}\'\n'.format(
         invalid_domain.encode('idna')
     )
     assert capsys.readouterr()[0] == expected_output
@@ -66,7 +66,7 @@ def test_old_domain_is_unregistered(capsys, monkeypatch):
     workers.deltas.process_domain(domain)
     assert repository.delta_report_last_read(domain) is None
 
-    expected_output = 'Unregistering (not read > 3 days) {}\n'.format(
+    expected_output = 'Expired: {}\n'.format(
         domain.encode('idna')
     )
     assert capsys.readouterr()[0] == expected_output
