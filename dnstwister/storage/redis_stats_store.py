@@ -68,4 +68,7 @@ class RedisStatsStore(object):
         """A domain is noisy if it changes more than threshold times over the
         expiry window.
         """
-        return self.r_conn.get(domain) > threshold
+        score = self.r_conn.get(domain)
+        if score is None:
+            return False
+        return int(score) > threshold
