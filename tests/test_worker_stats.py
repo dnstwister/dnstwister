@@ -64,9 +64,10 @@ def test_delta_domain_retriever_requires_deltas_url(f_httpretty, monkeypatch):
 
     # No DELTAS_URL set by default.
 
-    expected_message = 'Delta report URL configuration not set!'
-    with pytest.raises(Exception, message=expected_message):
+    with pytest.raises(Exception) as ex:
         when_the_delta_domains_are_retrieved()
+
+    assert ex.value.message == 'Delta report URL configuration not set!'
 
 
 def test_delta_domain_retriever_filters_invalid_domains(f_httpretty, monkeypatch):
