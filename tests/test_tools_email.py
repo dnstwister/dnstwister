@@ -13,6 +13,7 @@ def test_email_renderer():
         updated=(('www.exampl3.com', '127.0.0.1', '127.0.0.2', 'http://dnstwister.report/analyse/6789'),),
         deleted=('www.examplle.com',),
         unsubscribe_link='https://dnstwister.report/...',
+        noisy_link='https://dnstwister.report/email/1/noisy',
     )
 
     assert template.strip() == textwrap.dedent("""
@@ -79,6 +80,12 @@ def test_email_renderer():
             </tbody>
         </table>
         <p>
+            These emails <strong>exclude</strong> domains considered to be "noisy" -
+            those that are either registered and unregistered constantly, or
+            constantly change IP address. <a href="https://dnstwister.report/email/1/noisy">You can view a
+            report of these domains at any time.</a>
+        </p>
+        <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
     """).strip()
@@ -99,6 +106,7 @@ def test_email_renderer_domain_sorting():
         updated=[],
         deleted=[],
         unsubscribe_link='https://dnstwister.report/...',
+        noisy_link='https://dnstwister.report/email/1/noisy',
     )
 
     assert template.strip() == textwrap.dedent("""
@@ -157,6 +165,12 @@ def test_email_renderer_domain_sorting():
             </tbody>
         </table>
 
+        <p>
+            These emails <strong>exclude</strong> domains considered to be "noisy" -
+            those that are either registered and unregistered constantly, or
+            constantly change IP address. <a href="https://dnstwister.report/email/1/noisy">You can view a
+            report of these domains at any time.</a>
+        </p>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
