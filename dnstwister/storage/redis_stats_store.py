@@ -1,6 +1,6 @@
 """Trivial redis store for domains.
 
-Will be used to store a 7-day sliding window count of domains appearing in
+Will be used to store a 7-day "sliding window" count of domains appearing in
 delta reports.
 
 Reads from Heroku Dataclip of domains in delta reports, writes to Redis.
@@ -22,6 +22,14 @@ Dataclip is:
       from data
     ) as delta_values
     where delta_value->>0 != 'null'
+
+Note: The window is a bit fuzzy on the definition of "sliding". If the domain
+does not change in 7 days, then it will be removed, so would be considered
+not noisy. In the first 7 days it must change "threshold" times to be noisy
+then after that it only needs to change once every 7 days to remain noisy.
+
+This is a form of hysteresis caused by the simplicity I want to use for redis
+storage.
 """
 import datetime
 import os
@@ -64,7 +72,7 @@ class RedisStatsStore(object):
             pipe.expire(domain, EXPIRY)
             pipe.execute()
 
-    def is_noisy(self, domain, threshold=3):
+    def is_noisy(self, domain, threshold=4):
         """A domain is noisy if it changes more than threshold times over the
         expiry window.
         """
