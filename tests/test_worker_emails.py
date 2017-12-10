@@ -1,6 +1,9 @@
 """Tests the email worker."""
 import datetime
 
+import fakeredis
+import mock
+
 import dnstwister
 import patches
 import workers.email
@@ -44,10 +47,12 @@ def test_dont_send_when_no_changes(capsys, monkeypatch):
     assert len(emailer.sent_emails) == 0
 
 
+@mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
 def test_dont_send_too_often(capsys, monkeypatch):
     """Test that emails are not sent more than every 24 hours."""
 
     # Patches
+    monkeypatch.setenv('REDIS_URL', '')
     monkeypatch.setattr(
         'dnstwister.repository.db',
         patches.SimpleKVDatabase()

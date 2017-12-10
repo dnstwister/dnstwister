@@ -3,13 +3,25 @@ import datetime
 import time
 import traceback
 
-from dnstwister import emailer, repository, tools
+from dnstwister import emailer, repository, tools, stats_store
 import dnstwister.tools.email as email_tools
 import dnstwister.tools.template as template_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
 ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
+
+
+def remove_noisy(delta):
+    """Strip out all domains identified as noisy."""
+    filtered_delta = {}
+    for change in delta.keys():
+        filtered_delta[change] = []
+        for result in delta[change]:
+            domain = result[0]
+            if not stats_store.is_noisy(domain):
+                filtered_delta[change].append(result)
+    return filtered_delta
 
 
 def process_sub(sub_id, detail):
@@ -49,6 +61,9 @@ def process_sub(sub_id, detail):
         if age_delta_updated > datetime.timedelta(hours=23):
             print '>23h: {}'.format(sub_log)
             return
+
+    # Filter out noisy domains.
+    delta = remove_noisy(delta)
 
     # Don't email if no changes
     new = delta['new'] if len(delta['new']) > 0 else None
