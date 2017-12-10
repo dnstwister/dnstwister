@@ -121,4 +121,8 @@ def email_view_noisy_domains(sub_id):
                      in fuzzy_domains
                      if stats_store.is_noisy(domain)]
 
-    return flask.jsonify(noisy_domains)
+    return flask.render_template(
+        'www/email/noisy.html',
+        domain=subscribed_domain,
+        noisy_domains=noisy_domains
+    )

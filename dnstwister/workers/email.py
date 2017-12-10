@@ -76,7 +76,8 @@ def process_sub(sub_id, detail):
         new=new,
         updated=updated,
         deleted=deleted,
-        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
+        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id),
+        noisy_link='https://dnstwister.report/{}/noisy'.format(sub_id)
     )
 
     # Mark as emailed to ensure we don't flood if there's an error after the
