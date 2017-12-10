@@ -8,7 +8,7 @@ def test_stats_store_requires_redis_url(f_httpretty, monkeypatch):
 
     # No REDIS_URL set by default, but just in case it's currently in the
     # env...
-    monkeypatch.delenv('REDIS_URL')
+    monkeypatch.delenv('REDIS_URL', raising=False)
 
     with pytest.raises(Exception) as ex:
         dnstwister.storage.redis_stats_store.RedisStatsStore()
