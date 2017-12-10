@@ -8,7 +8,7 @@ import dnstwister.storage.redis_stats_store
 @mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
 def test_not_noisy_under_threshold(f_httpretty, monkeypatch):
     given_an_empty_redis_database(monkeypatch)
-    given_a_score_of(monkeypatch, 'www.example.com', 3)
+    given_a_score_of(monkeypatch, 'www.example.com', 4)
 
     then_the_domain_noisy_state_is(monkeypatch, 'www.example.com', False)
 
@@ -16,7 +16,7 @@ def test_not_noisy_under_threshold(f_httpretty, monkeypatch):
 @mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
 def test_is_noisy_over_threshold(f_httpretty, monkeypatch):
     given_an_empty_redis_database(monkeypatch)
-    given_a_score_of(monkeypatch, 'www.example.com', 4)
+    given_a_score_of(monkeypatch, 'www.example.com', 5)
 
     then_the_domain_noisy_state_is(monkeypatch, 'www.example.com', True)
 
