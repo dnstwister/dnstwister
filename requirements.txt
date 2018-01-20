@@ -2,7 +2,7 @@ dnspython==1.15.0
 Flask==0.12.2
 Flask-Cache==0.13.1
 idna==2.6
-psycopg2==2.6.2
+psycopg2==2.7.3.2
 python-whois==0.6.5
 redis==2.10.6
 requests==2.18.4

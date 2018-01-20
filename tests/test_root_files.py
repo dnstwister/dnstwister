@@ -5,3 +5,11 @@ def test_robots_txt(webapp):
         expected_file = robotsf.read()
 
     assert webapp.get('/robots.txt').body == expected_file
+
+
+def test_security_txt(webapp):
+    """Test the security.txt is loaded."""
+    with open('dnstwister/static/security.txt', 'rb') as securityf:
+        expected_file = securityf.read()
+
+    assert webapp.get('/security.txt').body == expected_file
