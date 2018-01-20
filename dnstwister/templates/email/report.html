@@ -59,8 +59,8 @@
             </td>
         </tr>{% endfor %}
     </tbody>
-</table>{% endif %}{% if noisy_link %}
-<p>
+</table>
+{% endif %}{% if noisy_link %}<p>
     These emails <strong>exclude</strong> domains considered to be "noisy" -
     those that are either registered and unregistered constantly, or
     constantly change IP address. <a href="{{ noisy_link }}">You can view a
