@@ -292,6 +292,8 @@ def test_send_when_only_noisy_but_noisy_feature_off(capsys, monkeypatch):
     sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
     workers.email.process_sub(sub_id, sub_data)
 
-    # We've not sent any emails as there were no changes (no IPs resolved at
-    # all).
+    # We have an email.
     assert len(emailer.sent_emails) == 1
+
+    # And there is no reference to noisy domains in the email.
+    assert 'noisy' not in emailer.sent_emails[0][2]

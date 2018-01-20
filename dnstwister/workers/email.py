@@ -92,6 +92,10 @@ def process_sub(sub_id, detail):
                    in updated]
 
     # Email
+    noisy_link = None
+    if feature_flags.enable_noisy_domains():
+        noisy_link = 'https://dnstwister.report/email/{}/noisy'.format(sub_id)
+
     body = email_tools.render_email(
         'report.html',
         domain=domain,
@@ -99,7 +103,7 @@ def process_sub(sub_id, detail):
         updated=updated,
         deleted=deleted,
         unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id),
-        noisy_link='https://dnstwister.report/email/{}/noisy'.format(sub_id)
+        noisy_link=noisy_link
     )
 
     # Mark as emailed to ensure we don't flood if there's an error after the
