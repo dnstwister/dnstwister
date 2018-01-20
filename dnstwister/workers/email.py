@@ -3,12 +3,31 @@ import datetime
 import time
 import traceback
 
-from dnstwister import emailer, repository, tools
+from dnstwister import emailer, repository, tools, stats_store
 import dnstwister.tools.email as email_tools
+import dnstwister.tools.template as template_tools
+import dnstwister.configuration.features as feature_flags
+
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
 ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
+
+
+def remove_noisy(delta):
+    """Strip out all domains identified as noisy."""
+    if not feature_flags.enable_noisy_domains():
+        return delta
+
+    filtered_delta = {}
+    for change in delta.keys():
+        filtered_delta[change] = []
+        for result in delta[change]:
+            domain = result[0]
+            if not stats_store.is_noisy(domain):
+                filtered_delta[change].append(result)
+
+    return filtered_delta
 
 
 def process_sub(sub_id, detail):
@@ -49,6 +68,9 @@ def process_sub(sub_id, detail):
             print '>23h: {}'.format(sub_log)
             return
 
+    # Filter out noisy domains.
+    delta = remove_noisy(delta)
+
     # Don't email if no changes
     new = delta['new'] if len(delta['new']) > 0 else None
     updated = delta['updated'] if len(delta['updated']) > 0 else None
@@ -70,13 +92,18 @@ def process_sub(sub_id, detail):
                    in updated]
 
     # Email
+    noisy_link = None
+    if feature_flags.enable_noisy_domains():
+        noisy_link = 'https://dnstwister.report/email/{}/noisy'.format(sub_id)
+
     body = email_tools.render_email(
         'report.html',
         domain=domain,
         new=new,
         updated=updated,
         deleted=deleted,
-        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
+        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id),
+        noisy_link=noisy_link
     )
 
     # Mark as emailed to ensure we don't flood if there's an error after the
@@ -85,7 +112,7 @@ def process_sub(sub_id, detail):
 
     emailer.send(
         email_address,
-        u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
+        u'dnstwister report for {}'.format(template_tools.domain_renderer(domain)),
         body
     )
     print 'Sent: {}'.format(sub_log)

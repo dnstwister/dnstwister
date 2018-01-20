@@ -42,3 +42,26 @@ a:hover .logo {
     color: red;
     padding-bottom: 1.5rem;
 }
+
+.ico {
+    margin-bottom: -2px;
+    height: 22px;
+    margin-right: 2px;
+    opacity: 0.5;
+}
+
+.ico:hover {
+    opacity: 1;
+}
+
+.ico.mini {
+    height: 16px;
+    margin-left: 5px;
+    margin-bottom: -3px;
+    margin-right: 0;
+}
+
+a.deep-search {
+    text-decoration: none;
+    margin-left: 5px;
+}

@@ -20,10 +20,6 @@ RESOLVER = dns.resolver.Resolver()
 RESOLVER.lifetime = 0.1
 RESOLVER.timeout = 0.1
 
-GOOGLEDNS = 'https://dns.google.com/resolve?name={}'
-GOOGLEDNS_SUCCESS = 0
-GOOGLEDNS_A_RECORD = 1
-
 
 def encode_domain(domain):
     """Given a domain with possible Unicode chars, encode it to hex."""
@@ -209,12 +205,3 @@ def api_url(view, var_pretty_name):
         flask.request.url_root,
         path
     )
-
-
-def domain_renderer(domain):
-    """Add IDNA values beside Unicode domains."""
-    idna_domain = domain.encode('idna')
-    if idna_domain == domain:
-        return domain
-
-    return domain + ' ({})'.format(idna_domain)
