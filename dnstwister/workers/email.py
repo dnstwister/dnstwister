@@ -101,7 +101,7 @@ def process_sub(sub_id, detail):
 
     # Email
     noisy_link = None
-    if feature_flags.enable_noisy_domains():
+    if hide_noisy and feature_flags.enable_noisy_domains():
         noisy_link = 'https://dnstwister.report/email/{}/noisy'.format(sub_id)
 
     body = email_tools.render_email(
