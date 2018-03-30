@@ -34,6 +34,13 @@ def process_sub(sub_id, detail):
     """Process a subscription."""
     domain = detail['domain']
     email_address = detail['email_address']
+    
+    hide_noisy = False
+    try:
+        hide_noisy = bool(detail['hide_noisy'])
+    except KeyError:
+        pass
+
     sub_log = sub_id[:10]
 
     # Ensure the domain is registered for reporting, register if not.
@@ -68,8 +75,9 @@ def process_sub(sub_id, detail):
             print '>23h: {}'.format(sub_log)
             return
 
-    # Filter out noisy domains.
-    delta = remove_noisy(delta)
+    # Filter out noisy domains if that's the user's preference.
+    if hide_noisy:
+        delta = remove_noisy(delta)
 
     # Don't email if no changes
     new = delta['new'] if len(delta['new']) > 0 else None

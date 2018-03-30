@@ -94,9 +94,10 @@ def email_subscribe_confirm_email(verify_code):
 
     email_address = pending_verify['email_address']
     domain = pending_verify['domain']
+    hide_noisy = bool(pending_verify['hide_noisy'])
     sub_id = tools.random_id()
 
-    repository.subscribe_email(sub_id, email_address, domain)
+    repository.subscribe_email(sub_id, email_address, domain, hide_noisy)
     repository.remove_proposition(verify_code)
 
     return flask.render_template('www/email/subscribed.html', domain=domain)
