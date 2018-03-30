@@ -33,7 +33,7 @@ def test_dont_send_when_no_changes(capsys, monkeypatch):
     email = 'a@b.zzzzzzzzzzz'
 
     # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     # Do a delta report.
     workers.deltas.process_domain(domain)
@@ -79,7 +79,7 @@ def test_dont_send_too_often(capsys, monkeypatch):
     email = 'a@b.zzzzzzzzzzz'
 
     # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     # Do a delta report.
     workers.deltas.process_domain(domain)
@@ -136,7 +136,7 @@ def test_subscription_email_timing(capsys, monkeypatch):
     assert not repository.is_domain_registered(domain)
 
     # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     # Subscribing a user does not register the domain.
     assert not repository.is_domain_registered(domain)
@@ -231,8 +231,8 @@ def test_dont_send_when_only_noisy(capsys, monkeypatch):
     for _ in range(5):
         store.note('www.example.co')
 
-    # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain)
+    # Subscribe a new user, with noisy filtering enabled.
+    repository.subscribe_email(sub_id, email, domain, True)
 
     # Do a delta report.
     workers.deltas.process_domain(domain)
@@ -282,8 +282,8 @@ def test_send_when_only_noisy_but_noisy_feature_off(capsys, monkeypatch):
     for _ in range(5):
         store.note('www.example.co')
 
-    # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain)
+    # Subscribe a new user, with noisy filtering enabled.
+    repository.subscribe_email(sub_id, email, domain, True)
 
     # Do a delta report.
     workers.deltas.process_domain(domain)
