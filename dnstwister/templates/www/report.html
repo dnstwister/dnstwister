@@ -29,7 +29,8 @@
             </p>
         </section>
         <section>
-            <button id="show_all">Show/hide unresolved domains</button>
+            <button class="toggle_unresolved">Show unresolved domains</button>
+            <button class="toggle_unresolved" style="display: none;">Hide unresolved domains</button>
             <section class="exports">
                 export:
                 {% for (title, format) in exports.items() %}
