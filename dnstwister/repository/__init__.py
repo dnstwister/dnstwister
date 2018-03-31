@@ -106,13 +106,14 @@ def isubscriptions():
                 yield key, sub
 
 
-def propose_subscription(verify_code, email_address, domain):
+def propose_subscription(verify_code, email_address, domain, hide_noisy):
     """Store that a sub has been proposed (pending email verification)."""
     db.set(
         'email_sub_pending', verify_code, {
             'email_address': email_address,
             'domain': domain,
             'since': db.to_db_datetime(datetime.datetime.now()),
+            'hide_noisy': hide_noisy
         }
     )
 
@@ -127,11 +128,12 @@ def remove_proposition(verify_code):
     db.delete('email_sub_pending', verify_code)
 
 
-def subscribe_email(sub_id, email_address, domain):
+def subscribe_email(sub_id, email_address, domain, hide_noisy):
     """Add a subscription for an email to a domain."""
     db.set('email_sub', sub_id, {
         'email_address': email_address,
         'domain': domain,
+        'hide_noisy': hide_noisy
     })
 
 
@@ -156,3 +158,10 @@ def unsubscribe(sub_id):
     """Unsubscribe a user."""
     db.delete('email_sub', sub_id)
     db.delete('email_sub_last_sent', sub_id)
+
+
+def subscribed_domain(sub_id):
+    """Return what domain the subscription is for."""
+    subscription = db.get('email_sub', sub_id)
+    if subscription is not None:
+        return subscription['domain']

@@ -53,17 +53,18 @@ def test_isubscriptions_during_subscription():
     email = 'a@b.com'
     sub_id = '1234'
 
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     subs = list(repository.isubscriptions())
 
     assert len(subs) == 1
 
     assert sorted(subs[0][1].keys()) == [
-        'domain', 'email_address'
+        'domain', 'email_address', 'hide_noisy'
     ]
     assert subs[0][1]['domain'] == domain
     assert subs[0][1]['email_address'] == email
+    assert subs[0][1]['hide_noisy'] == False
 
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
@@ -83,7 +84,7 @@ def test_email_address_required():
     response = subscribe_page.form.submit()
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/email/subscribe/{}/0'.format(hexdomain)
+    assert response.headers['location'] == 'http://localhost:80/email/subscribe/{}/0?hide_noisy=False'.format(hexdomain)
 
     assert 'Email address is required' in response.follow().body
 
@@ -150,7 +151,7 @@ def test_unsubscribe():
 
     assert len(list(repository.isubscriptions())) == 0
 
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     assert len(list(repository.isubscriptions())) == 1
 
@@ -228,7 +229,7 @@ def test_unsubscribe_unicode():
 
     assert len(list(repository.isubscriptions())) == 0
 
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     assert len(list(repository.isubscriptions())) == 1
 
