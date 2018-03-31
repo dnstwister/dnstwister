@@ -87,6 +87,6 @@ def monitor(root):
 
 
 if __name__ == '__main__':
-    build('../')
+    build('dnstwister/static/')
     if sys.argv[-1] == '--watch':
-        monitor('../')
+        monitor('dnstwister/static/')
