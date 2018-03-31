@@ -13,12 +13,12 @@ def test_launching_stats_worker(monkeypatch):
         python -m dnstwister.workers.stats
 
     """
-    monkeypatch.delenv('REDIS_URL', raising=False)
+    monkeypatch.delenv('DELTAS_URL', raising=False)
 
     with pytest.raises(Exception) as ex:
         runpy.run_module('dnstwister.workers.stats', run_name='__main__')
 
-    assert ex.value.message == 'REDIS connection configuration not set!'
+    assert ex.value.message == 'Delta report URL configuration not set!'
 
 
 def test_launching_deltas_worker(monkeypatch):

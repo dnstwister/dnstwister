@@ -11,6 +11,7 @@ def test_stats_store_requires_redis_url(f_httpretty, monkeypatch):
     monkeypatch.delenv('REDIS_URL', raising=False)
 
     with pytest.raises(Exception) as ex:
-        dnstwister.storage.redis_stats_store.RedisStatsStore()
+        store = dnstwister.storage.redis_stats_store.RedisStatsStore()
+        store.r_conn  # Enough to check for the URL
 
     assert ex.value.message == 'REDIS connection configuration not set!'

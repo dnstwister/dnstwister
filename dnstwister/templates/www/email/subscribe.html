@@ -16,6 +16,9 @@
                     <form action="/email/pending_verify/{{ hexdomain }}" method="post">
                         <input type="email" name="email_address" placeholder="Email address" />
                         <input type="submit" value="subscribe" />
+                        <section>
+                            <input type="checkbox" name="hide_noisy" value="true" {{ 'checked' if hide_noisy else '' }} /> Ignore domains that change all the time.
+                        </section>
                         {% if error is not none %}
                             <section class="error">
                                 {{ error }}
