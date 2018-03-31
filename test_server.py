@@ -1,7 +1,26 @@
 """Launch."""
-from dnstwister import app
+import os
 
-# At least until https://github.com/pallets/flask/pull/1910 is merged...
-app.jinja_env.auto_reload = True
+import waitress
+import werkzeug.serving
 
-app.run(debug=True)
+import dnstwister
+
+
+@werkzeug.serving.run_with_reloader
+def serve():
+    """Run waitress, but reload with file system changes."""
+
+    # Allow for template changes without manual restart.
+    # At least until https://github.com/pallets/flask/pull/1910 is merged...
+    dnstwister.app.jinja_env.auto_reload = True
+
+    waitress.serve(
+        dnstwister.app,
+        host='0.0.0.0',
+        port=5000,
+    )
+
+
+if __name__ == '__main__':
+    serve()
