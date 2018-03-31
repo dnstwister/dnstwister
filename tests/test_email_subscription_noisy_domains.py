@@ -24,7 +24,7 @@ def test_no_fuzzy_domains_returns_notice(webapp, monkeypatch):
     email = 'a@b.com'
     sub_id = '1234'
 
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     response = webapp.get('/email/1234/noisy')
 
@@ -43,7 +43,7 @@ def test_fuzzy_domains_are_listed(webapp, monkeypatch):
     email = 'a@b.com'
     sub_id = '1234'
 
-    repository.subscribe_email(sub_id, email, domain)
+    repository.subscribe_email(sub_id, email, domain, False)
 
     # Mark a domain as noisy.
     for _ in range(5):
