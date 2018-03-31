@@ -156,3 +156,10 @@ def unsubscribe(sub_id):
     """Unsubscribe a user."""
     db.delete('email_sub', sub_id)
     db.delete('email_sub_last_sent', sub_id)
+
+
+def subscribed_domain(sub_id):
+    """Return what domain the subscription is for."""
+    subscription = db.get('email_sub', sub_id)
+    if subscription is not None:
+        return subscription['domain']
