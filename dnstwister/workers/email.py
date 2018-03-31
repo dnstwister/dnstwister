@@ -3,44 +3,19 @@ import datetime
 import time
 import traceback
 
-from dnstwister import emailer, repository, tools, stats_store
+from dnstwister import emailer, repository, tools
 import dnstwister.tools.email as email_tools
 import dnstwister.tools.template as template_tools
-import dnstwister.configuration.features as feature_flags
-
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
 ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
 
 
-def remove_noisy(delta):
-    """Strip out all domains identified as noisy."""
-    if not feature_flags.enable_noisy_domains():
-        return delta
-
-    filtered_delta = {}
-    for change in delta.keys():
-        filtered_delta[change] = []
-        for result in delta[change]:
-            domain = result[0]
-            if not stats_store.is_noisy(domain):
-                filtered_delta[change].append(result)
-
-    return filtered_delta
-
-
 def process_sub(sub_id, detail):
     """Process a subscription."""
     domain = detail['domain']
     email_address = detail['email_address']
-    
-    hide_noisy = False
-    try:
-        hide_noisy = bool(detail['hide_noisy'])
-    except KeyError:
-        pass
-
     sub_log = sub_id[:10]
 
     # Ensure the domain is registered for reporting, register if not.
@@ -75,10 +50,6 @@ def process_sub(sub_id, detail):
             print '>23h: {}'.format(sub_log)
             return
 
-    # Filter out noisy domains if that's the user's preference.
-    if hide_noisy:
-        delta = remove_noisy(delta)
-
     # Don't email if no changes
     new = delta['new'] if len(delta['new']) > 0 else None
     updated = delta['updated'] if len(delta['updated']) > 0 else None
@@ -100,18 +71,13 @@ def process_sub(sub_id, detail):
                    in updated]
 
     # Email
-    noisy_link = None
-    if hide_noisy and feature_flags.enable_noisy_domains():
-        noisy_link = 'https://dnstwister.report/email/{}/noisy'.format(sub_id)
-
     body = email_tools.render_email(
         'report.html',
         domain=domain,
         new=new,
         updated=updated,
         deleted=deleted,
-        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id),
-        noisy_link=noisy_link
+        unsubscribe_link='https://dnstwister.report/email/unsubscribe/{}'.format(sub_id)
     )
 
     # Mark as emailed to ensure we don't flood if there's an error after the

@@ -47,14 +47,16 @@ class RedisStatsStore(object):
     def __init__(self):
         self._conn = None
 
+        url = os.getenv('REDIS_URL')
+        if url is None:
+            raise Exception('REDIS connection configuration not set!')
+        self._url = url
+
     @property
     def r_conn(self):
         """I am a redis connection!!!"""
         if self._conn is None:
-            url = os.getenv('REDIS_URL')
-            if url is None:
-                raise Exception('REDIS connection configuration not set!')
-            self._conn = redis.from_url(url)
+            self._conn = redis.from_url(self._url)
         return self._conn
 
     def note(self, domain):

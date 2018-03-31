@@ -1,9 +1,6 @@
 """Tests the email worker."""
 import datetime
 
-import fakeredis
-import mock
-
 import dnstwister
 import patches
 import workers.email
@@ -33,7 +30,7 @@ def test_dont_send_when_no_changes(capsys, monkeypatch):
     email = 'a@b.zzzzzzzzzzz'
 
     # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain, False)
+    repository.subscribe_email(sub_id, email, domain)
 
     # Do a delta report.
     workers.deltas.process_domain(domain)
@@ -47,12 +44,10 @@ def test_dont_send_when_no_changes(capsys, monkeypatch):
     assert len(emailer.sent_emails) == 0
 
 
-@mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
 def test_dont_send_too_often(capsys, monkeypatch):
     """Test that emails are not sent more than every 24 hours."""
 
     # Patches
-    monkeypatch.setenv('REDIS_URL', '')
     monkeypatch.setattr(
         'dnstwister.repository.db',
         patches.SimpleKVDatabase()
@@ -79,7 +74,7 @@ def test_dont_send_too_often(capsys, monkeypatch):
     email = 'a@b.zzzzzzzzzzz'
 
     # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain, False)
+    repository.subscribe_email(sub_id, email, domain)
 
     # Do a delta report.
     workers.deltas.process_domain(domain)
@@ -136,7 +131,7 @@ def test_subscription_email_timing(capsys, monkeypatch):
     assert not repository.is_domain_registered(domain)
 
     # Subscribe a new user.
-    repository.subscribe_email(sub_id, email, domain, False)
+    repository.subscribe_email(sub_id, email, domain)
 
     # Subscribing a user does not register the domain.
     assert not repository.is_domain_registered(domain)
@@ -190,110 +185,3 @@ def test_subscription_email_timing(capsys, monkeypatch):
 
     # And the emails are different.
     assert emailer.sent_emails[0] != emailer.sent_emails[1]
-
-
-@mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
-def test_dont_send_when_only_noisy(capsys, monkeypatch):
-    """Test that emails are not sent when no non-noisy domains exist in
-    delta report.
-    """
-
-    # Patches
-    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
-    monkeypatch.setattr(
-        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
-    )
-
-    # Ensure the fake redis will work.
-    monkeypatch.setenv('REDIS_URL', '')
-
-    # Return a result
-    monkeypatch.setattr(
-        'dnstwister.tools.resolve',
-        lambda domain: ('999.999.999.999', False)
-    )
-
-    # Enable noisy domains functionality
-    monkeypatch.setenv('feature.noisy_domains', 'true')
-
-    emailer = patches.NoEmailer()
-    monkeypatch.setattr('workers.email.emailer', emailer)
-
-    repository = dnstwister.repository
-
-    # Settings
-    domain = 'www.example.com'
-    sub_id = '1234'
-    email = 'a@b.zzzzzzzzzzz'
-
-    # Mark the found domain as also noisy.
-    store = dnstwister.stats_store
-    for _ in range(5):
-        store.note('www.example.co')
-
-    # Subscribe a new user, with noisy filtering enabled.
-    repository.subscribe_email(sub_id, email, domain, True)
-
-    # Do a delta report.
-    workers.deltas.process_domain(domain)
-
-    # Process the subscription.
-    sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
-    workers.email.process_sub(sub_id, sub_data)
-
-    # We've not sent any emails as there were no changes (no IPs resolved at
-    # all).
-    assert len(emailer.sent_emails) == 0
-
-
-@mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
-def test_send_when_only_noisy_but_noisy_feature_off(capsys, monkeypatch):
-    """Test that emails are sent when no non-noisy domains exist in
-    delta report, but the feature is disabled.
-    """
-
-    # Patches
-    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
-    monkeypatch.setattr(
-        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
-    )
-
-    # Ensure the fake redis will work.
-    monkeypatch.setenv('REDIS_URL', '')
-
-    # Return a result
-    monkeypatch.setattr(
-        'dnstwister.tools.resolve',
-        lambda domain: ('999.999.999.999', False)
-    )
-
-    emailer = patches.NoEmailer()
-    monkeypatch.setattr('workers.email.emailer', emailer)
-
-    repository = dnstwister.repository
-
-    # Settings
-    domain = 'www.example.com'
-    sub_id = '1234'
-    email = 'a@b.zzzzzzzzzzz'
-
-    # Mark the found domain as also noisy.
-    store = dnstwister.stats_store
-    for _ in range(5):
-        store.note('www.example.co')
-
-    # Subscribe a new user, with noisy filtering enabled.
-    repository.subscribe_email(sub_id, email, domain, True)
-
-    # Do a delta report.
-    workers.deltas.process_domain(domain)
-
-    # Process the subscription.
-    sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
-    workers.email.process_sub(sub_id, sub_data)
-
-    # We have an email.
-    assert len(emailer.sent_emails) == 1
-
-    # And there is no reference to noisy domains in the email.
-    assert 'noisy' not in emailer.sent_emails[0][2]
