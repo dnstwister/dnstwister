@@ -1,0 +1,59 @@
+{% extends "www/layout.html" %}
+{% block title %}Noisy domains report{% endblock %}
+{% block head %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='email.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>Noisy domains report</h1>
+{% endblock %}
+{% block body %}
+        <div class="row">
+            <section>
+                <p>
+                    The following domains similar to your subscription to
+                    <strong>{{ domain | domain_renderer }}</strong> have been
+                    detected as being "noisy". This means they are either
+                    registered and unregistered constantly, or constantly
+                    change IP address.
+                </p>
+                <p>
+                    These domains are not included in your email alerts so
+                    that important registrations or changes in IP are not
+                    lost.
+                </p>
+            </section>
+            {% if noisy_domains %}
+                <section>
+                    <table class="u-full-width">
+                        <thead>
+                            <tr>
+                                <th>Domain</th>
+                                <th>Tools</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for domain in noisy_domains %}
+                                <tr>
+                                    <td>{{ domain | domain_renderer }}</td>
+                                    <td class="tools">
+                                        <a href="/analyse/{{ domain | domain_encoder }}">analyse</a>
+                                        <a class="deep-search" href="/search/{{ domain | domain_encoder }}">&#128270;</a>
+                                        <a href="/email/subscribe/{{ domain | domain_encoder }}"><img class="ico mini" src="/static/email.png"/></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            {% else %}
+                <section>
+                    <p>
+                        <strong>
+                            We've not yet identified any "noisy" domains for
+                            your subscription.
+                        </strong>
+                    </p>
+                </section>
+            {% endif %}
+        </div>
+{% endblock %}

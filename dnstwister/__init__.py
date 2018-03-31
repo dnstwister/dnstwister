@@ -11,6 +11,7 @@ import logging
 
 import mail.sendgridservice
 import storage.pg_database
+import storage.redis_stats_store
 
 
 # Set up app/cache/db/emailer/gateway here
@@ -18,6 +19,7 @@ app = flask.Flask(__name__)
 cache = flask_cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 data_db = storage.pg_database.PGDatabase()
 emailer = mail.sendgridservice.SGSender()
+stats_store = storage.redis_stats_store.RedisStatsStore()
 
 # Logging
 app.logger.setLevel(logging.INFO)

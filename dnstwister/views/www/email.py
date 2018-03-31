@@ -1,7 +1,9 @@
 """Email pages."""
+import operator
+
 import flask
 
-from dnstwister import app, emailer, repository
+from dnstwister import app, emailer, repository, stats_store
 import dnstwister.tools as tools
 import dnstwister.tools.email as email_tools
 
@@ -93,3 +95,34 @@ def unsubscribe_user(sub_id):
     """Unsubscribe a user from a domain."""
     repository.unsubscribe(sub_id)
     return flask.render_template('www/email/unsubscribed.html')
+
+
+@app.route('/email/<sub_id>/noisy')
+def email_view_noisy_domains(sub_id):
+    """Show the noisy domains not sent in the email.
+
+    This is deliberately bound to the email system as the detection of noisy
+    domains is limited to the domains found in email subscriptions.
+    """
+    subscribed_domain = repository.subscribed_domain(sub_id)
+    if subscribed_domain is None:
+        app.logger.info(
+            'Failed to retrieve sub for id for noisy report: {}'.format(sub_id)
+        )
+        return flask.redirect('/')
+
+    fuzzy_domains = map(
+        operator.itemgetter('domain-name'),
+        tools.fuzzy_domains(subscribed_domain)
+    )
+
+    noisy_domains = [domain
+                     for domain
+                     in fuzzy_domains
+                     if stats_store.is_noisy(domain)]
+
+    return flask.render_template(
+        'www/email/noisy.html',
+        domain=subscribed_domain,
+        noisy_domains=noisy_domains
+    )
