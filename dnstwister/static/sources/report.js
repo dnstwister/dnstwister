@@ -1,9 +1,10 @@
 $(document).ready(function() {
 
     // UI hooks
-    $('#show_all').click(function() {
+    $('.toggle_unresolved').click(function() {
         $('.report').show();
         $('.report tr').toggleClass('displayed');
+        $('.toggle_unresolved').toggle();
     });
 
     // DNS resolution

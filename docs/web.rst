@@ -21,24 +21,32 @@ started sending malicious password-reset emails to users.
 **dnstwister** makes it trivial to `answer that exact question 
 <https://dnstwister.report/search/646e73747769737465722e7265706f7274>`_.
 
-Email and Atom alerts |email_icon| |feed_icon|
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Email alerts |email_icon|
+-------------------------
 
 ..  |email_icon| image:: https://dnstwister.report/static/email.png
     :height: 20
     :width: 20
     :target: #email-and-atom-alerts-email-icon-feed-icon
 
-..  |feed_icon| image:: https://dnstwister.report/static/feed.png
-    :height: 20
-    :width: 20
-    :target: #email-and-atom-alerts-email-icon-feed-icon
-
 So you don't have to keep coming back and running searches, **dnstwister** can
-also alert you (via Email or Atom/RSS feeds) within 24 hours if a **new**
-domain is registered like yours, if an existing domain has changed IP address
-or has even been unregistered. To subscribe you simply click on the
-appropriate icon after performing a search.
+also alert you via Email within 24 hours if a **new** domain is registered
+like yours, if an existing domain has changed IP address or has even been
+unregistered. To subscribe you simply click on the appropriate icon after
+performing a search.
+
+"Noisy" domains
+~~~~~~~~~~~~~~~
+
+Some domains change IP address all the time, or are constantly registered then
+unregistered. This is almost always due to the domain being parked. You can
+hide these domains from your email alerts by ticking the "Ignore domains that
+change all the time." box when signing up.
+
+Ticking this box will improve the quality of the alerts you get, ensuring the
+important alerts aren't lost in the noise.
+
+In the future existing subscribers will be able to change this setting too.
 
 How it works
 ------------
@@ -87,5 +95,5 @@ analysis.
 API
 ---
 
-We have a fast-evolving JSON `API available <https://dnstwister.report/api/>`_
-for you to play with, if you're keen.
+We have a JSON `API available <https://dnstwister.report/api/>`_ for you to
+play with, if you're keen.

@@ -11,8 +11,10 @@
         <section class="domains">
             {% for (domain, domain_encoded) in atoms.items() %}
                 <div class="domain_nav">
-                    <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ domain_encoded }}"><img class="ico" src="/static/email.png"/></a>
                     <h5>{{ domain | domain_renderer }}</h5>
+                    <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ domain_encoded }}">
+                        <img class="ico" src="/static/email.png"/>
+                    </a>
                 </div>
             {% endfor %}
             <div style="clear: both"></div>
@@ -27,7 +29,8 @@
             </p>
         </section>
         <section>
-            <button id="show_all">Show/hide unresolved domains</button>
+            <button class="toggle_unresolved">Show unresolved domains</button>
+            <button class="toggle_unresolved" style="display: none;">Hide unresolved domains</button>
             <section class="exports">
                 export:
                 {% for (title, format) in exports.items() %}

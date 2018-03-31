@@ -48,7 +48,7 @@ Setup:
 
 Running:
 
-    python run_local_server.py
+    python test_server.py
 
 ## Tests
 
