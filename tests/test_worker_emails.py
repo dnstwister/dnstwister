@@ -297,3 +297,57 @@ def test_send_when_only_noisy_but_noisy_feature_off(capsys, monkeypatch):
 
     # And there is no reference to noisy domains in the email.
     assert 'noisy' not in emailer.sent_emails[0][2]
+
+
+@mock.patch('redis.from_url', fakeredis.FakeStrictRedis)
+def test_pre_noisy_domain_subscriptions_default_to_off(capsys, monkeypatch):
+    """Test that subscriptions prior to noisy domains existing are supported
+    still but default to 'off'.
+    """
+
+    # Patches
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+
+    # Ensure the fake redis will work.
+    monkeypatch.setenv('REDIS_URL', '')
+
+    # Return a result
+    monkeypatch.setattr(
+        'dnstwister.tools.resolve',
+        lambda domain: ('999.999.999.999', False)
+    )
+
+    emailer = patches.NoEmailer()
+    monkeypatch.setattr('workers.email.emailer', emailer)
+
+    repository = dnstwister.repository
+
+    # Settings
+    domain = 'www.example.com'
+    sub_id = '1234'
+    email = 'a@b.zzzzzzzzzzz'
+
+    # Mark the found domain as also noisy.
+    store = dnstwister.stats_store
+    for _ in range(5):
+        store.note('www.example.co')
+
+    # Subscribe a new user, make them look like the pre-feature style.
+    repository.subscribe_email(sub_id, email, domain, True)
+    del(repository.db._data['email_sub:1234']['hide_noisy'])
+
+    # Do a delta report.
+    workers.deltas.process_domain(domain)
+
+    # Process the subscription.
+    sub_data = repository.db.data['email_sub:{}'.format(sub_id)]
+    workers.email.process_sub(sub_id, sub_data)
+
+    # We have an email.
+    assert len(emailer.sent_emails) == 1
+
+    # And there is no reference to noisy domains in the email.
+    assert 'noisy' not in emailer.sent_emails[0][2]

@@ -91,6 +91,27 @@ def test_email_address_required():
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
+def test_email_address_validation_remembers_hide_noisy_flag():
+    app = flask.ext.webtest.TestApp(dnstwister.app)
+
+    domain = 'a.com'
+    hexdomain = binascii.hexlify(domain)
+    subscribe_path = '/email/subscribe/{}'.format(hexdomain)
+
+    subscribe_page = app.get(subscribe_path)
+
+    subscribe_page.form['email_address'] = ' '
+    subscribe_page.form['hide_noisy'] = 'true'
+    response = subscribe_page.form.submit()
+
+    assert response.status_code == 302
+    assert response.headers['location'] == 'http://localhost:80/email/subscribe/{}/0?hide_noisy=True'.format(hexdomain)
+
+    assert 'Email address is required' in response.follow().body
+
+
+@mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
+@mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_isubscriptions_link():
     app = flask.ext.webtest.TestApp(dnstwister.app)
     emailer = dnstwister.views.www.email.emailer
