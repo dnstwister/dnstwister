@@ -18,9 +18,6 @@ def test_email_renderer():
     assert template.strip() == textwrap.dedent("""
         <h1>dnstwister report for <strong>www<span>.</span>example<span>.</span>com</strong></h1>
         <p>
-            <strong>NEW: dnstwister now supports Unicode domains.</strong>
-        </p>
-        <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
         <h2>New registrations</h2>
@@ -103,9 +100,6 @@ def test_email_renderer_domain_sorting():
 
     assert template.strip() == textwrap.dedent("""
         <h1>dnstwister report for <strong>www<span>.</span>example<span>.</span>com</strong></h1>
-        <p>
-            <strong>NEW: dnstwister now supports Unicode domains.</strong>
-        </p>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>

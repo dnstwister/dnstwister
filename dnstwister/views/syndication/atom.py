@@ -7,6 +7,7 @@ import werkzeug.contrib.atom
 
 from dnstwister import app, repository, tools
 import dnstwister.dnstwist as dnstwist
+import dnstwister.tools.template as template_tools
 
 
 def _base64_redirect(encoded_domain):
@@ -39,7 +40,9 @@ def view(hexdomain):
 
     # Prepare a feed
     feed = werkzeug.contrib.atom.AtomFeed(
-        title=u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
+        title=u'dnstwister report for {}'.format(
+            template_tools.domain_renderer(domain)
+        ),
         feed_url='{}atom/{}'.format(flask.request.url_root, hexdomain),
         url='{}search/{}'.format(flask.request.url_root, hexdomain),
     )
@@ -60,7 +63,7 @@ def view(hexdomain):
     # If we don't have a delta report yet, show the placeholder.
     if delta_report is None:
         feed.add(
-            title=u'No report yet for {}'.format(tools.domain_renderer(domain)),
+            title=u'No report yet for {}'.format(template_tools.domain_renderer(domain)),
             title_type='text',
             content=flask.render_template(
                 'syndication/atom/placeholder.html', domain=domain
@@ -69,7 +72,7 @@ def view(hexdomain):
             author='dnstwister',
             updated=today,
             published=today,
-            id=u'waiting:{}'.format(tools.domain_renderer(domain)),
+            id=u'waiting:{}'.format(template_tools.domain_renderer(domain)),
             url=feed.url,
         )
 
@@ -96,7 +99,7 @@ def view(hexdomain):
 
         for (dom, ip) in delta_report['new']:
             feed.add(
-                title=u'NEW: {}'.format(tools.domain_renderer(dom)),
+                title=u'NEW: {}'.format(template_tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/new.html',
                     ip=ip, hexdomain=tools.encode_domain(dom)
@@ -107,7 +110,7 @@ def view(hexdomain):
 
         for (dom, old_ip, new_ip) in delta_report['updated']:
             feed.add(
-                title=u'UPDATED: {}'.format(tools.domain_renderer(dom)),
+                title=u'UPDATED: {}'.format(template_tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/updated.html',
                     new_ip=new_ip, old_ip=old_ip,
@@ -124,7 +127,7 @@ def view(hexdomain):
 
         for dom in delta_report['deleted']:
             feed.add(
-                title=u'DELETED: {}'.format(tools.domain_renderer(dom)),
+                title=u'DELETED: {}'.format(template_tools.domain_renderer(dom)),
                 content=flask.render_template(
                     'syndication/atom/deleted.html',
                 ),

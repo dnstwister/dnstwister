@@ -1,7 +1,7 @@
 """Email tools."""
 import jinja2
 
-from dnstwister import tools
+import dnstwister.tools.template as template_tools
 
 
 TEMPLATES = jinja2.Environment(
@@ -15,7 +15,7 @@ def domain_renderer(domain):
 
     Testing suggests the span wrapping is the best so far.
     """
-    domain = tools.domain_renderer(domain)
+    domain = template_tools.domain_renderer(domain)
     domain = domain.replace('.', '<span>.</span>')
     return domain
 
