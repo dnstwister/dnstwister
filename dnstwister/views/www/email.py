@@ -38,6 +38,7 @@ def email_subscribe_get_email(hexdomain, error=None):
         domain=domain,
         hexdomain=hexdomain,
         error=error_str,
+        hide_noisy=flask.request.args.get('hide_noisy') == 'True'
     )
 
 
@@ -48,10 +49,15 @@ def email_subscribe_pending_confirm(hexdomain):
     if domain is None:
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
 
+    hide_noisy = bool(flask.request.form.get('hide_noisy'))
+
     email_address = flask.request.form['email_address']
 
     if email_address.strip() == '':
-        return flask.redirect('/email/subscribe/{}/0'.format(hexdomain))
+        return flask.redirect('/email/subscribe/{}/0?hide_noisy={}'.format(
+            hexdomain,
+            hide_noisy
+        ))
 
     verify_code = tools.random_id()
     verify_url = flask.request.url_root + 'email/verify/{}'.format(verify_code)
@@ -61,7 +67,13 @@ def email_subscribe_pending_confirm(hexdomain):
         verify_url=verify_url
     )
 
-    repository.propose_subscription(verify_code, email_address, domain)
+    repository.propose_subscription(
+        verify_code,
+        email_address,
+        domain,
+        hide_noisy
+    )
+
     emailer.send(
         email_address, 'Please verify your subscription', email_body
     )
@@ -82,9 +94,10 @@ def email_subscribe_confirm_email(verify_code):
 
     email_address = pending_verify['email_address']
     domain = pending_verify['domain']
+    hide_noisy = bool(pending_verify['hide_noisy'])
     sub_id = tools.random_id()
 
-    repository.subscribe_email(sub_id, email_address, domain)
+    repository.subscribe_email(sub_id, email_address, domain, hide_noisy)
     repository.remove_proposition(verify_code)
 
     return flask.render_template('www/email/subscribed.html', domain=domain)
