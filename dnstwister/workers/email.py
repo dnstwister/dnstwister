@@ -5,6 +5,7 @@ import traceback
 
 from dnstwister import emailer, repository, tools
 import dnstwister.tools.email as email_tools
+import dnstwister.tools.template as template_tools
 
 # Time in seconds between sending emails for a subscription.
 PERIOD = 86400
@@ -85,7 +86,7 @@ def process_sub(sub_id, detail):
 
     emailer.send(
         email_address,
-        u'dnstwister report for {}'.format(tools.domain_renderer(domain)),
+        u'dnstwister report for {}'.format(template_tools.domain_renderer(domain)),
         body
     )
     print 'Sent: {}'.format(sub_log)
