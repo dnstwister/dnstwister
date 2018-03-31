@@ -311,6 +311,9 @@ def test_pre_noisy_domain_subscriptions_default_to_off(capsys, monkeypatch):
         'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
     )
 
+    # Enable noisy domains functionality
+    monkeypatch.setenv('feature.noisy_domains', 'true')
+
     # Ensure the fake redis will work.
     monkeypatch.setenv('REDIS_URL', '')
 
