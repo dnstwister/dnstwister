@@ -17,7 +17,7 @@
                         <input type="email" name="email_address" placeholder="Email address" />
                         <input type="submit" value="subscribe" />
                         <section>
-                            <input type="checkbox" name="hide_noisy" value="true" {{ 'checked' if hide_noisy else '' }} /> Hide domains that change all the time.
+                            <input type="checkbox" name="hide_noisy" value="true" {{ 'checked' if hide_noisy else '' }} /> Ignore domains that change all the time.
                         </section>
                         {% if error is not none %}
                             <section class="error">
