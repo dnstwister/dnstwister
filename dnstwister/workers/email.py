@@ -16,9 +16,6 @@ ANALYSIS_ROOT = 'https://dnstwister.report/analyse/{}'
 
 def remove_noisy(delta):
     """Strip out all domains identified as noisy."""
-    if not feature_flags.enable_noisy_domains():
-        return delta
-
     filtered_delta = {}
     for change in delta.keys():
         filtered_delta[change] = []
