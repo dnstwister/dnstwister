@@ -76,7 +76,7 @@ def process_sub(sub_id, detail):
             return
 
     # Filter out noisy domains if that's the user's preference.
-    if hide_noisy:
+    if hide_noisy and feature_flags.enable_noisy_domains():
         delta = remove_noisy(delta)
 
     # Don't email if no changes
