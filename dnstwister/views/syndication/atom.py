@@ -53,9 +53,12 @@ def view(hexdomain):
         hour=0, minute=0, second=0, microsecond=0
     )
 
-    # Ensure the domain is registered.
+    # No longer taking new RSS registrations.
     if not repository.is_domain_registered(domain):
-        repository.register_domain(domain)
+        flask.abort(
+            404,
+            'New RSS feed generation currently disabled.'
+        )
 
     # Retrieve the delta report
     delta_report = repository.get_delta_report(domain)

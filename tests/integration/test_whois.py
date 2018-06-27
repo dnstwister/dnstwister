@@ -24,4 +24,4 @@ def test_whois_query(webapp):
         u'url': u'http://localhost:80/api/whois/{}'.format(hexdomain),
     }
 
-    assert 'Robert Wallhead' in whois_text
+    assert 'Domain Name: dnstwister.report' in whois_text
