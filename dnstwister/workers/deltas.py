@@ -10,7 +10,7 @@ import dnstwister.dnstwist as dnstwist
 PERIOD = 86400  # 24 hours
 
 # Multiplier on period to unregister if not read.
-UNREGISTER = 2  # 3 days
+UNREGISTER = 3  # 3 days
 
 
 def process_domain(domain):
