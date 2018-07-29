@@ -40,6 +40,11 @@ licensing of dnstwist, please raise a
 [Git issue](https://github.com/thisismyrobot/dnstwister/issues) and I will
 address your concern as quickly as possible.
 
+## Contributors
+
+ * [@elceef](https://github.com/elceef) (dnstwist itself)
+ * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
+
 ## Running dnstwister
 
 Setup:
