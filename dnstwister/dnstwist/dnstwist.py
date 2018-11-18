@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # dnstwist
@@ -19,13 +18,14 @@
 # limitations under the License.
 
 #
-# dnstwist 1.04b modified by Robert Wallhead (robert@thisismyrobot.com) for
-# use in https://dnstwister.report - all functionality except fuzzing removed
-# and various changes made to support usage in Heroku.
+# dnstwist version: https://github.com/elceef/dnstwist/blob/182902f42c749cc4b58af06f8c312c92af1a73dc/dnstwist.py
+# modified by Robert Wallhead (robert@thisismyrobot.com) for use in
+# https://dnstwister.report - all functionality except fuzzing removed and
+# various changes made to support usage in Heroku.
 #
 
 __author__ = 'Marcin Ulikowski'
-__version__ = '1.04b'
+__version__ = '20180623'
 __email__ = 'marcin@ulikowski.pl'
 
 import re
@@ -145,32 +145,32 @@ class fuzz_domain(object):
 
     def __homoglyph(self):
         glyphs = {
-            'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
-            'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
-            'c': [u'ϲ', u'с', u'ƈ', u'ċ', u'ć', u'ç'],
-            'd': ['b', 'cl', 'dl', 'di', u'ԁ', u'ժ', u'ɗ', u'đ'],
-            'e': [u'é', u'ê', u'ë', u'ē', u'ĕ', u'ě', u'ė', u'е', u'ẹ', u'ę', u'є', u'ϵ', u'ҽ'],
-            'f': [u'Ϝ', u'ƒ', u'Ғ'],
-            'g': ['q', u'ɢ', u'ɡ', u'Ԍ', u'Ԍ', u'ġ', u'ğ', u'ց', u'ǵ', u'ģ'],
-            'h': ['lh', 'ih', u'һ', u'հ', u'Ꮒ', u'н'],
-            'i': ['1', 'l', u'Ꭵ', u'í', u'ï', u'ı', u'ɩ', u'ι', u'ꙇ', u'ǐ', u'ĭ'],
-            'j': [u'ј', u'ʝ', u'ϳ', u'ɉ'],
-            'k': ['lk', 'ik', 'lc', u'κ', u'ⲕ', u'κ'],
-            'l': ['1', 'i', u'ɫ', u'ł'],
-            'm': ['n', 'nn', 'rn', 'rr', u'ṃ', u'ᴍ', u'м', u'ɱ'],
-            'n': ['m', 'r', u'ń'],
-            'o': ['0', u'Ο', u'ο', u'О', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
-            'p': [u'ρ', u'р', u'ƿ', u'Ϸ', u'Þ'],
-            'q': ['g', u'զ', u'ԛ', u'գ', u'ʠ'],
-            'r': [u'ʀ', u'Г', u'ᴦ', u'ɼ', u'ɽ'],
-            's': [u'Ⴝ', u'Ꮪ', u'ʂ', u'ś', u'ѕ'],
-            't': [u'τ', u'т', u'ţ'],
-            'u': [u'μ', u'υ', u'Ս', u'ս', u'ц', u'ᴜ', u'ǔ', u'ŭ'],
-            'v': [u'ѵ', u'ν', u'v̇'],
-            'w': ['vv', u'ѡ', u'ա', u'ԝ'],
-            'x': [u'х', u'ҳ', u'ẋ'],
-            'y': [u'ʏ', u'γ', u'у', u'Ү', u'ý'],
-            'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
+        'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
+        'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
+        'c': [u'ϲ', u'с', u'ƈ', u'ċ', u'ć', u'ç'],
+        'd': ['b', 'cl', 'dl', 'di', u'ԁ', u'ժ', u'ɗ', u'đ'],
+        'e': [u'é', u'ê', u'ë', u'ē', u'ĕ', u'ě', u'ė', u'е', u'ẹ', u'ę', u'є', u'ϵ', u'ҽ'],
+        'f': [u'Ϝ', u'ƒ', u'Ғ'],
+        'g': ['q', u'ɢ', u'ɡ', u'Ԍ', u'Ԍ', u'ġ', u'ğ', u'ց', u'ǵ', u'ģ'],
+        'h': ['lh', 'ih', u'һ', u'հ', u'Ꮒ', u'н'],
+        'i': ['1', 'l', u'Ꭵ', u'í', u'ï', u'ı', u'ɩ', u'ι', u'ꙇ', u'ǐ', u'ĭ', u'ì'],
+        'j': [u'ј', u'ʝ', u'ϳ', u'ɉ'],
+        'k': ['lk', 'ik', 'lc', u'κ', u'ⲕ', u'κ'],
+        'l': ['1', 'i', u'ɫ', u'ł'],
+        'm': ['n', 'nn', 'rn', 'rr', u'ṃ', u'ᴍ', u'м', u'ɱ'],
+        'n': ['m', 'r', u'ń'],
+        'o': ['0', u'Ο', u'ο', u'О', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
+        'p': [u'ρ', u'р', u'ƿ', u'Ϸ', u'Þ'],
+        'q': ['g', u'զ', u'ԛ', u'գ', u'ʠ'],
+        'r': [u'ʀ', u'Г', u'ᴦ', u'ɼ', u'ɽ'],
+        's': [u'Ⴝ', u'Ꮪ', u'ʂ', u'ś', u'ѕ'],
+        't': [u'τ', u'т', u'ţ'],
+        'u': [u'μ', u'υ', u'Ս', u'ս', u'ц', u'ᴜ', u'ǔ', u'ŭ'],
+        'v': [u'ѵ', u'ν', u'v̇'],
+        'w': ['vv', u'ѡ', u'ա', u'ԝ'],
+        'x': [u'х', u'ҳ', u'ẋ'],
+        'y': [u'ʏ', u'γ', u'у', u'Ү', u'ý'],
+        'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
         result = []
@@ -245,17 +245,6 @@ class fuzz_domain(object):
 
         return list(set(result))
 
-    def __vowel_swap(self):
-        vowels = 'aeiou'
-        result = []
-
-        for i in range(0, len(self.domain)):
-            for vowel in vowels:
-                if self.domain[i] in vowels:
-                    result.append(self.domain[:i] + vowel + self.domain[i+1:])
-
-        return list(set(result))
-
     def __subdomain(self):
         result = []
 
@@ -273,6 +262,17 @@ class fuzz_domain(object):
                 result.append(self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:])
 
         return result
+
+    def __vowel_swap(self):
+        vowels = 'aeiou'
+        result = []
+
+        for i in range(0, len(self.domain)):
+            for vowel in vowels:
+                if self.domain[i] in vowels:
+                    result.append(self.domain[:i] + vowel + self.domain[i+1:])
+
+        return list(set(result))
 
     def __addition(self):
         result = []
