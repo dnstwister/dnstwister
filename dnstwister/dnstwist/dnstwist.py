@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # dnstwist
@@ -26,7 +25,7 @@
 #
 
 __author__ = 'Marcin Ulikowski'
-__version__ = '1.04b'
+__version__ = '20180623'
 __email__ = 'marcin@ulikowski.pl'
 
 import re
