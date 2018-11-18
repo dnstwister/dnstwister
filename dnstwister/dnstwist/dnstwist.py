@@ -174,11 +174,12 @@ class fuzz_domain(object):
         'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        result_1pass = set()
+        result = []
 
-        for ws in range(1, len(self.domain)):
+        for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
                 win = self.domain[i:i+ws]
+
                 j = 0
                 while j < ws:
                     c = win[j]
@@ -186,28 +187,11 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            result_1pass.add(self.domain[:i] + win + self.domain[i+ws:])
+                            result.append(self.domain[:i] + win + self.domain[i+ws:])
                             win = win_copy
                     j += 1
 
-        result_2pass = set()
-
-        for domain in result_1pass:
-            for ws in range(1, len(domain)):
-                for i in range(0, (len(domain)-ws)+1):
-                    win = domain[i:i+ws]
-                    j = 0
-                    while j < ws:
-                        c = win[j]
-                        if c in glyphs:
-                            win_copy = win
-                            for g in glyphs[c]:
-                                win = win.replace(c, g)
-                                result_2pass.add(domain[:i] + win + domain[i+ws:])
-                                win = win_copy
-                        j += 1
-
-        return list(result_1pass | result_2pass)
+        return list(set(result))
 
     def __hyphenation(self):
         result = []
