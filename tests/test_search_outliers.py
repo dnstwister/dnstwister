@@ -1,6 +1,9 @@
 """Test of weird search behaviours."""
 # -*- coding: utf-8 -*-
 import binascii
+import time
+
+import idna
 
 
 def test_no_domains_key(webapp):
@@ -138,3 +141,18 @@ def test_post_unicode(webapp):
     assert unicode_domain in response.body
 
     assert 'höt.com (xn--ht-fka.com)' in response.body
+
+
+def test_long_request_does_not_timeout(webapp):
+    """A particular long request was timing out in Production."""
+    error_path = '/search/7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a2e7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a707069656f2e636f6d'
+
+    domain = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
+
+    tests = 100000
+    for i in range(tests):
+        idna.encode(domain)
+
+    for i in range(tests):
+        domain.encode('idna')
+

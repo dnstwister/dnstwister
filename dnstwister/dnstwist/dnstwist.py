@@ -30,6 +30,7 @@ __email__ = 'marcin@ulikowski.pl'
 
 import re
 import os.path
+import idna
 
 
 FILE_TLD = os.path.join(
@@ -42,6 +43,11 @@ DB_TLD = os.path.exists(FILE_TLD)
 if not DB_TLD:
     raise Exception('TLD database is required!')
 
+VALID_DOMAIN_RE = re.compile(
+    r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)',
+    flags=re.IGNORECASE
+)
+
 
 class InvalidDomain(Exception):
     """ Exception for invalid domains.
@@ -52,12 +58,17 @@ class InvalidDomain(Exception):
 def validate_domain(domain):
     """Validate a domain - including unicode domains."""
     try:
-        if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
+        if len(domain) > 255:
             return False
+
+        encoded_domain = idna.encode(domain)
+        if len(domain) == encoded_domain and domain != encoded_domain:
+            return False
+
+        return VALID_DOMAIN_RE.match(encoded_domain)
     except (UnicodeError, TypeError):
-        return False
-    allowed = re.compile(r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
-    return allowed.match(domain.encode('idna'))
+        pass
+    return False
 
 
 class fuzz_domain(object):
