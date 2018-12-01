@@ -33,9 +33,6 @@ import os.path
 
 import idna
 
-# 3x speed improvement in idna decoding...
-idna.core.check_label = lambda l: None
-
 
 FILE_TLD = os.path.join(
     'dnstwister',

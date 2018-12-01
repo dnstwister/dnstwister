@@ -8,6 +8,7 @@ import urlparse
 
 import dns.resolver
 import flask
+import idna
 
 from dnstwister import cache
 from dnstwister.tools import tld_db
@@ -22,15 +23,15 @@ RESOLVER.timeout = 0.1
 def encode_domain(domain):
     """Given a domain with possible Unicode chars, encode it to hex."""
     try:
-        return binascii.hexlify(domain.encode('idna'))
-    except UnicodeError:
+        return binascii.hexlify(idna.encode(domain))
+    except (UnicodeError, idna.IDNAError):
         # Some strange invalid Unicode domains
         return None
 
 
 def decode_domain(encoded_domain):
     """Return a domain from hex."""
-    return binascii.unhexlify(encoded_domain).decode('idna')
+    return idna.decode(binascii.unhexlify(encoded_domain))
 
 
 def fuzzy_domains(domain):
@@ -158,7 +159,7 @@ def resolve(domain):
     if dnstwist.validate_domain(domain) is None:
         return False, True
 
-    idna_domain = domain.encode('idna')
+    idna_domain = idna.encode(domain)
 
     # Try for an 'A' record.
     try:

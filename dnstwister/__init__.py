@@ -13,6 +13,10 @@ import mail.sendgridservice
 import storage.pg_database
 import storage.redis_stats_store
 
+import idna
+
+# 3x speed improvement in idna decoding...
+idna.core.check_label = lambda l: None
 
 # Set up app/cache/db/emailer/gateway here
 app = flask.Flask(__name__)
