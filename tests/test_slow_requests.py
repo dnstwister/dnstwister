@@ -16,4 +16,4 @@ def test2():
 
     duration = (datetime.datetime.now() - start).total_seconds()
 
-    assert duration < 5
+    assert duration < 5, 'duration too long: {} secs'.format(duration)

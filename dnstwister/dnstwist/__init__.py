@@ -4,5 +4,5 @@
 from dnstwist import InvalidDomain
 
 # Helpers
-from dnstwist import validate_domain
+from dnstwist import is_valid_domain
 from dnstwist import fuzz_domain as DomainFuzzer

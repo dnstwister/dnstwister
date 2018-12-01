@@ -30,7 +30,7 @@ class TestTools(unittest.TestCase):
 
         bad_domain = '\\www.z.comasfff'
         self.assertFalse(
-            dnstwist.validate_domain(bad_domain),
+            dnstwist.is_valid_domain(bad_domain),
             'Bad domain should be invalid'
         )
 
@@ -42,7 +42,7 @@ class TestTools(unittest.TestCase):
 
         domain = 'www.example.com'
         self.assertTrue(
-            dnstwist.validate_domain(domain),
+            dnstwist.is_valid_domain(domain),
             'Good domain should be valid'
         )
 

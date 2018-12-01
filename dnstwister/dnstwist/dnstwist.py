@@ -56,7 +56,7 @@ class InvalidDomain(Exception):
     pass
 
 
-def validate_domain(domain):
+def is_valid_domain(domain):
     """Validate a domain - including unicode domains."""
     try:
         if len(domain) > 255:
@@ -66,7 +66,7 @@ def validate_domain(domain):
         if domain != encoded_domain and len(domain) == encoded_domain:
             return False
 
-        return VALID_DOMAIN_RE.match(encoded_domain)
+        return VALID_DOMAIN_RE.match(encoded_domain) is not None
     except (UnicodeError, TypeError, idna.IDNAError):
         pass
     return False
@@ -124,9 +124,15 @@ class fuzz_domain(object):
         return domain[0] + '.' + domain[1], domain[2]
 
     def __validate_domain(self, domain):
-        return validate_domain(domain)
+        return is_valid_domain(domain)
 
     def __filter_domains(self):
+
+        # IDNA encoding's detailed check makes this 4x slower, and we validate
+        # all requests that just query a domain later on.
+        old_func = idna.core.check_label
+        idna.core.check_label = lambda l: None
+
         seen = set()
         filtered = []
 
@@ -140,6 +146,8 @@ class fuzz_domain(object):
                 filtered.append(d)
 
         self.domains = filtered
+
+        idna.core.check_label = old_func
 
     def __bitsquatting(self):
         result = []
@@ -315,7 +323,6 @@ class fuzz_domain(object):
             self.domains.append({ 'fuzzer': 'Insertion', 'domain-name': domain + '.' + self.tld })
         for domain in self.__omission():
             self.domains.append({ 'fuzzer': 'Omission', 'domain-name': domain + '.' + self.tld })
-
         for domain in self.__repetition():
             self.domains.append({ 'fuzzer': 'Repetition', 'domain-name': domain + '.' + self.tld })
         for domain in self.__replacement():

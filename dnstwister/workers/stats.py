@@ -21,7 +21,7 @@ def get_delta_domains():
     return [domain
             for (domain,)
             in json['values']
-            if dnstwist.validate_domain(domain)]
+            if dnstwist.is_valid_domain(domain)]
 
 
 def main():
