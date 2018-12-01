@@ -189,7 +189,7 @@ class fuzz_domain(object):
             'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        result = []
+        result = set()
 
         for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
@@ -202,11 +202,11 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            result.append(self.domain[:i] + win + self.domain[i+ws:])
+                            result.add(self.domain[:i] + win + self.domain[i+ws:])
                             win = win_copy
                     j += 1
 
-        return list(set(result))
+        return result
 
     def __hyphenation(self):
         result = []
@@ -217,60 +217,60 @@ class fuzz_domain(object):
         return result
 
     def __insertion(self):
-        result = []
+        result = set()
 
         for i in range(1, len(self.domain)-1):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.append(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
-                        result.append(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
+                        result.add(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
+                        result.add(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __omission(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
-            result.append(self.domain[:i] + self.domain[i+1:])
+            result.add(self.domain[:i] + self.domain[i+1:])
 
         n = re.sub(r'(.)\1+', r'\1', self.domain)
 
         if n not in result and n != self.domain:
-            result.append(n)
+            result.add(n)
 
-        return list(set(result))
+        return result
 
     def __repetition(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             if self.domain[i].isalpha():
-                result.append(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
+                result.add(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __replacement(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.append(self.domain[:i] + c + self.domain[i+1:])
+                        result.add(self.domain[:i] + c + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __vowel_swap(self):
         vowels = 'aeiou'
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             for vowel in vowels:
                 if self.domain[i] in vowels:
-                    result.append(self.domain[:i] + vowel + self.domain[i+1:])
+                    result.add(self.domain[:i] + vowel + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __subdomain(self):
         result = []
@@ -315,6 +315,7 @@ class fuzz_domain(object):
             self.domains.append({ 'fuzzer': 'Insertion', 'domain-name': domain + '.' + self.tld })
         for domain in self.__omission():
             self.domains.append({ 'fuzzer': 'Omission', 'domain-name': domain + '.' + self.tld })
+
         for domain in self.__repetition():
             self.domains.append({ 'fuzzer': 'Repetition', 'domain-name': domain + '.' + self.tld })
         for domain in self.__replacement():
