@@ -8,9 +8,7 @@ import urlparse
 
 import dns.resolver
 import flask
-import requests
 
-from dnstwister import app
 from dnstwister import cache
 from dnstwister.tools import tld_db
 import dnstwister.dnstwist as dnstwist
