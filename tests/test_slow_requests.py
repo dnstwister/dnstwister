@@ -6,7 +6,8 @@ import dnstwister.tools
 def test2():
     """Looooong domain names highlighted that the idna decoding is slooooow.
 
-    This is a basic benchmark for performance.
+    This is a basic benchmark for performance, based on a bot's behaviour
+    recently.
     """
     domain = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
 
@@ -16,4 +17,4 @@ def test2():
 
     duration = (datetime.datetime.now() - start).total_seconds()
 
-    assert duration < 5, 'duration too long: {} secs'.format(duration)
+    assert duration < 7, 'duration too long: {} secs'.format(duration)
