@@ -31,6 +31,11 @@ __email__ = 'marcin@ulikowski.pl'
 import re
 import os.path
 
+import idna
+
+# 3x speed improvement in idna decoding...
+idna.core.check_label = lambda l: None
+
 
 FILE_TLD = os.path.join(
     'dnstwister',
@@ -60,12 +65,12 @@ def validate_domain(domain):
         if len(domain) > 255:
             return False
 
-        encoded_domain = domain.encode('idna')
-        if len(domain) == encoded_domain and domain != encoded_domain:
+        encoded_domain = idna.encode(domain)
+        if domain != encoded_domain and len(domain) == encoded_domain:
             return False
 
         return VALID_DOMAIN_RE.match(encoded_domain)
-    except (UnicodeError, TypeError):
+    except (UnicodeError, TypeError, idna.IDNAError):
         pass
     return False
 
@@ -129,8 +134,12 @@ class fuzz_domain(object):
         filtered = []
 
         for d in self.domains:
-            if self.__validate_domain(d['domain-name']) and d['domain-name'] not in seen:
-                seen.add(d['domain-name'])
+            if d['domain-name'] in seen:
+                continue
+
+            seen.add(d['domain-name'])
+
+            if self.__validate_domain(d['domain-name']):
                 filtered.append(d)
 
         self.domains = filtered

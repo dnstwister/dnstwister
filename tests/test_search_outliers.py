@@ -1,9 +1,6 @@
 """Test of weird search behaviours."""
 # -*- coding: utf-8 -*-
 import binascii
-import time
-
-import idna
 
 
 def test_no_domains_key(webapp):
