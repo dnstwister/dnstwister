@@ -30,7 +30,6 @@ __email__ = 'marcin@ulikowski.pl'
 
 import re
 import os.path
-import idna
 
 
 FILE_TLD = os.path.join(
@@ -61,7 +60,7 @@ def validate_domain(domain):
         if len(domain) > 255:
             return False
 
-        encoded_domain = idna.encode(domain)
+        encoded_domain = domain.encode('idna')
         if len(domain) == encoded_domain and domain != encoded_domain:
             return False
 
