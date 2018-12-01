@@ -24,8 +24,8 @@ __dnstwister__ is hosted at [https://dnstwister.report](https://dnstwister.repor
 
 ## dnstwist module
 
-This project currently uses a modified snapshot of version 1.04b of dnstwist,
-in [dnstwister/dnstwist](dnstwister/dnstwist).
+This project currently uses a modified [snapshot](https://github.com/elceef/dnstwist/blob/182902f42c749cc4b58af06f8c312c92af1a73dc/dnstwist.py)
+of dnstwist, in [dnstwister/dnstwist](dnstwister/dnstwist).
 
 I have kept the original dnstwist README and LICENCE in that snapshot but I
 have applied an "Unlicense" to __dnstwister__.
@@ -39,6 +39,11 @@ If you come across this repository and disagree with my usage, attribution or
 licensing of dnstwist, please raise a
 [Git issue](https://github.com/thisismyrobot/dnstwister/issues) and I will
 address your concern as quickly as possible.
+
+## Contributors
+
+ * [@elceef](https://github.com/elceef) (dnstwist itself)
+ * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
 
 ## Running dnstwister
 
