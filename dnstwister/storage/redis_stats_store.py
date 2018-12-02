@@ -64,7 +64,7 @@ class RedisStatsStore(object):
         chosen number of seconds. That gives us a sliding window of changes
         over the period.
         """
-        if dnstwist.validate_domain(domain):
+        if dnstwist.is_valid_domain(domain):
             pipe = self.r_conn.pipeline()
             pipe.incr(domain)
             pipe.expire(domain, EXPIRY)

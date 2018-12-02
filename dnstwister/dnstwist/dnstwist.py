@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # dnstwist
@@ -19,17 +18,20 @@
 # limitations under the License.
 
 #
-# dnstwist 1.04b modified by Robert Wallhead (robert@thisismyrobot.com) for
-# use in https://dnstwister.report - all functionality except fuzzing removed
-# and various changes made to support usage in Heroku.
+# dnstwist version: https://github.com/elceef/dnstwist/blob/182902f42c749cc4b58af06f8c312c92af1a73dc/dnstwist.py
+# modified by Robert Wallhead (robert@thisismyrobot.com) for use in
+# https://dnstwister.report - all functionality except fuzzing removed and
+# various changes made to support usage in Heroku.
 #
 
 __author__ = 'Marcin Ulikowski'
-__version__ = '1.04b'
+__version__ = '20180623'
 __email__ = 'marcin@ulikowski.pl'
 
 import re
 import os.path
+
+import idna
 
 
 FILE_TLD = os.path.join(
@@ -42,6 +44,11 @@ DB_TLD = os.path.exists(FILE_TLD)
 if not DB_TLD:
     raise Exception('TLD database is required!')
 
+VALID_DOMAIN_RE = re.compile(
+    r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)',
+    flags=re.IGNORECASE
+)
+
 
 class InvalidDomain(Exception):
     """ Exception for invalid domains.
@@ -49,15 +56,20 @@ class InvalidDomain(Exception):
     pass
 
 
-def validate_domain(domain):
+def is_valid_domain(domain):
     """Validate a domain - including unicode domains."""
     try:
-        if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
+        if len(domain) > 255:
             return False
-    except (UnicodeError, TypeError):
-        return False
-    allowed = re.compile(r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
-    return allowed.match(domain.encode('idna'))
+
+        encoded_domain = idna.encode(domain)
+        if domain != encoded_domain and len(domain) == encoded_domain:
+            return False
+
+        return VALID_DOMAIN_RE.match(encoded_domain) is not None
+    except (UnicodeError, TypeError, idna.IDNAError):
+        pass
+    return False
 
 
 class fuzz_domain(object):
@@ -112,18 +124,30 @@ class fuzz_domain(object):
         return domain[0] + '.' + domain[1], domain[2]
 
     def __validate_domain(self, domain):
-        return validate_domain(domain)
+        return is_valid_domain(domain)
 
     def __filter_domains(self):
+
+        # IDNA encoding's detailed check makes this 4x slower, and we validate
+        # all requests that just query a domain later on.
+        old_func = idna.core.check_label
+        idna.core.check_label = lambda l: None
+
         seen = set()
         filtered = []
 
         for d in self.domains:
-            if self.__validate_domain(d['domain-name']) and d['domain-name'] not in seen:
-                seen.add(d['domain-name'])
+            if d['domain-name'] in seen:
+                continue
+
+            seen.add(d['domain-name'])
+
+            if self.__validate_domain(d['domain-name']):
                 filtered.append(d)
 
         self.domains = filtered
+
+        idna.core.check_label = old_func
 
     def __bitsquatting(self):
         result = []
@@ -145,35 +169,35 @@ class fuzz_domain(object):
 
     def __homoglyph(self):
         glyphs = {
-            'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
-            'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
-            'c': [u'ϲ', u'с', u'ƈ', u'ċ', u'ć', u'ç'],
-            'd': ['b', 'cl', 'dl', 'di', u'ԁ', u'ժ', u'ɗ', u'đ'],
-            'e': [u'é', u'ê', u'ë', u'ē', u'ĕ', u'ě', u'ė', u'е', u'ẹ', u'ę', u'є', u'ϵ', u'ҽ'],
-            'f': [u'Ϝ', u'ƒ', u'Ғ'],
-            'g': ['q', u'ɢ', u'ɡ', u'Ԍ', u'Ԍ', u'ġ', u'ğ', u'ց', u'ǵ', u'ģ'],
-            'h': ['lh', 'ih', u'һ', u'հ', u'Ꮒ', u'н'],
-            'i': ['1', 'l', u'Ꭵ', u'í', u'ï', u'ı', u'ɩ', u'ι', u'ꙇ', u'ǐ', u'ĭ'],
-            'j': [u'ј', u'ʝ', u'ϳ', u'ɉ'],
-            'k': ['lk', 'ik', 'lc', u'κ', u'ⲕ', u'κ'],
-            'l': ['1', 'i', u'ɫ', u'ł'],
-            'm': ['n', 'nn', 'rn', 'rr', u'ṃ', u'ᴍ', u'м', u'ɱ'],
-            'n': ['m', 'r', u'ń'],
-            'o': ['0', u'Ο', u'ο', u'О', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
-            'p': [u'ρ', u'р', u'ƿ', u'Ϸ', u'Þ'],
-            'q': ['g', u'զ', u'ԛ', u'գ', u'ʠ'],
-            'r': [u'ʀ', u'Г', u'ᴦ', u'ɼ', u'ɽ'],
-            's': [u'Ⴝ', u'Ꮪ', u'ʂ', u'ś', u'ѕ'],
-            't': [u'τ', u'т', u'ţ'],
-            'u': [u'μ', u'υ', u'Ս', u'ս', u'ц', u'ᴜ', u'ǔ', u'ŭ'],
-            'v': [u'ѵ', u'ν', u'v̇'],
-            'w': ['vv', u'ѡ', u'ա', u'ԝ'],
-            'x': [u'х', u'ҳ', u'ẋ'],
-            'y': [u'ʏ', u'γ', u'у', u'Ү', u'ý'],
-            'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
+        'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
+        'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
+        'c': [u'ϲ', u'с', u'ƈ', u'ċ', u'ć', u'ç'],
+        'd': ['b', 'cl', 'dl', 'di', u'ԁ', u'ժ', u'ɗ', u'đ'],
+        'e': [u'é', u'ê', u'ë', u'ē', u'ĕ', u'ě', u'ė', u'е', u'ẹ', u'ę', u'є', u'ϵ', u'ҽ'],
+        'f': [u'Ϝ', u'ƒ', u'Ғ'],
+        'g': ['q', u'ɢ', u'ɡ', u'Ԍ', u'Ԍ', u'ġ', u'ğ', u'ց', u'ǵ', u'ģ'],
+        'h': ['lh', 'ih', u'һ', u'հ', u'Ꮒ', u'н'],
+        'i': ['1', 'l', u'Ꭵ', u'í', u'ï', u'ı', u'ɩ', u'ι', u'ꙇ', u'ǐ', u'ĭ', u'ì'],
+        'j': [u'ј', u'ʝ', u'ϳ', u'ɉ'],
+        'k': ['lk', 'ik', 'lc', u'κ', u'ⲕ', u'κ'],
+        'l': ['1', 'i', u'ɫ', u'ł'],
+        'm': ['n', 'nn', 'rn', 'rr', u'ṃ', u'ᴍ', u'м', u'ɱ'],
+        'n': ['m', 'r', u'ń'],
+        'o': ['0', u'Ο', u'ο', u'О', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
+        'p': [u'ρ', u'р', u'ƿ', u'Ϸ', u'Þ'],
+        'q': ['g', u'զ', u'ԛ', u'գ', u'ʠ'],
+        'r': [u'ʀ', u'Г', u'ᴦ', u'ɼ', u'ɽ'],
+        's': [u'Ⴝ', u'Ꮪ', u'ʂ', u'ś', u'ѕ'],
+        't': [u'τ', u'т', u'ţ'],
+        'u': [u'μ', u'υ', u'Ս', u'ս', u'ц', u'ᴜ', u'ǔ', u'ŭ'],
+        'v': [u'ѵ', u'ν', u'v̇'],
+        'w': ['vv', u'ѡ', u'ա', u'ԝ'],
+        'x': [u'х', u'ҳ', u'ẋ'],
+        'y': [u'ʏ', u'γ', u'у', u'Ү', u'ý'],
+        'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        result = []
+        result = set()
 
         for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
@@ -186,11 +210,16 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            result.append(self.domain[:i] + win + self.domain[i+ws:])
+                            result.add(self.domain[:i] + win + self.domain[i+ws:])
                             win = win_copy
+
+                            # Very long domains have terrible complexity when
+                            # ran through this algorithm.
+                            if len(result) >= 1000:
+                                return result
                     j += 1
 
-        return list(set(result))
+        return result
 
     def __hyphenation(self):
         result = []
@@ -201,60 +230,49 @@ class fuzz_domain(object):
         return result
 
     def __insertion(self):
-        result = []
+        result = set()
 
         for i in range(1, len(self.domain)-1):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.append(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
-                        result.append(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
+                        result.add(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
+                        result.add(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __omission(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
-            result.append(self.domain[:i] + self.domain[i+1:])
+            result.add(self.domain[:i] + self.domain[i+1:])
 
         n = re.sub(r'(.)\1+', r'\1', self.domain)
 
         if n not in result and n != self.domain:
-            result.append(n)
+            result.add(n)
 
-        return list(set(result))
+        return result
 
     def __repetition(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             if self.domain[i].isalpha():
-                result.append(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
+                result.add(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __replacement(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.append(self.domain[:i] + c + self.domain[i+1:])
+                        result.add(self.domain[:i] + c + self.domain[i+1:])
 
-        return list(set(result))
-
-    def __vowel_swap(self):
-        vowels = 'aeiou'
-        result = []
-
-        for i in range(0, len(self.domain)):
-            for vowel in vowels:
-                if self.domain[i] in vowels:
-                    result.append(self.domain[:i] + vowel + self.domain[i+1:])
-
-        return list(set(result))
+        return result
 
     def __subdomain(self):
         result = []
@@ -271,6 +289,17 @@ class fuzz_domain(object):
         for i in range(0, len(self.domain)-1):
             if self.domain[i+1] != self.domain[i]:
                 result.append(self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:])
+
+        return result
+
+    def __vowel_swap(self):
+        vowels = 'aeiou'
+        result = set()
+
+        for i in range(0, len(self.domain)):
+            for vowel in vowels:
+                if self.domain[i] in vowels:
+                    result.add(self.domain[:i] + vowel + self.domain[i+1:])
 
         return result
 

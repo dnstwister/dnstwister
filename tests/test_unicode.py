@@ -39,13 +39,13 @@ def test_decode_encoded_unicode_punycoded_domain():
 
 def test_dnstwist_validations():
     """dnstwist validates domains internally, including unicode."""
-    assert dnstwist.dnstwist.validate_domain('www.example1.com')
-    assert dnstwist.dnstwist.validate_domain(u'www.\u0454xampl\u0454.com')
-    assert dnstwist.dnstwist.validate_domain(u'www.\u0454xampl\u0454.com')
+    assert dnstwist.dnstwist.is_valid_domain('www.example1.com')
+    assert dnstwist.dnstwist.is_valid_domain(u'www.\u0454xampl\u0454.com')
+    assert dnstwist.dnstwist.is_valid_domain(u'www.\u0454xampl\u0454.com')
 
-    assert not dnstwist.dnstwist.validate_domain('www.\u0454xampl\u0454.com')
-    assert not dnstwist.dnstwist.validate_domain(u'example1')
-    assert not dnstwist.dnstwist.validate_domain('example1')
+    assert not dnstwist.dnstwist.is_valid_domain('www.\u0454xampl\u0454.com')
+    assert not dnstwist.dnstwist.is_valid_domain(u'example1')
+    assert not dnstwist.dnstwist.is_valid_domain('example1')
 
 
 def test_idna_submit(webapp):

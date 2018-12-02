@@ -15,7 +15,7 @@ UNREGISTER = 3  # 3 days
 
 def process_domain(domain):
     """Process a domain - generating resolution reports and deltas."""
-    if dnstwist.validate_domain(domain) is None:
+    if not dnstwist.is_valid_domain(domain):
         print 'Invalid: {}'.format(repr(domain))
         repository.unregister_domain(domain)
         return

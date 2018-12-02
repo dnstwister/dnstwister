@@ -1,11 +1,11 @@
 dnspython==1.15.0
-Flask==0.12.2
+Flask==0.12.4
 Flask-Cache==0.13.1
-idna==2.6
+idna==2.7
 psycopg2==2.7.3.2
 python-whois==0.6.5
 redis==2.10.6
-requests==2.18.4
+requests==2.20.1
 sendgrid==2.2.1
 waitress==1.1.0
 zope.interface==4.3.2

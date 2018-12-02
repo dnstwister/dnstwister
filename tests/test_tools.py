@@ -30,8 +30,14 @@ class TestTools(unittest.TestCase):
 
         bad_domain = '\\www.z.comasfff'
         self.assertFalse(
-            dnstwist.validate_domain(bad_domain),
+            dnstwist.is_valid_domain(bad_domain),
             'Bad domain should be invalid'
+        )
+
+        long_bad_domain = 'www.zsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssszssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss.com'
+        self.assertFalse(
+            dnstwist.is_valid_domain(long_bad_domain),
+            'Long domain should be invalid'
         )
 
         bad_domain_data = binascii.hexlify(bad_domain)
@@ -42,7 +48,7 @@ class TestTools(unittest.TestCase):
 
         domain = 'www.example.com'
         self.assertTrue(
-            dnstwist.validate_domain(domain),
+            dnstwist.is_valid_domain(domain),
             'Good domain should be valid'
         )
 

@@ -16,7 +16,7 @@ def _base64_redirect(encoded_domain):
     """
     try:
         decoded_domain = base64.b64decode(encoded_domain)
-        if dnstwist.validate_domain(decoded_domain):
+        if dnstwist.is_valid_domain(decoded_domain):
             return '/atom/{}'.format(tools.encode_domain(decoded_domain))
     except:
         pass
