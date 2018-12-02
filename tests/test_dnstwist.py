@@ -2,6 +2,104 @@
 import dnstwister.dnstwist.dnstwist as dnstwist
 
 
+def test_small_domain_stats():
+    """Test of the size of the results for a simple domain."""
+    fuzzer = dnstwist.fuzz_domain('abc.com')
+    fuzzer.fuzz()
+
+    assert breakdown(fuzzer.domains) == {
+        'Addition': 26,
+        'Bitsquatting': 13,
+        'Homoglyph': 27,
+        'Hyphenation': 2,
+        'Insertion': 8,
+        'Omission': 3,
+        'Original*': 1,
+        'Repetition': 2,
+        'Replacement': 14,
+        'Subdomain': 2,
+        'Transposition': 2,
+        'Various': 4,
+        'Vowel swap': 2
+    }
+
+
+def test_medium_domain_stats():
+    """Test of the size of the results for a medium-length domain."""
+    fuzzer = dnstwist.fuzz_domain('example.com')
+    fuzzer.fuzz()
+
+    assert breakdown(fuzzer.domains) == {
+        'Addition': 26,
+        'Bitsquatting': 33,
+        'Homoglyph': 59,
+        'Hyphenation': 6,
+        'Insertion': 43,
+        'Omission': 7,
+        'Original*': 1,
+        'Repetition': 3,
+        'Replacement': 30,
+        'Subdomain': 6,
+        'Transposition': 6,
+        'Various': 4,
+        'Vowel swap': 6
+    }
+
+
+def test_medium_domain_with_subdomain_stats():
+    """Test of the size of the results for a medium-length domain."""
+    fuzzer = dnstwist.fuzz_domain('www.example.com')
+    fuzzer.fuzz()
+
+    assert breakdown(fuzzer.domains) == {
+        'Addition': 26,
+        'Bitsquatting': 49,
+        'Homoglyph': 96,
+        'Hyphenation': 8,
+        'Insertion': 75,
+        'Omission': 10,
+        'Original*': 1,
+        'Repetition': 4,
+        'Replacement': 48,
+        'Subdomain': 8,
+        'Transposition': 8,
+        'Various': 1,
+        'Vowel swap': 6
+    }
+
+
+def test_crawler_massive_domain():
+    """Test of the size of the results for a crawler monster domain."""
+    fuzzer = dnstwist.fuzz_domain(
+        'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
+    )
+    fuzzer.fuzz()
+
+    assert breakdown(fuzzer.domains) == {
+        'Addition': 26,
+        'Bitsquatting': 288,
+        'Homoglyph': 252,
+        'Hyphenation': 29,
+        'Insertion': 375,
+        'Omission': 7,
+        'Original*': 1,
+        'Repetition': 4,
+        'Replacement': 1077,
+        'Subdomain': 91,
+        'Transposition': 5,
+        'Various': 1,
+        'Vowel swap': 6
+    }
+
+
+def breakdown(result):
+    return dict(
+        [(f, len([d for d in result if d['fuzzer'] == f]))
+         for f
+         in set([d['fuzzer'] for d in result])]
+     )
+
+
 def test_unicode_fuzzing():
     """Test can fuzz and generate unicode."""
     unicode_domain = 'xn--domain.com'.decode('idna')
@@ -416,101 +514,3 @@ def test_basic_fuzz():
         {'domain-name': 'www.exumple.com', 'fuzzer': 'Vowel swap'},
         {'domain-name': 'www.examplecom.com', 'fuzzer': 'Various'}
     ]
-
-
-def test_small_domain_stats():
-    """Test of the size of the results for a simple domain."""
-    fuzzer = dnstwist.fuzz_domain('abc.com')
-    fuzzer.fuzz()
-
-    assert breakdown(fuzzer.domains) == {
-        'Addition': 26,
-        'Bitsquatting': 13,
-        'Homoglyph': 27,
-        'Hyphenation': 2,
-        'Insertion': 8,
-        'Omission': 3,
-        'Original*': 1,
-        'Repetition': 2,
-        'Replacement': 14,
-        'Subdomain': 2,
-        'Transposition': 2,
-        'Various': 4,
-        'Vowel swap': 2
-    }
-
-
-def test_medium_domain_stats():
-    """Test of the size of the results for a medium-length domain."""
-    fuzzer = dnstwist.fuzz_domain('example.com')
-    fuzzer.fuzz()
-
-    assert breakdown(fuzzer.domains) == {
-        'Addition': 26,
-        'Bitsquatting': 33,
-        'Homoglyph': 59,
-        'Hyphenation': 6,
-        'Insertion': 43,
-        'Omission': 7,
-        'Original*': 1,
-        'Repetition': 3,
-        'Replacement': 30,
-        'Subdomain': 6,
-        'Transposition': 6,
-        'Various': 4,
-        'Vowel swap': 6
-    }
-
-
-def test_medium_domain_with_subdomain_stats():
-    """Test of the size of the results for a medium-length domain."""
-    fuzzer = dnstwist.fuzz_domain('www.example.com')
-    fuzzer.fuzz()
-
-    assert breakdown(fuzzer.domains) == {
-        'Addition': 26,
-        'Bitsquatting': 49,
-        'Homoglyph': 96,
-        'Hyphenation': 8,
-        'Insertion': 75,
-        'Omission': 10,
-        'Original*': 1,
-        'Repetition': 4,
-        'Replacement': 48,
-        'Subdomain': 8,
-        'Transposition': 8,
-        'Various': 1,
-        'Vowel swap': 6
-    }
-
-
-def test_crawler_massive_domain():
-    """Test of the size of the results for a crawler monster domain."""
-    fuzzer = dnstwist.fuzz_domain(
-        'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
-    )
-    fuzzer.fuzz()
-
-    assert breakdown(fuzzer.domains) == {
-        'Addition': 26,
-        'Bitsquatting': 288,
-        'Homoglyph': 1353,
-        'Hyphenation': 29,
-        'Insertion': 375,
-        'Omission': 7,
-        'Original*': 1,
-        'Repetition': 4,
-        'Replacement': 1077,
-        'Subdomain': 91,
-        'Transposition': 5,
-        'Various': 1,
-        'Vowel swap': 6
-    }
-
-
-def breakdown(result):
-    return dict(
-        [(f, len([d for d in result if d['fuzzer'] == f]))
-         for f
-         in set([d['fuzzer'] for d in result])]
-     )

@@ -212,6 +212,11 @@ class fuzz_domain(object):
                             win = win.replace(c, g)
                             result.add(self.domain[:i] + win + self.domain[i+ws:])
                             win = win_copy
+
+                            # Very long domains have terrible complexity when
+                            # ran through this algorithm.
+                            if len(result) >= 1000:
+                                return result
                     j += 1
 
         return result
