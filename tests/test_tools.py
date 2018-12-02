@@ -34,7 +34,7 @@ class TestTools(unittest.TestCase):
             'Bad domain should be invalid'
         )
 
-        long_bad_domain = 'www.zsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss.comasfff'
+        long_bad_domain = 'www.zsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssszssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss.com'
         self.assertFalse(
             dnstwist.is_valid_domain(long_bad_domain),
             'Long domain should be invalid'
