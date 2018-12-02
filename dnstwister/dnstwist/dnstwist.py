@@ -31,6 +31,8 @@ __email__ = 'marcin@ulikowski.pl'
 import re
 import os.path
 
+import idna
+
 
 FILE_TLD = os.path.join(
     'dnstwister',
@@ -42,6 +44,11 @@ DB_TLD = os.path.exists(FILE_TLD)
 if not DB_TLD:
     raise Exception('TLD database is required!')
 
+VALID_DOMAIN_RE = re.compile(
+    r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)',
+    flags=re.IGNORECASE
+)
+
 
 class InvalidDomain(Exception):
     """ Exception for invalid domains.
@@ -49,15 +56,20 @@ class InvalidDomain(Exception):
     pass
 
 
-def validate_domain(domain):
+def is_valid_domain(domain):
     """Validate a domain - including unicode domains."""
     try:
-        if len(domain) == len(domain.encode('idna')) and domain != domain.encode('idna'):
+        if len(domain) > 255:
             return False
-    except (UnicodeError, TypeError):
-        return False
-    allowed = re.compile(r'(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}\.?$)', re.IGNORECASE)
-    return allowed.match(domain.encode('idna'))
+
+        encoded_domain = idna.encode(domain)
+        if domain != encoded_domain and len(domain) == encoded_domain:
+            return False
+
+        return VALID_DOMAIN_RE.match(encoded_domain) is not None
+    except (UnicodeError, TypeError, idna.IDNAError):
+        pass
+    return False
 
 
 class fuzz_domain(object):
@@ -112,18 +124,30 @@ class fuzz_domain(object):
         return domain[0] + '.' + domain[1], domain[2]
 
     def __validate_domain(self, domain):
-        return validate_domain(domain)
+        return is_valid_domain(domain)
 
     def __filter_domains(self):
+
+        # IDNA encoding's detailed check makes this 4x slower, and we validate
+        # all requests that just query a domain later on.
+        old_func = idna.core.check_label
+        idna.core.check_label = lambda l: None
+
         seen = set()
         filtered = []
 
         for d in self.domains:
-            if self.__validate_domain(d['domain-name']) and d['domain-name'] not in seen:
-                seen.add(d['domain-name'])
+            if d['domain-name'] in seen:
+                continue
+
+            seen.add(d['domain-name'])
+
+            if self.__validate_domain(d['domain-name']):
                 filtered.append(d)
 
         self.domains = filtered
+
+        idna.core.check_label = old_func
 
     def __bitsquatting(self):
         result = []
@@ -173,7 +197,7 @@ class fuzz_domain(object):
         'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        result = []
+        result = set()
 
         for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
@@ -186,11 +210,16 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            result.append(self.domain[:i] + win + self.domain[i+ws:])
+                            result.add(self.domain[:i] + win + self.domain[i+ws:])
                             win = win_copy
+
+                            # Very long domains have terrible complexity when
+                            # ran through this algorithm.
+                            if len(result) >= 1000:
+                                return result
                     j += 1
 
-        return list(set(result))
+        return result
 
     def __hyphenation(self):
         result = []
@@ -201,49 +230,49 @@ class fuzz_domain(object):
         return result
 
     def __insertion(self):
-        result = []
+        result = set()
 
         for i in range(1, len(self.domain)-1):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.append(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
-                        result.append(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
+                        result.add(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
+                        result.add(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __omission(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
-            result.append(self.domain[:i] + self.domain[i+1:])
+            result.add(self.domain[:i] + self.domain[i+1:])
 
         n = re.sub(r'(.)\1+', r'\1', self.domain)
 
         if n not in result and n != self.domain:
-            result.append(n)
+            result.add(n)
 
-        return list(set(result))
+        return result
 
     def __repetition(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             if self.domain[i].isalpha():
-                result.append(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
+                result.add(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __replacement(self):
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.append(self.domain[:i] + c + self.domain[i+1:])
+                        result.add(self.domain[:i] + c + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __subdomain(self):
         result = []
@@ -265,14 +294,14 @@ class fuzz_domain(object):
 
     def __vowel_swap(self):
         vowels = 'aeiou'
-        result = []
+        result = set()
 
         for i in range(0, len(self.domain)):
             for vowel in vowels:
                 if self.domain[i] in vowels:
-                    result.append(self.domain[:i] + vowel + self.domain[i+1:])
+                    result.add(self.domain[:i] + vowel + self.domain[i+1:])
 
-        return list(set(result))
+        return result
 
     def __addition(self):
         result = []

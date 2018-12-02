@@ -76,7 +76,7 @@ def parse_domain(encoded_domain):
     """
     try:
         decoded_domain = decode_domain(encoded_domain)
-        if dnstwist.validate_domain(decoded_domain):
+        if dnstwist.is_valid_domain(decoded_domain):
             return decoded_domain.lower()
     except:
         pass
@@ -91,13 +91,13 @@ def suggest_domain(search_domain):
     # in-between the second- and top-level domains.
     if len(search_terms) == 1:
         candidate = re.sub(r'[,/-]', '.', search_terms[0])
-        if dnstwist.validate_domain(candidate):
+        if dnstwist.is_valid_domain(candidate):
             return candidate
 
     # Pick up space-separated domain levels.
     if len(search_terms) == 2 and search_terms[1] in tld_db.TLDS:
         candidate = '.'.join(search_terms)
-        if dnstwist.validate_domain(candidate):
+        if dnstwist.is_valid_domain(candidate):
             return candidate
 
     # Attempt to make a domain from the terms.
@@ -136,7 +136,7 @@ def suggest_domain(search_domain):
 
     # Filter for those that are actually valid domains
     valid_suggestions = filter(
-        dnstwist.validate_domain, suggested_domains
+        dnstwist.is_valid_domain, suggested_domains
     )
 
     if len(valid_suggestions) == 0:
@@ -155,7 +155,7 @@ def resolve(domain):
 
     Cached to 1 hour.
     """
-    if dnstwist.validate_domain(domain) is None:
+    if not dnstwist.is_valid_domain(domain):
         return False, True
 
     idna_domain = domain.encode('idna')
