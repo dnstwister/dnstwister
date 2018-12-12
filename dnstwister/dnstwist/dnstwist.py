@@ -56,6 +56,30 @@ class InvalidDomain(Exception):
     pass
 
 
+class Result(object):
+
+    def __init__(self, fuzzer, domain):
+        self._fuzzer = fuzzer
+        self._domain = domain
+
+    @property
+    def fuzzer(self):
+        return self._fuzzer
+
+    @property
+    def domain(self):
+        return self._domain
+
+
+class ResultBuilder(object):
+
+    def __init__(self, tld):
+        self._tld = tld
+
+    def build(self, fuzzer, domain):
+        return Result(fuzzer, domain + '.' + self._tld)
+
+
 def is_valid_domain(domain):
     """Validate a domain - including unicode domains."""
     try:
@@ -150,7 +174,6 @@ class fuzz_domain(object):
         idna.core.check_label = old_func
 
     def __bitsquatting(self):
-        result = []
         masks = [1, 2, 4, 8, 16, 32, 64, 128]
         for i in range(0, len(self.domain)):
             c = self.domain[i]
@@ -163,9 +186,7 @@ class fuzz_domain(object):
                 b = chr(ord(c) ^ masks[j])
                 o = ord(b)
                 if (o >= 48 and o <= 57) or (o >= 97 and o <= 122) or o == 45:
-                    result.append(self.domain[:i] + b + self.domain[i+1:])
-
-        return result
+                    yield self.domain[:i] + b + self.domain[i+1:]
 
     def __homoglyph(self):
         glyphs = {
@@ -304,12 +325,8 @@ class fuzz_domain(object):
         return result
 
     def __addition(self):
-        result = []
-
         for i in range(97, 123):
-            result.append(self.domain + chr(i))
-
-        return result
+            yield self.domain + chr(i)
 
     def fuzz(self):
         """ Perform a domain fuzz.
@@ -352,3 +369,42 @@ class fuzz_domain(object):
             self.domains.append({ 'fuzzer': 'Various', 'domain-name': self.domain + '-' + self.tld + '.com' })
 
         self.__filter_domains()
+
+    def fuzz_iter(self, de_dupe=False):
+        """Return an iterator of the fuzz.
+
+        The intent is to reduce memory usage and to allow the fuzzed domains
+        to be returned in a chunked manner over HTTP chunking to the
+        front-end.
+
+        The sacrifice of some performance should be lost in the time taken to
+        individually resolve each domain - aka an additional 0.001 sec per
+        domain here is irrelevant if it takes 1 second to resolve each one
+        in the browser.
+
+        You can optionally de-duplicate as you go, though that will use more
+        memory obviously.
+        """
+        seen = set()
+        builder = ResultBuilder(self.tld)
+
+        yield builder.build('Original*', self.domain)
+
+        fuzzers = {
+            'Addition': self.__addition,
+            'Bitsquatting': self.__bitsquatting
+        }
+
+        for (tag, fuzzer_func) in fuzzers.items():
+
+            for domain in fuzzer_func():
+                if de_dupe:
+                    if domain in seen:
+                        continue
+                    else:
+                        seen.add(domain)
+
+                if not is_valid_domain(domain + '.' + self.tld):
+                    continue
+
+                yield builder.build(tag, domain)

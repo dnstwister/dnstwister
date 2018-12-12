@@ -1,6 +1,7 @@
 """The analysis API endpoint."""
-import binascii
+import json
 import urlparse
+
 import whois as whois_mod
 
 import flask
@@ -163,3 +164,28 @@ def fuzz(hexdomain):
     payload = standard_api_values(domain, skip='fuzz')
     payload['fuzzy_domains'] = fuzz_payload
     return flask.jsonify(payload)
+
+
+@app.route('/fuzz_chunked/<hexdomain>')
+def fuzz_chunked(hexdomain):
+    """Return a chunked json fuzz based on jsonpipe by eBay.
+
+    https://github.com/eBay/jsonpipe
+
+    http://localhost:5000/api/fuzz_chunked/646E73747769737465722E7265706F7274
+    """
+    domain = tools.parse_domain(hexdomain)
+    if domain is None:
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
+
+    def generate():
+        for result in tools.fuzzy_domains_iter(domain):
+            yield json.dumps({
+                'fuzzer': result.fuzzer,
+                'domain': result.domain
+            }) + '\n\n'
+
+    return flask.Response(generate())
