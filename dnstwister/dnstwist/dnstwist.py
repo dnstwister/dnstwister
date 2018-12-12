@@ -188,7 +188,7 @@ class fuzz_domain(object):
                 if (o >= 48 and o <= 57) or (o >= 97 and o <= 122) or o == 45:
                     yield self.domain[:i] + b + self.domain[i+1:]
 
-    def __homoglyph(self):
+    def __homoglyph(self, MAX=1000):
         glyphs = {
         'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
         'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
@@ -218,7 +218,7 @@ class fuzz_domain(object):
         'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        result = set()
+        found = 0
 
         for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
@@ -231,16 +231,15 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            result.add(self.domain[:i] + win + self.domain[i+ws:])
+                            yield self.domain[:i] + win + self.domain[i+ws:]
                             win = win_copy
 
                             # Very long domains have terrible complexity when
                             # ran through this algorithm.
-                            if len(result) >= 1000:
-                                return result
+                            found += 1
+                            if found >= MAX:
+                                return
                     j += 1
-
-        return result
 
     def __hyphenation(self):
         result = []
@@ -392,7 +391,8 @@ class fuzz_domain(object):
 
         fuzzers = {
             'Addition': self.__addition,
-            'Bitsquatting': self.__bitsquatting
+            'Bitsquatting': self.__bitsquatting,
+            'Homoglyph': lambda: self.__homoglyph(100000)
         }
 
         for (tag, fuzzer_func) in fuzzers.items():
