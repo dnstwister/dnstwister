@@ -218,7 +218,8 @@ class fuzz_domain(object):
         'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        found = 0
+        yielded = 0
+        seen = set()
 
         for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
@@ -231,35 +232,40 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            yield self.domain[:i] + win + self.domain[i+ws:]
+                            candidate = self.domain[:i] + win + self.domain[i+ws:]
+                            if candidate not in seen:
+                                seen.add(candidate)
+                                yield candidate
+                                yielded += 1
                             win = win_copy
 
                             # Very long domains have terrible complexity when
                             # ran through this algorithm.
-                            found += 1
-                            if found >= MAX:
+                            if MAX is not None and yielded >= MAX:
                                 return
                     j += 1
 
     def __hyphenation(self):
-        result = []
-
         for i in range(1, len(self.domain)):
-            result.append(self.domain[:i] + '-' + self.domain[i:])
-
-        return result
+            yield self.domain[:i] + '-' + self.domain[i:]
 
     def __insertion(self):
-        result = set()
+        seen = set()
 
         for i in range(1, len(self.domain)-1):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.add(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
-                        result.add(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
+                        first = self.domain[:i] + c + self.domain[i] + self.domain[i+1:]
+                        second = self.domain[:i] + self.domain[i] + c + self.domain[i+1:]
 
-        return result
+                        if first not in seen:
+                            seen.add(first)
+                            yield first
+
+                        if second not in seen:
+                            seen.add(second)
+                            yield second
 
     def __omission(self):
         result = set()
@@ -392,7 +398,9 @@ class fuzz_domain(object):
         fuzzers = {
             'Addition': self.__addition,
             'Bitsquatting': self.__bitsquatting,
-            'Homoglyph': lambda: self.__homoglyph(100000)
+            'Homoglyph': lambda: self.__homoglyph(MAX=None),
+            'Hyphenation': self.__hyphenation,
+            'Insertion': self.__insertion,
         }
 
         for (tag, fuzzer_func) in fuzzers.items():
