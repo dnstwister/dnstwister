@@ -168,13 +168,7 @@ def fuzz(hexdomain):
 
 @app.route('/fuzz_chunked/<hexdomain>')
 def fuzz_chunked(hexdomain):
-    """Return a chunked json fuzz based on jsonpipe by eBay.
-
-    https://github.com/eBay/jsonpipe
-
-    http://localhost:5000/api/fuzz_chunked/646E73747769737465722E7265706F7274
-    http://localhost:5000/api/fuzz_chunked/7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A2E7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A7A707069656F2E636F6D
-    """
+    """Return a chunked json fuzz based on jsonpipe by eBay."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(
