@@ -1,10 +1,12 @@
 # Manual test script to assist with load testing.
 #
 # Usage:
-#           python load_test.py [host:port]
+#           python load_test.py [endpoint]
 #
 # Eg:
-#           python load_test.py http://localhost:5000
+#           python load_test.py http://localhost:5000/search/
+#           python load_test.py http://localhost:5000/api/fuzz/
+#           python load_test.py http://localhost:5000/api/fuzz_chunked/
 #
 import binascii
 import datetime
@@ -14,39 +16,43 @@ import sys
 import requests
 
 
-DOMAIN_TEMPLATE = '{}zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
-DOMAIN_TEMPLATE = 'ww{}.example.com'
-CLIENTS = 20
+DOMAIN_TEMPLATE = '{}zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
+CLIENTS = 50
 
 
 def request(args):
-    host, domain = args
-    url = '{}/search/{}'.format(
-        host,
+    endpoint, domain = args
+    url = '{}{}'.format(
+        endpoint,
         binascii.hexlify(domain.encode('idna'))
     )
 
     start = datetime.datetime.now()
-    requests.get(url).content
+    response = requests.get(url, stream=True)
+    if response.status_code != 200:
+        print 'Failed {} with {}'.format(url, response.status_code)
+        return
+    generator = response.iter_content(chunk_size=None)
+    content = next(generator)  # We're timing how long the first result took.
+#    print content
     end = datetime.datetime.now()
+    print '.',
 
-    print url, (end - start).total_seconds()
 
-
-def test(host):
+def test(endpoint):
     start = datetime.datetime.now()
     pool = multiprocessing.Pool(CLIENTS)
-    args = [(host, DOMAIN_TEMPLATE.format(i))
+    args = [(endpoint, DOMAIN_TEMPLATE.format(i))
             for i
             in range(CLIENTS)]
     pool.map(request, args)
     end = datetime.datetime.now()
-    print '{} requests took {} seconds'.format(
+    print '\n\n{} requests took {} seconds\n\n'.format(
         CLIENTS,
         (end - start).total_seconds()
     )
 
 
 if __name__ == '__main__':
-    host = sys.argv[1]
-    test(host)
+    endpoint = sys.argv[1]
+    test(endpoint)
