@@ -1,0 +1,60 @@
+{% extends "www/layout.html" %}
+{% block title %}Report{% endblock %}
+{% block head %}
+        <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
+        <script type="text/javascript">
+            document.onreadystatechange = () => {
+              if (document.readyState === 'interactive') {
+                search('{{ domain | domain_encoder }}');
+              }
+            };
+        </script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>dnstwister report</h1>
+{% endblock %}
+{% block body %}
+        <section class="domains">
+            <div class="domain_nav">
+                <h5>{{ domain | domain_renderer }}</h5>
+                <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ domain | domain_encoder }}">
+                    <img class="ico" src="/static/email.png"/>
+                </a>
+            </div>
+            <div style="clear: both"></div>
+        </section>
+        <section class="sub_nav">
+            <a href="/">new search</a>
+        </section>
+        <section class="progress">
+            <p>
+                Possible domains: <span class="resolved_total" id="discovered_count"></span>
+                Resolved: <span id="resolved_count" class="resolved_count">0</span>
+            </p>
+        </section>
+        <section>
+            <button class="toggle_unresolved">Show unresolved domains</button>
+            <button class="toggle_unresolved" style="display: none;">Hide unresolved domains</button>
+            <section class="exports">
+                export:
+                {% for (title, format) in exports.items() %}
+                    <a href="/search/{{ domain | domain_encoder }}/{{ format }}">{{ title }}</a>
+                {% endfor %}
+            </section>
+        </section>
+        <section>
+            <table class="report u-full-width" style="display: table;">
+                <thead>
+                    <tr>
+                        <th>Tweak</th>
+                        <th>Type</th>
+                        <th>IP</th>
+                        <th>Tools</th>
+                    </tr>
+                </thead>
+                <tbody id="report_target">
+                </tbody>
+            </table>
+        </section>
+{% endblock %}
