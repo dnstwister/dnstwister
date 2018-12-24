@@ -1,3 +1,30 @@
+var updatedProgress = function(checkedCount, resolvedCount) {
+
+    var checkedCountElem = document.getElementById('checked_count');
+    var resolvedCountElem = document.getElementById('resolved_count');
+    var resolvedPercentElem = document.getElementById('resolved_percent');
+
+    checkedCountElem.innerHTML = checkedCount;
+    resolvedCountElem.innerHTML = resolvedCount;
+    resolvedPercentElem.innerHTML = Math.round((resolvedCount / checkedCount) * 100);
+}
+
+var startProgressDots = function () {
+
+    var searchDotsElem = document.getElementById('search_dots');
+
+    return setInterval(function() {
+        var dotsCount  = (searchDotsElem.firstChild || []).length;
+        var nextDotsCount = (dotsCount + 1) % 4;
+
+        var newDots = '';
+        for(var i = 0; i < nextDotsCount; i++) {
+            newDots += '.';
+        }
+        searchDotsElem.innerHTML = newDots;
+    }, 350);
+}
+
 var resolve = function(encoded_domain, callback) {
     const request = new XMLHttpRequest();
     const url='/api/ip/' + encoded_domain;
@@ -44,42 +71,86 @@ var reportRowElem = function(domain, tweak, ipText, show) {
     return rowElem;
 }
 
+
 var search = function(encoded_domain) {
 
     var checkedCount = 0;
     var resolvedCount = 0;
+    var resolveQueue = [];
+    var startedResolving = false;
+    var allFound = false;
 
-    var checkedCountElem = document.getElementById('checked_count');
-    var resolvedCountElem = document.getElementById('resolved_count');
+    var reportElem = document.getElementById('report_target');
 
-    var report_elem = document.getElementById('report_target');
+    var progressTimer = startProgressDots();
+
+    var resolveNext = function(queue) {
+        var data = queue.pop();
+        if (data === undefined) {
+            if (allFound === true) {
+                console.log('all resolved')
+                clearInterval(progressTimer);
+                return;
+            }
+            else {
+                console.log('Exhausted!')
+                // If queue exhausted, wait for more.
+                setTimeout(function() {
+                    resolveNext(queue);
+                }, 1000);
+                return;
+            }
+        }
+
+        console.log('resolving', data.domain)
+
+        resolve(data.encode_domain, function(ip) {
+            checkedCount += 1;
+            updatedProgress(checkedCount, resolvedCount);
+
+            if (ip === null) {
+                reportElem.appendChild(
+                    reportRowElem(data.domain, data.fuzzer, 'Error!', true)
+                );
+                resolveNext(queue);
+                return;
+            }
+            else if (ip === false) {
+                reportElem.appendChild(
+                    reportRowElem(data.domain, data.fuzzer, 'None resolved', false)
+                );
+                resolveNext(queue);
+                return;
+            }
+
+            resolvedCount += 1;
+            updatedProgress(checkedCount, resolvedCount);
+            reportElem.appendChild(
+                reportRowElem(data.domain, data.fuzzer, ip, true)
+            );
+
+            resolveNext(queue);
+        });
+    }
 
     jsonpipe.flow('/api/fuzz_chunked/' + encoded_domain, {
         'success': function(data) {
-            resolve(data.encode_domain, function(ip) {
-                checkedCount += 1;
-                checkedCountElem.innerHTML = checkedCount;
+            resolveQueue.push(data);
 
-                if (ip === null) {
-                    report_elem.appendChild(
-                        reportRowElem(data.domain, data.fuzzer, 'Error!', true)
-                    );
-                    return;
+            console.log('push', data.domain);
+
+            if (startedResolving !== true) {
+                startedResolving = true;
+                for(var i = 0; i < 5; i++) {
+                    setTimeout(function() {
+                        resolveNext(resolveQueue);
+                    }, 500);
                 }
-
-                if (ip === false) {
-                    report_elem.appendChild(
-                        reportRowElem(data.domain, data.fuzzer, 'None resolved', false)
-                    );
-                    return;
-                }
-
-                resolvedCount += 1;
-                resolvedCountElem.innerHTML = resolvedCount;
-                report_elem.appendChild(
-                    reportRowElem(data.domain, data.fuzzer, ip, true)
-                );
-            });
+            }
+        },
+        'complete': function() {
+            allFound = true;
+            console.log('all found!');
         }
     });
 }

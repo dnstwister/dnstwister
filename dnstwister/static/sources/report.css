@@ -36,3 +36,12 @@
 .domain_nav .ico {
     margin-left: 2px;
 }
+
+#progress_box.in_progress {
+    text-align: center;
+    border: 1px solid silver;
+    margin: 1rem 3rem;
+    padding-top: 1rem;
+}
+
+
