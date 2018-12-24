@@ -37,6 +37,10 @@
     margin-left: 2px;
 }
 
+#progress_box h4 {
+    display: none;
+}
+
 #progress_box.in_progress {
     text-align: center;
     border: 1px solid silver;
@@ -44,4 +48,6 @@
     padding-top: 1rem;
 }
 
-
+#progress_box.in_progress h4 {
+    display: block;
+}

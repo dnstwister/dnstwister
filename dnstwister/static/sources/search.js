@@ -25,6 +25,12 @@ var startProgressDots = function () {
     }, 350);
 }
 
+var markProgressAsDone = function () {
+    var progressBoxElem = document.getElementById('progress_box');
+
+    progressBoxElem.className = 'progress';
+}
+
 var resolve = function(encoded_domain, callback) {
     const request = new XMLHttpRequest();
     const url='/api/ip/' + encoded_domain;
@@ -88,12 +94,11 @@ var search = function(encoded_domain) {
         var data = queue.pop();
         if (data === undefined) {
             if (allFound === true) {
-                console.log('all resolved')
                 clearInterval(progressTimer);
+                markProgressAsDone();
                 return;
             }
             else {
-                console.log('Exhausted!')
                 // If queue exhausted, wait for more.
                 setTimeout(function() {
                     resolveNext(queue);
@@ -101,8 +106,6 @@ var search = function(encoded_domain) {
                 return;
             }
         }
-
-        console.log('resolving', data.domain)
 
         resolve(data.encode_domain, function(ip) {
             checkedCount += 1;
@@ -137,8 +140,6 @@ var search = function(encoded_domain) {
         'success': function(data) {
             resolveQueue.push(data);
 
-            console.log('push', data.domain);
-
             if (startedResolving !== true) {
                 startedResolving = true;
                 for(var i = 0; i < 5; i++) {
@@ -150,7 +151,6 @@ var search = function(encoded_domain) {
         },
         'complete': function() {
             allFound = true;
-            console.log('all found!');
         }
     });
 }
