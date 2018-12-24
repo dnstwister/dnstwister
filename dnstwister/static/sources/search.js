@@ -27,8 +27,11 @@ var startProgressDots = function () {
 
 var markProgressAsDone = function () {
     var progressBoxElem = document.getElementById('progress_box');
+    var doneTargetElem = document.getElementById('search_progress');
 
-    progressBoxElem.className = 'progress';
+    doneTargetElem.innerHTML = 'Done!'
+
+    Velocity(doneTargetElem, 'fadeOut', { duration: 1000, delay: 500 })
 }
 
 var resolve = function(encoded_domain, callback) {
@@ -85,6 +88,7 @@ var search = function(encoded_domain) {
     var resolveQueue = [];
     var startedResolving = false;
     var allFound = false;
+    var cleaningUp = false;
 
     var reportElem = document.getElementById('report_target');
 
@@ -94,8 +98,11 @@ var search = function(encoded_domain) {
         var data = queue.pop();
         if (data === undefined) {
             if (allFound === true) {
-                clearInterval(progressTimer);
-                markProgressAsDone();
+                if (cleaningUp === false) {
+                    cleaningUp = true;
+                    clearInterval(progressTimer);
+                    markProgressAsDone();
+                }
                 return;
             }
             else {

@@ -2,6 +2,7 @@
 {% block title %}Report{% endblock %}
 {% block head %}
         <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
         <script type="text/javascript">
             document.onreadystatechange = () => {
               if (document.readyState === 'interactive') {
@@ -27,7 +28,7 @@
         <section class="sub_nav">
             <a href="/">new search</a>
         </section>
-        <section id="progress_box" class="progress in_progress">
+        <section id="progress_box" class="progress">
             <h4 id="search_progress">
                 Searching<span id="search_dots">..</span>
             </h4>
