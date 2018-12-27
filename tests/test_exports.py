@@ -176,7 +176,6 @@ def test_json_export_no_fuzzy(webapp, monkeypatch):
     }
 
 
-
 def test_json_export_formatting(webapp, monkeypatch):
     """Test JSON export looks nice :)"""
     monkeypatch.setattr(
@@ -322,17 +321,17 @@ def test_unicode_csv_export(webapp, monkeypatch):
         xn--a-sfa.com,Bitsquatting,xn--e-sfa.com,999.999.999.999,False
         xn--a-sfa.com,Bitsquatting,xn--i-sfa.com,999.999.999.999,False
         xn--a-sfa.com,Bitsquatting,xn--q-sfa.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0cab.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0caa.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0ca3e.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0cab.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0cad.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0ca743m.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0ca98b.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0caf.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0caj.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0cah.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caj.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca15e.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca90o.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca743m.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca98b.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca3e.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca76d.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca53r.com,999.999.999.999,False
         xn--a-sfa.com,Hyphenation,xn--a--kia.com,999.999.999.999,False
