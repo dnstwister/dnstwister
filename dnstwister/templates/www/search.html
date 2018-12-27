@@ -28,26 +28,24 @@
         <section class="sub_nav">
             <a href="/">new search</a>
         </section>
-        <section id="progress_box" class="progress">
-            <h4 id="search_progress">
-                Searching<span id="search_dots">..</span>
+        <section class="progress">
+            <h4 class="search_progress">
+                Searching<span id="search_dots">.</span>
             </h4>
-            <h6 id="search_result">
+            <h6 class="search_result">
                 <p>
-                    We identified
+                    We<span class="wip_text">'ve</span> identified
                     <span id="checked_count" class="result_highlight">0</span>
                     domains similar to
                     <span class="result_highlight">{{ domain | domain_renderer }}</span>.
                 </p>
                 <p>
-                    <span id="resolved_count" class="result_highlight">0</span>
-                    of those domains resolved to an IP address.
+                    <span id="resolved_count" class="result_highlight">None</span>
+                    of those domains <span class="wip_text">have so far</span> resolved to an IP address.
                 </p>
             </h6>
         </section>
         <section>
-            <button class="toggle_unresolved" style="display: none;">Show unresolved domains</button>
-            <button class="toggle_unresolved" style="display: none;">Hide unresolved domains</button>
             <section class="exports">
                 export:
                 {% for (title, format) in exports.items() %}

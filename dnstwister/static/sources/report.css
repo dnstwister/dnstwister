@@ -42,10 +42,6 @@
     padding-top: 1rem;
 }
 
-#search_result {
-    zdisplay: none;
-}
-
 .result_highlight {
     font-weight: bold;
 }

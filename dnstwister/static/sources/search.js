@@ -3,8 +3,13 @@ var updatedProgress = function(checkedCount, resolvedCount) {
     var checkedCountElem = document.getElementById('checked_count');
     var resolvedCountElem = document.getElementById('resolved_count');
 
-    checkedCountElem.innerHTML = checkedCount;
-    resolvedCountElem.innerHTML = resolvedCount;
+    if (checkedCount > 0) {
+        checkedCountElem.innerHTML = checkedCount;
+    }
+
+    if (resolvedCount > 0) {
+        resolvedCountElem.innerHTML = resolvedCount;
+    }
 }
 
 var startProgressDots = function () {
@@ -24,13 +29,12 @@ var startProgressDots = function () {
 }
 
 var markProgressAsDone = function () {
-    var progressElem = document.getElementById('search_progress');
-    var resultElem = document.getElementById('search_result');
+    var progressElem = document.getElementsByClassName('search_progress')[0];
+    progressElem.innerHTML = 'Done!';
 
-    progressElem.innerHTML = 'Done!'
-
-    Velocity(progressElem, 'slideUp', { duration: 500, delay: 0 });
-    Velocity(resultElem, {'font-size': '150%'}, { duration: 500 });
+    Velocity(document.getElementsByClassName('wip_text'), 'fadeOut', { duration: 500, delay: 250 });
+    Velocity(progressElem, 'slideUp', { duration: 500, delay: 1500 });
+    Velocity(document.getElementsByClassName('search_result'), {'font-size': '150%'}, { duration: 500, delay: 1500 });
 }
 
 var resolve = function(encoded_domain, callback) {
