@@ -32,12 +32,17 @@
             <h4 id="search_progress">
                 Searching<span id="search_dots">..</span>
             </h4>
-            <h6>
-                Resolved
-                <span id="resolved_count">0</span>
-                (<span id="resolved_percent">0</span>%)
-                domains of a possible
-                <span id="checked_count">0</span>
+            <h6 id="search_result">
+                <p>
+                    We identified
+                    <span id="checked_count" class="result_highlight">0</span>
+                    domains similar to
+                    <span class="result_highlight">{{ domain | domain_renderer }}</span>.
+                </p>
+                <p>
+                    <span id="resolved_count" class="result_highlight">0</span>
+                    of those domains resolved to an IP address.
+                </p>
             </h6>
         </section>
         <section>

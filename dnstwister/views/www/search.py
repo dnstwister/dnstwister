@@ -181,7 +181,7 @@ def search_v2():
         return handle_invalid_domain(encoded_domain_parameter)
 
     return flask.render_template(
-        'www/report_v2.html',
+        'www/search.html',
         domain=domain_parameter,
         exports={'json': 'json', 'csv': 'csv'},
     )
