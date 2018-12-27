@@ -61,18 +61,15 @@ var resolve = function(encoded_domain, callback) {
     }
 }
 
-var reportRowElem = function(domain, tweak, ipText, show) {
+var reportRowElem = function(domain, ipText, show) {
     var rowElem = document.createElement('tr');
     var domainCellElem = document.createElement('td');
-    var tweakCellElem = document.createElement('td');
     var ipCellElem = document.createElement('td');
 
     domainCellElem.appendChild(document.createTextNode(domain));
-    tweakCellElem.appendChild(document.createTextNode(tweak));
     ipCellElem.appendChild(document.createTextNode(ipText));
 
     rowElem.appendChild(domainCellElem);
-    rowElem.appendChild(tweakCellElem);
     rowElem.appendChild(ipCellElem);
 
     rowElem.className = 'domain-row';
@@ -117,20 +114,20 @@ var search = function(encoded_domain) {
             }
         }
 
-        resolve(data.encode_domain, function(ip) {
+        resolve(data.ed, function(ip) {
             checkedCount += 1;
             updatedProgress(checkedCount, resolvedCount);
 
             if (ip === null) {
                 reportElem.appendChild(
-                    reportRowElem(data.domain, data.fuzzer, 'Error!', true)
+                    reportRowElem(data.d, data.fuzzer, 'Error!', true)
                 );
                 resolveNext(queue);
                 return;
             }
             else if (ip === false) {
                 reportElem.appendChild(
-                    reportRowElem(data.domain, data.fuzzer, 'None resolved', false)
+                    reportRowElem(data.d, data.fuzzer, 'None resolved', false)
                 );
                 resolveNext(queue);
                 return;
@@ -139,7 +136,7 @@ var search = function(encoded_domain) {
             resolvedCount += 1;
             updatedProgress(checkedCount, resolvedCount);
             reportElem.appendChild(
-                reportRowElem(data.domain, data.fuzzer, ip, true)
+                reportRowElem(data.d, ip, true)
             );
 
             resolveNext(queue);
