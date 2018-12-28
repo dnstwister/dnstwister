@@ -39,6 +39,7 @@ maps = {
     ),
     'search.min.js': (
         'jsonpipe.js',
+        'search-ui.js',
         'search.js',
     ),
     'analyse.min.js': (

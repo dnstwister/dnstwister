@@ -1,56 +1,4 @@
-/* global jsonpipe, Velocity, XMLHttpRequest */
-var ui = (function () {
-  var reportShown = false
-
-  var updatedProgress = function (checkedCount, resolvedCount) {
-    var checkedCountElem = document.getElementById('checked_count')
-    var resolvedCountElem = document.getElementById('resolved_count')
-    var reportTableElem = document.getElementById('main_report')
-
-    if (checkedCount > 0) {
-      checkedCountElem.innerHTML = checkedCount
-    }
-
-    if (resolvedCount > 0) {
-      resolvedCountElem.innerHTML = resolvedCount
-      if (reportShown === false) {
-        reportShown = true
-        reportTableElem.style.display = 'table'
-      }
-    }
-  }
-
-  var startProgressDots = function () {
-    var searchDotsElem = document.getElementById('search_dots')
-
-    return setInterval(function () {
-      var dotsCount = (searchDotsElem.firstChild || []).length
-      var nextDotsCount = (dotsCount + 1) % 4
-
-      var newDots = ''
-      for (var i = 0; i < nextDotsCount; i++) {
-        newDots += '.'
-      }
-      searchDotsElem.innerHTML = newDots
-    }, 350)
-  }
-
-  var markProgressAsDone = function () {
-    var progressElem = document.getElementsByClassName('search_progress')[0]
-    progressElem.innerHTML = 'Done!'
-
-    Velocity(document.getElementsByClassName('wip_text'), 'fadeOut', { duration: 500, delay: 250 })
-    Velocity(progressElem, 'slideUp', { duration: 500, delay: 1500 })
-    Velocity(document.getElementsByClassName('search_result'), { 'font-size': '150%' }, { duration: 500, delay: 1500 })
-  }
-
-  return {
-    updatedProgress: updatedProgress,
-    startProgressDots: startProgressDots,
-    markProgressAsDone: markProgressAsDone
-  }
-})()
-
+/* globals jsonpipe, ui, XMLHttpRequest */
 var search = (function () {
   var resolve = function (encodedDomain, callback) {
     var request = new XMLHttpRequest()
@@ -72,25 +20,6 @@ var search = (function () {
         }
       }
     }
-  }
-
-  var reportRowElem = function (domain, ipText, show) {
-    var rowElem = document.createElement('tr')
-    var domainCellElem = document.createElement('td')
-    var ipCellElem = document.createElement('td')
-
-    domainCellElem.appendChild(document.createTextNode(domain))
-    ipCellElem.appendChild(document.createTextNode(ipText))
-
-    rowElem.appendChild(domainCellElem)
-    rowElem.appendChild(ipCellElem)
-
-    rowElem.className = 'domain-row'
-    if (show === true) {
-      rowElem.className = 'resolved'
-    }
-
-    return rowElem
   }
 
   var runSearch = function (encodedDomain) {
@@ -129,25 +58,17 @@ var search = (function () {
         ui.updatedProgress(checkedCount, resolvedCount)
 
         if (ip === null) {
-          reportElem.appendChild(
-            reportRowElem(data.d, data.fuzzer, 'Error!', true)
-          )
+          ui.addErrorRow(reportElem, data.d, data.ed)
           resolveNext(queue)
           return
         } else if (ip === false) {
-          reportElem.appendChild(
-            reportRowElem(data.d, data.fuzzer, 'None resolved', false)
-          )
           resolveNext(queue)
           return
         }
 
         resolvedCount += 1
         ui.updatedProgress(checkedCount, resolvedCount)
-        reportElem.appendChild(
-          reportRowElem(data.d, ip, true)
-        )
-
+        ui.addResolvedRow(reportElem, data.d, data.ed, ip)
         resolveNext(queue)
       })
     }
