@@ -36,3 +36,17 @@
 .domain_nav .ico {
     margin-left: 2px;
 }
+
+.progress {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.result_highlight {
+    font-weight: bold;
+}
+
+.result_highlight.counter {
+    font-size: 130%;
+    color: #1eaedb;
+}

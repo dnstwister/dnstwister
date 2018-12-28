@@ -1,0 +1,68 @@
+{% extends "www/layout.html" %}
+{% block title %}Report{% endblock %}
+{% block head %}
+        <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
+        <script type="text/javascript">
+          document.onreadystatechange = () => {
+            if (document.readyState === 'interactive') {
+              search.run('{{ domain | domain_encoder }}');
+            }
+          };
+        </script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>dnstwister report</h1>
+{% endblock %}
+{% block body %}
+        <section class="domains">
+            <div class="domain_nav">
+                <h5>{{ domain | domain_renderer }}</h5>
+                <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ domain | domain_encoder }}">
+                    <img class="ico" src="/static/email.png"/>
+                </a>
+            </div>
+            <div style="clear: both"></div>
+        </section>
+        <section class="sub_nav">
+            <a href="/">new search</a>
+        </section>
+        <section class="progress">
+            <h4 class="search_progress">
+                Searching<span id="search_dots">.</span>
+            </h4>
+            <h6 class="search_result">
+                <p>
+                    We<span class="wip_text">'ve</span> identified
+                    <span id="checked_count" class="result_highlight counter">0</span>
+                    domains similar to
+                    <span class="result_highlight">{{ domain | domain_renderer }}</span>.
+                    <br />
+                    <span id="resolved_count" class="result_highlight counter">None</span>
+                    of those domains <span class="wip_text">have so far</span> resolved to an IP address.
+                </p>
+            </h6>
+        </section>
+        <section>
+            <section class="exports">
+                export:
+                {% for (title, format) in exports.items() %}
+                    <a href="/search/{{ domain | domain_encoder }}/{{ format }}">{{ title }}</a>
+                {% endfor %}
+            </section>
+        </section>
+        <section>
+            <table class="report u-full-width" id="main_report">
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>IP</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="report_target">
+                </tbody>
+            </table>
+        </section>
+{% endblock %}

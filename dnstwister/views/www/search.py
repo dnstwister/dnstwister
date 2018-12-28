@@ -170,6 +170,22 @@ def handle_invalid_domain(search_term_as_hex):
     return flask.redirect('/error/0')
 
 
+@app.route('/search')
+def search_v2():
+    """Chunked endpoint supporting search."""
+    encoded_domain_parameter = flask.request.args.get('ed')
+
+    domain_parameter = tools.parse_domain(encoded_domain_parameter)
+    if domain_parameter is None:
+        return handle_invalid_domain(encoded_domain_parameter)
+
+    return flask.render_template(
+        'www/search.html',
+        domain=domain_parameter,
+        exports={'json': 'json', 'csv': 'csv'},
+    )
+
+
 @app.route('/search/<search_domain>')
 @app.route('/search/<search_domain>/<fmt>')
 def search(search_domain, fmt=None):

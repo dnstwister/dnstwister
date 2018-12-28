@@ -56,6 +56,30 @@ class InvalidDomain(Exception):
     pass
 
 
+class Result(object):
+
+    def __init__(self, fuzzer, domain):
+        self._fuzzer = fuzzer
+        self._domain = domain
+
+    @property
+    def fuzzer(self):
+        return self._fuzzer
+
+    @property
+    def domain(self):
+        return self._domain
+
+
+class ResultBuilder(object):
+
+    def __init__(self, tld):
+        self._tld = tld
+
+    def build(self, fuzzer, domain):
+        return Result(fuzzer, domain + '.' + self._tld)
+
+
 def is_valid_domain(domain):
     """Validate a domain - including unicode domains."""
     try:
@@ -150,7 +174,6 @@ class fuzz_domain(object):
         idna.core.check_label = old_func
 
     def __bitsquatting(self):
-        result = []
         masks = [1, 2, 4, 8, 16, 32, 64, 128]
         for i in range(0, len(self.domain)):
             c = self.domain[i]
@@ -163,11 +186,9 @@ class fuzz_domain(object):
                 b = chr(ord(c) ^ masks[j])
                 o = ord(b)
                 if (o >= 48 and o <= 57) or (o >= 97 and o <= 122) or o == 45:
-                    result.append(self.domain[:i] + b + self.domain[i+1:])
+                    yield self.domain[:i] + b + self.domain[i+1:]
 
-        return result
-
-    def __homoglyph(self):
+    def __homoglyph(self, MAX=1000):
         glyphs = {
         'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'а', u'ạ', u'ǎ', u'ă', u'ȧ', u'ӓ'],
         'b': ['d', 'lb', 'ib', u'ʙ', u'Ь', u'b̔', u'ɓ', u'Б'],
@@ -197,7 +218,8 @@ class fuzz_domain(object):
         'z': [u'ʐ', u'ż', u'ź', u'ʐ', u'ᴢ']
         }
 
-        result = set()
+        yielded = 0
+        seen = set()
 
         for ws in range(0, len(self.domain)):
             for i in range(0, (len(self.domain)-ws)+1):
@@ -210,106 +232,102 @@ class fuzz_domain(object):
                         win_copy = win
                         for g in glyphs[c]:
                             win = win.replace(c, g)
-                            result.add(self.domain[:i] + win + self.domain[i+ws:])
+                            candidate = self.domain[:i] + win + self.domain[i+ws:]
+                            if candidate not in seen:
+                                seen.add(candidate)
+                                yield candidate
+                                yielded += 1
                             win = win_copy
 
                             # Very long domains have terrible complexity when
                             # ran through this algorithm.
-                            if len(result) >= 1000:
-                                return result
+                            if MAX is not None and yielded >= MAX:
+                                return
                     j += 1
 
-        return result
-
     def __hyphenation(self):
-        result = []
-
         for i in range(1, len(self.domain)):
-            result.append(self.domain[:i] + '-' + self.domain[i:])
-
-        return result
+            yield self.domain[:i] + '-' + self.domain[i:]
 
     def __insertion(self):
-        result = set()
+        seen = set()
 
         for i in range(1, len(self.domain)-1):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.add(self.domain[:i] + c + self.domain[i] + self.domain[i+1:])
-                        result.add(self.domain[:i] + self.domain[i] + c + self.domain[i+1:])
+                        first = self.domain[:i] + c + self.domain[i] + self.domain[i+1:]
+                        second = self.domain[:i] + self.domain[i] + c + self.domain[i+1:]
 
-        return result
+                        if first not in seen:
+                            seen.add(first)
+                            yield first
+
+                        if second not in seen:
+                            seen.add(second)
+                            yield second
 
     def __omission(self):
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
-            result.add(self.domain[:i] + self.domain[i+1:])
+            candidate = self.domain[:i] + self.domain[i+1:]
+            if candidate not in seen:
+                seen.add(candidate)
+                yield candidate
 
         n = re.sub(r'(.)\1+', r'\1', self.domain)
 
-        if n not in result and n != self.domain:
-            result.add(n)
-
-        return result
+        if n not in seen and n != self.domain:
+            yield n
 
     def __repetition(self):
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
             if self.domain[i].isalpha():
-                result.add(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
-
-        return result
+                candidate = self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:]
+                if candidate not in seen:
+                    seen.add(candidate)
+                    yield candidate
 
     def __replacement(self):
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.add(self.domain[:i] + c + self.domain[i+1:])
-
-        return result
+                        candidate = self.domain[:i] + c + self.domain[i+1:]
+                        if candidate not in seen:
+                            seen.add(candidate)
+                            yield candidate
 
     def __subdomain(self):
-        result = []
-
         for i in range(1, len(self.domain)):
             if self.domain[i] not in ['-', '.'] and self.domain[i-1] not in ['-', '.']:
-                result.append(self.domain[:i] + '.' + self.domain[i:])
-
-        return result
+                yield self.domain[:i] + '.' + self.domain[i:]
 
     def __transposition(self):
-        result = []
-
         for i in range(0, len(self.domain)-1):
             if self.domain[i+1] != self.domain[i]:
-                result.append(self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:])
-
-        return result
+                yield self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:]
 
     def __vowel_swap(self):
         vowels = 'aeiou'
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
             for vowel in vowels:
                 if self.domain[i] in vowels:
-                    result.add(self.domain[:i] + vowel + self.domain[i+1:])
-
-        return result
+                    candidate = self.domain[:i] + vowel + self.domain[i+1:]
+                    if candidate not in seen:
+                        seen.add(candidate)
+                        yield candidate
 
     def __addition(self):
-        result = []
-
         for i in range(97, 123):
-            result.append(self.domain + chr(i))
-
-        return result
+            yield self.domain + chr(i)
 
     def fuzz(self):
         """ Perform a domain fuzz.
@@ -352,3 +370,66 @@ class fuzz_domain(object):
             self.domains.append({ 'fuzzer': 'Various', 'domain-name': self.domain + '-' + self.tld + '.com' })
 
         self.__filter_domains()
+
+    def fuzz_iter(self, de_dupe=False):
+        """Return an iterator of the fuzz.
+
+        The intent is to reduce memory usage and to allow the fuzzed domains
+        to be returned in a chunked manner over HTTP chunking to the
+        front-end.
+
+        The sacrifice of some performance should be lost in the time taken to
+        individually resolve each domain - aka an additional 0.001 sec per
+        domain here is irrelevant if it takes 1 second to resolve each one
+        in the browser.
+
+        You can optionally de-duplicate as you go, though that will use more
+        memory obviously.
+        """
+        seen = set()
+        builder = ResultBuilder(self.tld)
+
+        yield builder.build('Original*', self.domain)
+
+        fuzzers = {
+            'Addition': self.__addition,
+            'Bitsquatting': self.__bitsquatting,
+            'Homoglyph': lambda: self.__homoglyph(MAX=None),
+            'Hyphenation': self.__hyphenation,
+            'Insertion': self.__insertion,
+            'Omission': self.__omission,
+            'Repetition': self.__repetition,
+            'Replacement': self.__replacement,
+            'Subdomain': self.__subdomain,
+            'Transposition': self.__transposition,
+            'Vowel swap': self.__vowel_swap
+        }
+
+        for (tag, fuzzer_func) in fuzzers.items():
+
+            for domain in fuzzer_func():
+                if de_dupe:
+                    if domain in seen:
+                        continue
+                    else:
+                        seen.add(domain)
+
+                if not is_valid_domain(domain + '.' + self.tld):
+                    continue
+
+                yield builder.build(tag, domain)
+
+        if not self.domain.startswith('www.'):
+            yield builder.build('Various', 'ww' + self.domain)
+            yield builder.build('Various', 'www' + self.domain)
+            yield builder.build('Various', 'www-' + self.domain)
+
+        if '.' in self.tld:
+            yield Result('Various', self.domain + '.' + self.tld.split('.')[-1])
+            yield Result('Various', self.domain + self.tld)
+
+        if '.' not in self.tld:
+            yield builder.build('Various', self.domain + self.tld)
+
+        if self.tld != 'com' and '.' not in self.tld:
+            yield Result('Various', self.domain + '-' + self.tld + '.com')

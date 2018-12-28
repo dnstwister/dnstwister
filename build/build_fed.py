@@ -37,6 +37,11 @@ maps = {
         'jquery-1.11.3.min.js',
         'report.js',
     ),
+    'search.min.js': (
+        'jsonpipe.js',
+        'search-ui.js',
+        'search.js',
+    ),
     'analyse.min.js': (
         'jquery-1.11.3.min.js',
         'analyse.js',
