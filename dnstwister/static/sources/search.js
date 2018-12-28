@@ -1,5 +1,7 @@
 /* globals jsonpipe, ui, XMLHttpRequest */
 var search = (function () {
+  var seen = []
+
   var resolve = function (encodedDomain, callback) {
     var request = new XMLHttpRequest()
     var url = '/api/ip/' + encodedDomain
@@ -53,6 +55,12 @@ var search = (function () {
         }
       }
 
+      if (seen.indexOf(data.d) !== -1) {
+        resolveNext(queue)
+        return
+      }
+
+      seen.push(data.d)
       resolve(data.ed, function (ip) {
         checkedCount += 1
         ui.updatedProgress(checkedCount, resolvedCount)

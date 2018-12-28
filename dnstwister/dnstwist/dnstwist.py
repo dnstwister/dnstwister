@@ -371,8 +371,7 @@ class fuzz_domain(object):
 
         self.__filter_domains()
 
-    @staticmethod
-    def fuzz_iter(de_dupe=False):
+    def fuzz_iter(self, de_dupe=False):
         """Return an iterator of the fuzz.
 
         The intent is to reduce memory usage and to allow the fuzzed domains
