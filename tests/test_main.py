@@ -30,26 +30,6 @@ class TestMain(unittest.TestCase):
         )
 
     @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
-    def test_report_redirect(self):
-        """Test the /report?q= urls redirect to the new urls."""
-
-        res = self.app.get('/report?q={}'.format(','.join((
-            binascii.hexlify('a.com'),
-        ))))
-
-        self.assertEqual(
-            'http://localhost:80/search/612e636f6d',
-            res.location
-        )
-
-        res = self.app.post('/search', {'domains': 'b.com'})
-
-        self.assertEqual(
-            'http://localhost:80/search/622e636f6d',
-            res.location
-        )
-
-    @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
     def test_exports(self):
         """We have export links."""
         res = self.app.get('/search/{}'.format(binascii.hexlify('a.com')))
