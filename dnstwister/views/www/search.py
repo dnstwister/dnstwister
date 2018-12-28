@@ -170,10 +170,9 @@ def handle_invalid_domain(search_term_as_hex):
     return flask.redirect('/error/0')
 
 
-# http://localhost:5000/search?ed=7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a707069656f2e636f6d
 @app.route('/search')
 def search_v2():
-    """Chunked endpoint-supporting search."""
+    """Chunked endpoint supporting search."""
     encoded_domain_parameter = flask.request.args.get('ed')
 
     domain_parameter = tools.parse_domain(encoded_domain_parameter)
