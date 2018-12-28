@@ -371,7 +371,8 @@ class fuzz_domain(object):
 
         self.__filter_domains()
 
-    def fuzz_iter(self, de_dupe=False):
+    @staticmethod
+    def fuzz_iter(de_dupe=False):
         """Return an iterator of the fuzz.
 
         The intent is to reduce memory usage and to allow the fuzzed domains
@@ -418,3 +419,18 @@ class fuzz_domain(object):
                     continue
 
                 yield builder.build(tag, domain)
+
+        if not self.domain.startswith('www.'):
+            yield builder.build('Various', 'ww' + self.domain)
+            yield builder.build('Various', 'www' + self.domain)
+            yield builder.build('Various', 'www-' + self.domain)
+
+        if '.' in self.tld:
+            yield Result('Various', self.domain + '.' + self.tld.split('.')[-1])
+            yield Result('Various', self.domain + self.tld)
+
+        if '.' not in self.tld:
+            yield builder.build('Various', self.domain + self.tld)
+
+        if self.tld != 'com' and '.' not in self.tld:
+            yield Result('Various', self.domain + '-' + self.tld + '.com')
