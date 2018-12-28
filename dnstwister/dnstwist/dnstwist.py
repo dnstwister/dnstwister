@@ -268,66 +268,62 @@ class fuzz_domain(object):
                             yield second
 
     def __omission(self):
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
-            result.add(self.domain[:i] + self.domain[i+1:])
+            candidate = self.domain[:i] + self.domain[i+1:]
+            if candidate not in seen:
+                seen.add(candidate)
+                yield candidate
 
         n = re.sub(r'(.)\1+', r'\1', self.domain)
 
-        if n not in result and n != self.domain:
-            result.add(n)
-
-        return result
+        if n not in seen and n != self.domain:
+            yield n
 
     def __repetition(self):
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
             if self.domain[i].isalpha():
-                result.add(self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:])
-
-        return result
+                candidate = self.domain[:i] + self.domain[i] + self.domain[i] + self.domain[i+1:]
+                if candidate not in seen:
+                    seen.add(candidate)
+                    yield candidate
 
     def __replacement(self):
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
-                        result.add(self.domain[:i] + c + self.domain[i+1:])
-
-        return result
+                        candidate = self.domain[:i] + c + self.domain[i+1:]
+                        if candidate not in seen:
+                            seen.add(candidate)
+                            yield candidate
 
     def __subdomain(self):
-        result = []
-
         for i in range(1, len(self.domain)):
             if self.domain[i] not in ['-', '.'] and self.domain[i-1] not in ['-', '.']:
-                result.append(self.domain[:i] + '.' + self.domain[i:])
-
-        return result
+                yield self.domain[:i] + '.' + self.domain[i:]
 
     def __transposition(self):
-        result = []
-
         for i in range(0, len(self.domain)-1):
             if self.domain[i+1] != self.domain[i]:
-                result.append(self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:])
-
-        return result
+                yield self.domain[:i] + self.domain[i+1] + self.domain[i] + self.domain[i+2:]
 
     def __vowel_swap(self):
         vowels = 'aeiou'
-        result = set()
+        seen = set()
 
         for i in range(0, len(self.domain)):
             for vowel in vowels:
                 if self.domain[i] in vowels:
-                    result.add(self.domain[:i] + vowel + self.domain[i+1:])
-
-        return result
+                    candidate = self.domain[:i] + vowel + self.domain[i+1:]
+                    if candidate not in seen:
+                        seen.add(candidate)
+                        yield candidate
 
     def __addition(self):
         for i in range(97, 123):
@@ -401,6 +397,12 @@ class fuzz_domain(object):
             'Homoglyph': lambda: self.__homoglyph(MAX=None),
             'Hyphenation': self.__hyphenation,
             'Insertion': self.__insertion,
+            'Omission': self.__omission,
+            'Repetition': self.__repetition,
+            'Replacement': self.__replacement,
+            'Subdomain': self.__subdomain,
+            'Transposition': self.__transposition,
+            'Vowel swap': self.__vowel_swap
         }
 
         for (tag, fuzzer_func) in fuzzers.items():
