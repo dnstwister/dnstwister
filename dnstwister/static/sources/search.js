@@ -1,7 +1,5 @@
 /* globals jsonpipe, ui, XMLHttpRequest */
 var search = (function () {
-  var seen = []
-
   var resolve = function (encodedDomain, callback) {
     var request = new XMLHttpRequest()
     var url = '/api/ip/' + encodedDomain
@@ -25,6 +23,7 @@ var search = (function () {
   }
 
   var runSearch = function (encodedDomain) {
+    var seen = []
     var checkedCount = 0
     var resolvedCount = 0
     var resolveQueue = []
