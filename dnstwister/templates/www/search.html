@@ -4,11 +4,11 @@
         <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
         <script type="text/javascript">
-            document.onreadystatechange = () => {
-              if (document.readyState === 'interactive') {
-                search('{{ domain | domain_encoder }}');
-              }
-            };
+          document.onreadystatechange = () => {
+            if (document.readyState === 'interactive') {
+              search.run('{{ domain | domain_encoder }}');
+            }
+          };
         </script>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
 {% endblock %}
