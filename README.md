@@ -45,26 +45,23 @@ address your concern as quickly as possible.
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
 
-## Running dnstwister
+## Developing dnstwister
 
-Setup:
+Once-off setup:
 
-    pip install -r requirements.txt
+    pip install pipenv
+    pipenv install
+    pipenv install --dev
 
 Running:
 
-    python test_server.py
+    pipenv run python test_server.py
 
 ## Tests
 
-Setup:
-
-    pip install -r requirements.txt
-    pip install -r tests/extra_requirements.txt
-
 Running:
 
-    py.test
+    pipenv run py.test
 
 ## Say hello
 
