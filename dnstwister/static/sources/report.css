@@ -45,3 +45,8 @@
 .result_highlight {
     font-weight: bold;
 }
+
+.result_highlight.counter {
+    font-size: 130%;
+    color: #1eaedb;
+}

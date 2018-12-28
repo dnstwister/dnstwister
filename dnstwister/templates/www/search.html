@@ -35,12 +35,11 @@
             <h6 class="search_result">
                 <p>
                     We<span class="wip_text">'ve</span> identified
-                    <span id="checked_count" class="result_highlight">0</span>
+                    <span id="checked_count" class="result_highlight counter">0</span>
                     domains similar to
                     <span class="result_highlight">{{ domain | domain_renderer }}</span>.
-                </p>
-                <p>
-                    <span id="resolved_count" class="result_highlight">None</span>
+                    <br />
+                    <span id="resolved_count" class="result_highlight counter">None</span>
                     of those domains <span class="wip_text">have so far</span> resolved to an IP address.
                 </p>
             </h6>
@@ -54,12 +53,12 @@
             </section>
         </section>
         <section>
-            <table class="report u-full-width" style="display: table;">
+            <table class="report u-full-width" id="main_report">
                 <thead>
                     <tr>
                         <th>Domain</th>
                         <th>IP</th>
-                        <th>Tools</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="report_target">
