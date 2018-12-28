@@ -13,7 +13,7 @@ def test_generator_is_same_as_original():
     fuzzer = dnstwist.fuzz_domain('amazon.net')
     generator_results = sorted([r.domain
                                 for r
-                                in fuzzer.fuzz_iter(de_dupe=True)])
+                                in fuzzer.fuzz_iter()])
 
     missing_from_original = [d
                              for d
@@ -30,6 +30,36 @@ def test_generator_is_same_as_original():
     # The generator returns 3 less domains because those domains are actually
     # invalid.
     assert missing_from_generator == [u'amaz\u039fn.net', u'amaz\u041en.net', u'amaz\u0555n.net']
+
+
+def test_generator_is_same_as_original2():
+    """Test of an outlier?"""
+    domain = 'wwwwwwwwwwwwwww.com.au'
+
+    fuzzer = dnstwist.fuzz_domain(domain)
+    fuzzer.fuzz()
+    original_results = sorted([r['domain-name']
+                               for r
+                               in fuzzer.domains])
+
+    fuzzer = dnstwist.fuzz_domain(domain)
+    generator_results = sorted([r.domain
+                                for r
+                                in fuzzer.fuzz_iter()])
+
+    missing_from_original = [d
+                             for d
+                             in generator_results
+                             if d not in original_results]
+
+    assert missing_from_original == []
+
+    missing_from_generator = [d
+                              for d
+                              in original_results
+                              if d not in generator_results]
+
+    assert missing_from_generator == []
 
 
 def test_small_domain_stats():
