@@ -3,4 +3,3 @@
 brand/*.psd
 _build*
 .coverage
-*/node_modules/
