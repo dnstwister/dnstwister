@@ -5,14 +5,14 @@
   "main": "index.js",
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "dns": "^0.2.2"
+  },
   "devDependencies": {
     "webpack": "^4.28.2",
-    "webpack-cli": "^3.1.2",
-    "workers-preview": "^1.0.6"
+    "webpack-cli": "^3.1.2"
   },
   "scripts": {
-    "build": "webpack",
-    "build:watch": "webpack --watch",
-    "preview": "workers-preview < dist/bundle.js"
+    "build": "webpack index.js"
   }
 }
