@@ -29,7 +29,9 @@ async function handleRequest (request) {
         error: false
       }
       if (data.Answer !== undefined && data.Answer.length > 0) {
-        response.ip = data.Answer[0].data
+        response.ip = data.Answer.find(function (element) {
+          return element.type === 1
+        }).data
       }
       return new Response(JSON.stringify(response), {
         headers: jsonHeaders
