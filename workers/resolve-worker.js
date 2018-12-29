@@ -17,7 +17,7 @@ async function handleRequest (request) {
 
   let domain = parsedUrl.searchParams.get('ed')
 
-  return fetch('https://dns.google.com/resolve?name=' + domain)
+  return fetch('https://dns.google.com/resolve?name=' + domain, { cf: { cacheTtl: 86400 } })
     .then(function (response) {
       if (response.ok) {
         return response.json()
