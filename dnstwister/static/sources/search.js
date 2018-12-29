@@ -86,7 +86,7 @@ var search = (function () {
 
         if (startedResolving !== true) {
           startedResolving = true
-          for (var i = 0; i < 5; i++) {
+          for (var i = 0; i < 20; i++) {
             setTimeout(function () {
               resolveNext(resolveQueue)
             }, 500)
