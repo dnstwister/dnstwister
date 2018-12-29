@@ -1,8 +1,8 @@
 /* globals jsonpipe, ui, XMLHttpRequest */
 var search = (function () {
-  var resolve = function (encodedDomain, callback) {
+  var resolve = function (domain, callback) {
     var request = new XMLHttpRequest()
-    var url = '/api/ip/' + encodedDomain
+    var url = 'https://dnstwister.report/api/ip2?ed=' + domain
     request.open('GET', url)
     request.send()
     request.onreadystatechange = (e) => {
@@ -60,7 +60,7 @@ var search = (function () {
       }
 
       seen.push(data.d)
-      resolve(data.ed, function (ip) {
+      resolve(data.d, function (ip) {
         checkedCount += 1
         ui.updatedProgress(checkedCount, resolvedCount)
 
