@@ -1,0 +1,18 @@
+{
+  "name": "resolve-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.28.2",
+    "webpack-cli": "^3.1.2",
+    "workers-preview": "^1.0.6"
+  },
+  "scripts": {
+    "build": "webpack",
+    "build:watch": "webpack --watch",
+    "preview": "workers-preview < dist/bundle.js"
+  }
+}
