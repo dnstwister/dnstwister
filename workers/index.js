@@ -3,7 +3,7 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
 
-const dns = require('dns');
+// const dns = require('dns');
 let jsonHeaders = new Headers([['Content-Type', 'application/json']])
 
 async function handleRequest (request) {
