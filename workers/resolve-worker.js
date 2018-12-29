@@ -1,4 +1,5 @@
 /* globals fetch, addEventListener, Headers, Response */
+// Route: https://dnstwister.report/api/ip2*
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
@@ -6,7 +7,14 @@ addEventListener('fetch', event => {
 const jsonHeaders = new Headers([['Content-Type', 'application/json']])
 
 async function handleRequest (request) {
-  return fetch('https://dns.google.com/resolve?name=dnstwister.report')
+  const parsedUrl = new URL(request.url)
+  if (!parsedUrl.searchParams.has('ed')) {
+    return new Response('Missing encoded domain parameter', { status: 403 })
+  }
+
+  let decodedDomain = parsedUrl.searchParams.get('ed')
+
+  return fetch('https://dns.google.com/resolve?name=' + decodedDomain)
     .then(function (response) {
       if (response.ok) {
         return response.json()
