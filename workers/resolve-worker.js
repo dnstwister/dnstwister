@@ -4,7 +4,10 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
 
-const jsonHeaders = new Headers([['Content-Type', 'application/json']])
+const jsonHeaders = new Headers([
+  ['Content-Type', 'application/json'],
+  ['Access-Control-Allow-Origin', '*']
+])
 
 async function handleRequest (request) {
   const parsedUrl = new URL(request.url)
