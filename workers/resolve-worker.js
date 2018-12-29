@@ -12,9 +12,9 @@ async function handleRequest (request) {
     return new Response('Missing encoded domain parameter', { status: 403 })
   }
 
-  let decodedDomain = parsedUrl.searchParams.get('ed')
+  let domain = parsedUrl.searchParams.get('ed')
 
-  return fetch('https://dns.google.com/resolve?name=' + decodedDomain)
+  return fetch('https://dns.google.com/resolve?name=' + domain)
     .then(function (response) {
       if (response.ok) {
         return response.json()
