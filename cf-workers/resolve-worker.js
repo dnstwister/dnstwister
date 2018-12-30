@@ -11,11 +11,11 @@ const jsonHeaders = new Headers([
 
 async function handleRequest (request) {
   const parsedUrl = new URL(request.url)
-  if (!parsedUrl.searchParams.has('ed')) {
+  if (!parsedUrl.searchParams.has('pd')) {
     return new Response('Missing encoded domain parameter', { status: 403 })
   }
 
-  let domain = parsedUrl.searchParams.get('ed')
+  let domain = parsedUrl.searchParams.get('pd')
 
   return fetch('https://dns.google.com/resolve?name=' + domain, { cf: { cacheTtl: 86400 } })
     .then(function (response) {

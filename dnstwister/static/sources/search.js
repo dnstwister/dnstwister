@@ -1,8 +1,8 @@
 /* globals jsonpipe, ui, XMLHttpRequest */
 var search = (function () {
-  var resolve = function (domain, callback) {
+  var resolve = function (punyCodedDomain, callback) {
     var request = new XMLHttpRequest()
-    var url = 'https://dnstwister.report/api/ip2?ed=' + domain
+    var url = 'https://dnstwister.report/api/ip2?pd=' + punyCodedDomain
     request.open('GET', url)
     request.send()
     request.onreadystatechange = (e) => {
@@ -60,12 +60,11 @@ var search = (function () {
       }
 
       seen.push(data.d)
-      resolve(data.d, function (ip) {
+      resolve(data.pd, function (ip) {
         checkedCount += 1
         ui.updatedProgress(checkedCount, resolvedCount)
 
         if (ip === null) {
-          ui.addErrorRow(reportElem, data.d, data.ed)
           resolveNext(queue)
           return
         } else if (ip === false) {
@@ -75,7 +74,7 @@ var search = (function () {
 
         resolvedCount += 1
         ui.updatedProgress(checkedCount, resolvedCount)
-        ui.addResolvedRow(reportElem, data.d, data.ed, ip)
+        ui.addResolvedRow(reportElem, data.d, data.pd, data.ed, ip)
         resolveNext(queue)
       })
     }

@@ -52,26 +52,26 @@ var ui = (function () {
     Velocity(document.getElementsByClassName('search_result'), { 'font-size': '150%' }, { duration: 500, delay: 1500 })
   }
 
-  var reportRowElem = function (domain, encodedDomain, ipText, showTools) {
+  var reportRowElem = function (domain, punyCodedDomain, encodedDomain, ipText) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
-    domainCellElem.appendChild(document.createTextNode(domain))
+    var domainText = domain
+    if (domain !== punyCodedDomain) {
+      domainText += ' (' + punyCodedDomain + ')'
+    }
+    domainCellElem.appendChild(document.createTextNode(domainText))
     ipCellElem.appendChild(document.createTextNode(ipText))
     toolsCellElem.className = 'tools'
 
-    if (showTools === true) {
-      toolsCellElem.appendChild(
-        anchorElem('analyse', '/analyse/' + encodedDomain)
-      )
-      toolsCellElem.appendChild(
-        anchorElem('&#128270;', '/search?ed=' + encodedDomain, 'deep-search')
-      )
-    } else {
-      toolsCellElem.insertAdjacentHTML('afterbegin', '&nbsp;')
-    }
+    toolsCellElem.appendChild(
+      anchorElem('analyse', '/analyse/' + encodedDomain)
+    )
+    toolsCellElem.appendChild(
+      anchorElem('&#128270;', '/search?ed=' + encodedDomain, 'deep-search')
+    )
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(ipCellElem)
@@ -81,15 +81,9 @@ var ui = (function () {
     return rowElem
   }
 
-  var addErrorRow = function (reportElem, domain, encodedDomain) {
+  var addResolvedRow = function (reportElem, domain, punyCodedDomain, encodedDomain, ip) {
     reportElem.appendChild(
-      reportRowElem(domain, encodedDomain, 'Error!', false)
-    )
-  }
-
-  var addResolvedRow = function (reportElem, domain, encodedDomain, ip) {
-    reportElem.appendChild(
-      reportRowElem(domain, encodedDomain, ip, true)
+      reportRowElem(domain, punyCodedDomain, encodedDomain, ip)
     )
   }
 
@@ -97,7 +91,6 @@ var ui = (function () {
     updatedProgress: updatedProgress,
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
-    addErrorRow: addErrorRow,
     addResolvedRow: addResolvedRow
   }
 })()

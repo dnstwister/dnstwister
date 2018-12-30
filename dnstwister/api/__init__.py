@@ -178,9 +178,11 @@ def fuzz_chunked(hexdomain):
 
     def generate():
         for result in tools.fuzzy_domains_iter(domain):
+            domain_result = result.domain
             yield json.dumps({
-                'd': result.domain,
-                'ed': tools.encode_domain(result.domain)
+                'd': domain_result,
+                'ed': tools.encode_domain(domain_result),
+                'pd': domain_result.encode('idna')
             }) + '\n\n'
 
     return flask.Response(generate())
