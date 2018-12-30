@@ -4,6 +4,8 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
 
+const urlStart = 'https://cloudflare-dns.com/dns-query?type=A&ct=application/dns-json&name='
+
 const jsonHeaders = new Headers([
   ['Content-Type', 'application/json'],
   ['Access-Control-Allow-Origin', '*']
@@ -17,7 +19,7 @@ async function handleRequest (request) {
 
   let domain = parsedUrl.searchParams.get('pd')
 
-  return fetch('https://dns.google.com/resolve?name=' + domain, { cf: { cacheTtl: 86400 } })
+  return fetch(urlStart + domain, { cf: { cacheTtl: 86400 } })
     .then(function (response) {
       if (response.ok) {
         return response.json()
