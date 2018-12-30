@@ -50,3 +50,12 @@
     font-size: 130%;
     color: #1eaedb;
 }
+
+.result_highlight.counter.error {
+    color: red;
+}
+
+#error_summary {
+    font-size: 60%;
+    display: none;
+}

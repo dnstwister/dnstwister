@@ -30,6 +30,8 @@ var search = (function () {
     var startedResolving = false
     var allFound = false
     var cleaningUp = false
+    var unresolved = []
+    var errored = []
 
     var reportElem = document.getElementById('report_target')
 
@@ -42,7 +44,7 @@ var search = (function () {
           if (cleaningUp === false) {
             cleaningUp = true
             clearInterval(progressTimer)
-            ui.markProgressAsDone()
+            ui.markProgressAsDone(errored.length)
           }
           return
         } else {
@@ -65,9 +67,11 @@ var search = (function () {
         ui.updatedProgress(checkedCount, resolvedCount)
 
         if (ip === null) {
+          errored.push([data.d, data.pd])
           resolveNext(queue)
           return
         } else if (ip === false) {
+          unresolved.push([data.d, data.pd])
           resolveNext(queue)
           return
         }
@@ -85,7 +89,7 @@ var search = (function () {
 
         if (startedResolving !== true) {
           startedResolving = true
-          for (var i = 0; i < 20; i++) {
+          for (var i = 0; i < 10; i++) {
             setTimeout(function () {
               resolveNext(resolveQueue)
             }, 500)

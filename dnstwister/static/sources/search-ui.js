@@ -43,13 +43,18 @@ var ui = (function () {
     }, 350)
   }
 
-  var markProgressAsDone = function () {
+  var markProgressAsDone = function (errorCount) {
     var progressElem = document.getElementsByClassName('search_progress')[0]
     progressElem.innerHTML = 'Done!'
 
     Velocity(document.getElementsByClassName('wip_text'), 'fadeOut', { duration: 500, delay: 250 })
     Velocity(progressElem, 'slideUp', { duration: 500, delay: 1500 })
     Velocity(document.getElementsByClassName('search_result'), { 'font-size': '150%' }, { duration: 500, delay: 1500 })
+
+    if (errorCount > 0) {
+      document.getElementById('errored_count').innerText = errorCount
+      Velocity(document.getElementById('error_summary'), 'fadeIn', { duration: 500, delay: 1500 })
+    }
   }
 
   var reportRowElem = function (domain, punyCodedDomain, encodedDomain, ipText) {
