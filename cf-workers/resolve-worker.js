@@ -6,7 +6,7 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
 
-const urlStart = 'https://cloudflare-dns.com/dns-query?type=A&ct=application/dns-json&name='
+const urlStart = 'https://cloudflare-dns.com/dns-query?ct=application/dns-json&name='
 
 const jsonHeaders = new Headers([
   ['Content-Type', 'application/json'],
@@ -31,7 +31,7 @@ async function handleRequest (request) {
 }
 
 function aRecord (domain) {
-  return fetch(urlStart + domain, { cf: { cacheTtl: 86400 } })
+  return fetch(urlStart + domain + '&type=A', { cf: { cacheTtl: 86400 } })
     .then(function (response) {
       if (response.ok) {
         return response.json()
@@ -62,6 +62,28 @@ function aRecord (domain) {
     })
 }
 
-function mxRecord () {
-  return new Response('MX!')
+function mxRecord (domain) {
+  return fetch(urlStart + domain + '&type=MX', { cf: { cacheTtl: 86400 } })
+    .then(function (response) {
+      if (response.ok) {
+        return response.json()
+      }
+    })
+    .then(function (data) {
+      let response = { mx: false }
+      if (data.Answer !== undefined && data.Answer.length > 0) {
+        response.mx = data.Answer.find(function (element) {
+          return element.type === 15
+        }).data !== undefined
+      }
+      return new Response(JSON.stringify(response), {
+        headers: jsonHeaders
+      })
+    })
+    .catch(function () {
+      let response = { mx: null }
+      return new Response(JSON.stringify(response), {
+        headers: jsonHeaders
+      })
+    })
 }
