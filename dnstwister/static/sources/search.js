@@ -78,7 +78,8 @@ var search = (function () {
 
         resolvedCount += 1
         ui.updatedProgress(checkedCount, resolvedCount)
-        ui.addResolvedRow(reportElem, data.d, data.pd, data.ed, ip)
+        ui.addResolvedRow(reportElem, data.d, data.pd, data.ed)
+        ui.addARecordInfo(data.d, ip)
         resolveNext(queue)
       })
     }

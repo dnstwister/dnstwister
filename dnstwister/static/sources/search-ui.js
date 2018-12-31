@@ -1,6 +1,7 @@
 /* global Velocity */
 var ui = (function () {
   var reportShown = false
+  var rowMap = {}
 
   var anchorElem = function (innerHtml, href, className) {
     var elem = document.createElement('a')
@@ -57,7 +58,7 @@ var ui = (function () {
     }
   }
 
-  var reportRowElem = function (domain, punyCodedDomain, encodedDomain, ipText) {
+  var reportRowElem = function (domain, punyCodedDomain, encodedDomain) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var mxCellElem = document.createElement('td')
@@ -69,14 +70,10 @@ var ui = (function () {
       domainText += ' (' + punyCodedDomain + ')'
     }
     domainCellElem.appendChild(document.createTextNode(domainText))
-    ipCellElem.appendChild(document.createTextNode(ipText))
     toolsCellElem.className = 'tools'
 
     toolsCellElem.appendChild(
       anchorElem('analyse', '/analyse/' + encodedDomain)
-    )
-    toolsCellElem.appendChild(
-      anchorElem('&#128270;', '/search?ed=' + encodedDomain, 'deep-search')
     )
 
     rowElem.appendChild(domainCellElem)
@@ -88,16 +85,27 @@ var ui = (function () {
     return rowElem
   }
 
-  var addResolvedRow = function (reportElem, domain, punyCodedDomain, encodedDomain, ip) {
-    reportElem.appendChild(
-      reportRowElem(domain, punyCodedDomain, encodedDomain, ip)
-    )
+  var addResolvedRow = function (reportElem, domain, punyCodedDomain, encodedDomain) {
+    if (rowMap[domain] !== undefined) {
+      return
+    }
+
+    var rowElem = reportRowElem(domain, punyCodedDomain, encodedDomain)
+    rowMap[domain] = rowElem
+    reportElem.appendChild(rowElem)
+  }
+
+  var addARecordInfo = function (domain, ipText) {
+    var row = rowMap[domain]
+    var td = row.childNodes[1]
+    td.appendChild(document.createTextNode(ipText))
   }
 
   return {
     updatedProgress: updatedProgress,
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
-    addResolvedRow: addResolvedRow
+    addResolvedRow: addResolvedRow,
+    addARecordInfo: addARecordInfo
   }
 })()
