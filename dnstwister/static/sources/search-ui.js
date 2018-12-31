@@ -60,6 +60,7 @@ var ui = (function () {
   var reportRowElem = function (domain, punyCodedDomain, encodedDomain, ipText) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
+    var mxCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
@@ -80,6 +81,7 @@ var ui = (function () {
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(ipCellElem)
+    rowElem.appendChild(mxCellElem)
     rowElem.appendChild(toolsCellElem)
     rowElem.className = 'domain-row resolved'
 

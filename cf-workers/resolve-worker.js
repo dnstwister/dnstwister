@@ -1,5 +1,7 @@
 /* globals fetch, addEventListener, Headers, Response */
-// Route: https://dnstwister.report/api/ip2*
+// Routes:
+//  * https://dnstwister.report/api/a*
+//  * https://dnstwister.report/api/mx*
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
@@ -16,9 +18,19 @@ async function handleRequest (request) {
   if (!parsedUrl.searchParams.has('pd')) {
     return new Response('Missing encoded domain parameter', { status: 403 })
   }
-
   let domain = parsedUrl.searchParams.get('pd')
 
+  const mode = parsedUrl.pathname.split('/').slice(-1)[0]
+  if (mode === 'a') {
+    return aRecord(domain)
+  } else if (mode === 'mx') {
+    return mxRecord(domain)
+  }
+
+  return new Response('', { status: 404 })
+}
+
+function aRecord (domain) {
   return fetch(urlStart + domain, { cf: { cacheTtl: 86400 } })
     .then(function (response) {
       if (response.ok) {
@@ -48,4 +60,8 @@ async function handleRequest (request) {
         headers: jsonHeaders
       })
     })
+}
+
+function mxRecord () {
+  return new Response('MX!')
 }

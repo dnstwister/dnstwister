@@ -2,7 +2,7 @@
 var search = (function () {
   var resolve = function (punyCodedDomain, callback) {
     var request = new XMLHttpRequest()
-    var url = 'https://dnstwister.report/api/ip2?pd=' + punyCodedDomain
+    var url = 'https://dnstwister.report/api/a?pd=' + punyCodedDomain
     request.open('GET', url)
     request.send()
     request.onreadystatechange = (e) => {
