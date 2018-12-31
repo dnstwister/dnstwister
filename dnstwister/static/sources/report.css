@@ -59,3 +59,19 @@
     font-size: 60%;
     display: none;
 }
+
+.re-search {
+    margin-bottom: 0;
+}
+
+.search_result {
+    margin-bottom: 0;
+}
+
+.re-search input[type="submit"] {
+    padding: 0 15px;
+}
+
+.re-search div.buttons {
+    margin-left: 1rem;
+}

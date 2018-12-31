@@ -39,5 +39,5 @@ def test_chunking_api_endpoint(webapp):
     response = webapp.get('/api/fuzz_chunked/{}'.format(hexdomain)).text
 
     assert response.startswith(
-        u'{"ed": "612e636f6d", "d": "a.com"}\n\n{"ed": "61612e636f6d", "d": "aa.com"}\n\n'
+        u'{"ed": "612e636f6d", "d": "a.com", "pd": "a.com"}\n\n{"ed": "61612e636f6d", "d": "aa.com", "pd": "aa.com"}\n\n'
     )

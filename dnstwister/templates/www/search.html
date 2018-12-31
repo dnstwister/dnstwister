@@ -1,39 +1,37 @@
 {% extends "www/layout.html" %}
-{% block title %}Report{% endblock %}
+{% block title %}Report for {{ domain | domain_renderer }}{% endblock %}
 {% block head %}
         <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
         <script type="text/javascript">
           document.onreadystatechange = () => {
             if (document.readyState === 'interactive') {
-              search.run('{{ domain | domain_encoder }}');
+              search.run('{{ domain | domain_encoder }}')
             }
-          };
+          }
         </script>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
 {% endblock %}
 {% block header %}
         <h1>dnstwister report</h1>
+        <form action="/search" method="post" class="re-search" autocomplete="off">
+            <div class="row">
+                <div class="six columns">
+                    <input type="text" autocapitalize="none" name="domains" value="{{ domain }}" size="49" class="u-full-width" />
+                </div>
+                <div class="six columns buttons">
+                    <input type="submit" value="&#128270;" class="button-primary" alt="search" />
+                </div>
+            </div>
+        </form>
 {% endblock %}
 {% block body %}
-        <section class="domains">
-            <div class="domain_nav">
-                <h5>{{ domain | domain_renderer }}</h5>
-                <a alt="email alert subscribe link" title="subscribe to email alerts" href="/email/subscribe/{{ domain | domain_encoder }}">
-                    <img class="ico" src="/static/email.png"/>
-                </a>
-            </div>
-            <div style="clear: both"></div>
-        </section>
-        <section class="sub_nav">
-            <a href="/">new search</a>
-        </section>
         <section class="progress">
             <h4 class="search_progress">
                 Searching<span id="search_dots">.</span>
             </h4>
             <h6 class="search_result">
-                <p>
+                <div>
                     We<span class="wip_text">'ve</span> identified
                     <span id="checked_count" class="result_highlight counter">0</span>
                     domains similar to
@@ -43,11 +41,11 @@
                     of those domains <span class="wip_text">have so far</span> resolved to an IP address.
                     <span id="error_summary">
                         <br />
-                        We experienced an unexpected error resolving
+                        There was an unexpected error resolving
                         <span id="errored_count" class="result_highlight counter error"></span>
                         of those domains.
                     </span>
-                </p>
+                </div>
             </h6>
         </section>
         <section>
