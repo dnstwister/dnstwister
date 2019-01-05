@@ -38,7 +38,8 @@ maps = {
         'report.js',
     ),
     'search.min.js': (
-        'jsonpipe.js',
+        'tld.min.js',
+        'dnstwist.js',
         'search-ui.js',
         'search.js',
     ),
