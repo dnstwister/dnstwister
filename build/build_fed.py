@@ -38,6 +38,7 @@ maps = {
         'report.js',
     ),
     'search.min.js': (
+        'punycode.js',
         'tld.min.js',
         'dnstwist.js',
         'search-ui.js',

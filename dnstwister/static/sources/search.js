@@ -1,10 +1,7 @@
-/* globals dnstwistjs, ui, XMLHttpRequest */
+/* globals dnstwistjs, punycode, ui, XMLHttpRequest */
 var search = (function () {
   var idnaEncode = function (domain) {
-    // http://ecmanaut.blogspot.com/2009/05/resolving-idna-urls-in-browser.html
-    var a = document.createElement('a')
-    a.href = '//' + domain
-    return a.href.split('/')[2]
+    return punycode.toASCII(domain)
   }
 
   var hexEncode = function (str) {
