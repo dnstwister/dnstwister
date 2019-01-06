@@ -33,12 +33,20 @@
             <h6 class="search_result">
                 <div>
                     We<span class="wip_text">'ve</span> identified
-                    <span id="checked_count" class="result_highlight counter">0</span>
+                    <span id="identified_count" class="result_highlight counter">0</span>
                     domains similar to
                     <span class="result_highlight">{{ domain | domain_renderer }}</span>.
                     <br />
+                    <span class="wip_text">
+                        We've checked
+                        <span id="checked_count" class="result_highlight counter">0</span>
+                        of those domains.
+                        <br />
+                    </span>
                     <span id="resolved_count" class="result_highlight counter">None</span>
-                    of those domains <span class="wip_text">have so far</span> resolved to an IP address or MX record.
+                    domains
+                    <span class="wip_text">have</span>
+                    resolved to an IP address or MX record.
                     <span id="error_summary">
                         <br />
                         There was an unexpected error resolving

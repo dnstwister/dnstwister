@@ -63,6 +63,7 @@ var search = (function () {
     var identified = []
     var allIdentified = false
     var identifiedCount = 0
+    var checkedCount = 0
     var resolvedCount = 0
     var resolveQueue = []
     var cleaningUp = false
@@ -90,6 +91,7 @@ var search = (function () {
           }
           return
         } else {
+          // Due to queue exhaustion.
           resolveMomentarily()
           return
         }
@@ -98,12 +100,13 @@ var search = (function () {
       var idnaEncodedDomain = idnaEncode(nextDomain)
       var hexEncodedDomain = hexEncode(idnaEncodedDomain)
 
+      checkedCount += 1
+
       resolveA(idnaEncodedDomain, function (ip) {
         if (ip === null) {
           erroredA.push([nextDomain, idnaEncodedDomain])
         } else if (ip !== false) {
           resolvedCount += 1
-          ui.updatedProgress(identifiedCount, resolvedCount)
           ui.addResolvedRow(reportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
           ui.addARecordInfo(nextDomain, ip)
         }
@@ -112,7 +115,6 @@ var search = (function () {
           if (mxExists === true) {
             if (ip === null || ip === false) {
               resolvedCount += 1
-              ui.updatedProgress(identifiedCount, resolvedCount)
               ui.addResolvedRow(reportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
               ui.addUnresolvedARecord(nextDomain)
             }
@@ -121,6 +123,7 @@ var search = (function () {
             erroredA.push([nextDomain, idnaEncodedDomain])
           }
 
+          ui.updateProgress(identifiedCount, checkedCount, resolvedCount, allIdentified)
           resolveMomentarily()
         })
       })
@@ -138,7 +141,7 @@ var search = (function () {
         identified.push(result.domain)
         resolveQueue.push(result.domain)
         identifiedCount += 1
-        ui.updatedProgress(identifiedCount, resolvedCount)
+        ui.updateProgress(identifiedCount, checkedCount, resolvedCount, allIdentified)
       }
 
       setTimeout(function () {

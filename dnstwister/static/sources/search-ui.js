@@ -11,13 +11,22 @@ var ui = (function () {
     return elem
   }
 
-  var updatedProgress = function (identifiedCount, resolvedCount) {
-    var identifiedCountElem = document.getElementById('checked_count')
+  var updateProgress = function (identifiedCount, checkedCount, resolvedCount, usePercent) {
+    var identifiedCountElem = document.getElementById('identified_count')
+    var checkedCountElem = document.getElementById('checked_count')
     var resolvedCountElem = document.getElementById('resolved_count')
     var reportTableElem = document.getElementById('main_report')
 
     if (identifiedCount > 0) {
       identifiedCountElem.innerHTML = identifiedCount
+    }
+
+    if (checkedCount > 0) {
+      if (usePercent === true) {
+        checkedCountElem.innerHTML = Math.round((checkedCount / identifiedCount) * 100) + '%'
+      } else {
+        checkedCountElem.innerHTML = checkedCount
+      }
     }
 
     if (resolvedCount > 0) {
@@ -114,7 +123,7 @@ var ui = (function () {
   }
 
   return {
-    updatedProgress: updatedProgress,
+    updateProgress: updateProgress,
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
     addResolvedRow: addResolvedRow,
