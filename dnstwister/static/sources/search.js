@@ -1,8 +1,23 @@
 /* globals dnstwistjs, ui, XMLHttpRequest */
 var search = (function () {
-  var resolveA = function (punyCodedDomain, callback) {
+  var idnaEncode = function (domain) {
+    // http://ecmanaut.blogspot.com/2009/05/resolving-idna-urls-in-browser.html
+    var a = document.createElement('a')
+    a.href = '//' + domain
+    return a.href.split('/')[2]
+  }
+
+  var hexEncode = function (str) {
+    var hex = ''
+    for (var i = 0; i < str.length; i++) {
+      hex += '' + str.charCodeAt(i).toString(16)
+    }
+    return hex
+  }
+
+  var resolveA = function (idnaEncodedDomain, callback) {
     var request = new XMLHttpRequest()
-    var url = 'https://dnstwister.report/api/a?pd=' + punyCodedDomain
+    var url = 'https://dnstwister.report/api/a?pd=' + idnaEncodedDomain
     request.open('GET', url)
     request.send()
     request.onreadystatechange = (e) => {
@@ -22,9 +37,9 @@ var search = (function () {
     }
   }
 
-  var resolveMx = function (punyCodedDomain, callback) {
+  var resolveMx = function (idnaEncodedDomain, callback) {
     var request = new XMLHttpRequest()
-    var url = 'https://dnstwister.report/api/mx?pd=' + punyCodedDomain
+    var url = 'https://dnstwister.report/api/mx?pd=' + idnaEncodedDomain
     request.open('GET', url)
     request.send()
     request.onreadystatechange = (e) => {
@@ -65,8 +80,8 @@ var search = (function () {
     }
 
     var resolveNext = function () {
-      var next = resolveQueue.pop()
-      if (next === undefined) {
+      var nextDomain = resolveQueue.pop()
+      if (nextDomain === undefined) {
         if (allIdentified === true) {
           if (cleaningUp === false) {
             cleaningUp = true
@@ -80,32 +95,30 @@ var search = (function () {
         }
       }
 
-      var data = {
-        'd': next,
-        'pd': next
-      }
+      var idnaEncodedDomain = idnaEncode(nextDomain)
+      var hexEncodedDomain = hexEncode(idnaEncodedDomain)
 
-      resolveA(data.pd, function (ip) {
+      resolveA(idnaEncodedDomain, function (ip) {
         if (ip === null) {
-          erroredA.push([data.d, data.pd])
+          erroredA.push([nextDomain, idnaEncodedDomain])
         } else if (ip !== false) {
           resolvedCount += 1
           ui.updatedProgress(identifiedCount, resolvedCount)
-          ui.addResolvedRow(reportElem, data.d, data.pd, data.ed)
-          ui.addARecordInfo(data.d, ip)
+          ui.addResolvedRow(reportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
+          ui.addARecordInfo(nextDomain, ip)
         }
 
-        resolveMx(data.pd, function (mxExists) {
+        resolveMx(idnaEncodedDomain, function (mxExists) {
           if (mxExists === true) {
             if (ip === null || ip === false) {
               resolvedCount += 1
               ui.updatedProgress(identifiedCount, resolvedCount)
-              ui.addResolvedRow(reportElem, data.d, data.pd, data.ed)
-              ui.addUnresolvedARecord(data.d)
+              ui.addResolvedRow(reportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
+              ui.addUnresolvedARecord(nextDomain)
             }
-            ui.addMxRecord(data.d)
+            ui.addMxRecord(nextDomain)
           } else if (mxExists === null && ip !== null) {
-            erroredA.push([data.d, data.pd])
+            erroredA.push([nextDomain, idnaEncodedDomain])
           }
 
           resolveMomentarily()

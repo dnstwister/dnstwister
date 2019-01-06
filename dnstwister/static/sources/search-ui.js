@@ -58,7 +58,7 @@ var ui = (function () {
     }
   }
 
-  var reportRowElem = function (domain, punyCodedDomain, encodedDomain) {
+  var reportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var mxCellElem = document.createElement('td')
@@ -66,8 +66,8 @@ var ui = (function () {
     var toolsCellElem = document.createElement('td')
 
     var domainText = domain
-    if (domain !== punyCodedDomain) {
-      domainText += ' (' + punyCodedDomain + ')'
+    if (domain !== idnaEncodedDomain) {
+      domainText += ' (' + idnaEncodedDomain + ')'
     }
     domainCellElem.appendChild(document.createTextNode(domainText))
     toolsCellElem.className = 'tools'
@@ -85,12 +85,12 @@ var ui = (function () {
     return rowElem
   }
 
-  var addResolvedRow = function (reportElem, domain, punyCodedDomain, encodedDomain) {
+  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
     if (rowMap[domain] !== undefined) {
       return
     }
 
-    var rowElem = reportRowElem(domain, punyCodedDomain, encodedDomain)
+    var rowElem = reportRowElem(domain, idnaEncodedDomain, encodedDomain)
     rowMap[domain] = rowElem
     reportElem.appendChild(rowElem)
   }
