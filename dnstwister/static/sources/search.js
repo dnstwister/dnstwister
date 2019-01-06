@@ -1,4 +1,4 @@
-/* globals jsonpipe, ui, XMLHttpRequest */
+/* globals dnstwistjs, ui, XMLHttpRequest */
 var search = (function () {
   var resolve = function (punyCodedDomain, callback) {
     var request = new XMLHttpRequest()
@@ -22,13 +22,12 @@ var search = (function () {
     }
   }
 
-  var runSearch = function (encodedDomain) {
-    var seen = []
-    var checkedCount = 0
+  var runSearch = function (domain) {
+    var identified = []
+    var allIdentified = false
+    var identifiedCount = 0
     var resolvedCount = 0
     var resolveQueue = []
-    var startedResolving = false
-    var allFound = false
     var cleaningUp = false
     var unresolved = []
     var errored = []
@@ -37,10 +36,17 @@ var search = (function () {
 
     var progressTimer = ui.startProgressDots()
 
-    var resolveNext = function (queue) {
-      var data = queue.pop()
-      if (data === undefined) {
-        if (allFound === true) {
+    var resolveMomentarily = function () {
+      // To give the UI thread a chance.
+      setTimeout(function () {
+        resolveNext()
+      }, 10)
+    }
+
+    var resolveNext = function () {
+      var next = resolveQueue.pop()
+      if (next === undefined) {
+        if (allIdentified === true) {
           if (cleaningUp === false) {
             cleaningUp = true
             clearInterval(progressTimer)
@@ -48,61 +54,64 @@ var search = (function () {
           }
           return
         } else {
-          // If queue exhausted, wait for more.
-          setTimeout(function () {
-            resolveNext(queue)
-          }, 1000)
+          resolveMomentarily()
           return
         }
       }
 
-      if (seen.indexOf(data.d) !== -1) {
-        resolveNext(queue)
-        return
+      var data = {
+        'd': next,
+        'pd': next
       }
 
-      seen.push(data.d)
       resolve(data.pd, function (ip) {
-        checkedCount += 1
-        ui.updatedProgress(checkedCount, resolvedCount)
-
         if (ip === null) {
           errored.push([data.d, data.pd])
-          resolveNext(queue)
+          resolveMomentarily()
           return
         } else if (ip === false) {
           unresolved.push([data.d, data.pd])
-          resolveNext(queue)
+          resolveMomentarily()
           return
         }
 
         resolvedCount += 1
-        ui.updatedProgress(checkedCount, resolvedCount)
+        ui.updatedProgress(identifiedCount, resolvedCount)
         ui.addResolvedRow(reportElem, data.d, data.pd, data.ed)
         ui.addARecordInfo(data.d, ip)
-        resolveNext(queue)
+
+        resolveMomentarily()
       })
     }
 
-    jsonpipe.flow('/api/fuzz_chunked/' + encodedDomain, {
-      'success': function (data) {
-        resolveQueue.push(data)
-
-        if (startedResolving !== true) {
-          startedResolving = true
-          for (var i = 0; i < 10; i++) {
-            setTimeout(function () {
-              resolveNext(resolveQueue)
-            }, 500)
-          }
-        }
-      },
-      'complete': function () {
-        allFound = true
+    var findNext = function (cursor) {
+      var result = dnstwistjs.tweak(domain, cursor)
+      if (result === null) {
+        allIdentified = true
+        identified = null
+        return
       }
-    })
-  }
 
+      if (identified.indexOf(result.domain) === -1) {
+        identified.push(result.domain)
+        resolveQueue.push(result.domain)
+        identifiedCount += 1
+        ui.updatedProgress(identifiedCount, resolvedCount)
+      }
+
+      setTimeout(function () {
+        findNext(result.cursor + 1)
+      }, 1)
+    }
+
+    findNext(0)
+
+    for (var i = 0; i < 10; i++) {
+      setTimeout(function () {
+        resolveNext()
+      }, 100)
+    }
+  }
   return {
     run: runSearch
   }

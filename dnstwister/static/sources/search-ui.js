@@ -11,13 +11,13 @@ var ui = (function () {
     return elem
   }
 
-  var updatedProgress = function (checkedCount, resolvedCount) {
-    var checkedCountElem = document.getElementById('checked_count')
+  var updatedProgress = function (identifiedCount, resolvedCount) {
+    var identifiedCountElem = document.getElementById('checked_count')
     var resolvedCountElem = document.getElementById('resolved_count')
     var reportTableElem = document.getElementById('main_report')
 
-    if (checkedCount > 0) {
-      checkedCountElem.innerHTML = checkedCount
+    if (identifiedCount > 0) {
+      identifiedCountElem.innerHTML = identifiedCount
     }
 
     if (resolvedCount > 0) {
