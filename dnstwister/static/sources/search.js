@@ -1,6 +1,6 @@
 /* globals dnstwistjs, ui, XMLHttpRequest */
 var search = (function () {
-  var resolve = function (punyCodedDomain, callback) {
+  var resolveA = function (punyCodedDomain, callback) {
     var request = new XMLHttpRequest()
     var url = 'https://dnstwister.report/api/a?pd=' + punyCodedDomain
     request.open('GET', url)
@@ -64,7 +64,7 @@ var search = (function () {
         'pd': next
       }
 
-      resolve(data.pd, function (ip) {
+      resolveA(data.pd, function (ip) {
         if (ip === null) {
           errored.push([data.d, data.pd])
           resolveMomentarily()
