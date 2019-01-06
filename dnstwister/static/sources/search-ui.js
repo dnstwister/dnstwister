@@ -101,11 +101,25 @@ var ui = (function () {
     td.appendChild(document.createTextNode(ipText))
   }
 
+  var addMxRecord = function (domain) {
+    var row = rowMap[domain]
+    var td = row.childNodes[2]
+    td.insertAdjacentHTML('afterbegin', '&#10004;')
+  }
+
+  var addUnresolvedARecord = function (domain) {
+    var row = rowMap[domain]
+    var td = row.childNodes[1]
+    td.insertAdjacentHTML('afterbegin', '&#10006;')
+  }
+
   return {
     updatedProgress: updatedProgress,
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
     addResolvedRow: addResolvedRow,
-    addARecordInfo: addARecordInfo
+    addARecordInfo: addARecordInfo,
+    addUnresolvedARecord: addUnresolvedARecord,
+    addMxRecord: addMxRecord
   }
 })()
