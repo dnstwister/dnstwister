@@ -2,7 +2,6 @@
 {% block title %}Report for {{ domain | domain_renderer }}{% endblock %}
 {% block head %}
         <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
         <script type="text/javascript">
           document.onreadystatechange = () => {
             if (document.readyState === 'interactive') {
