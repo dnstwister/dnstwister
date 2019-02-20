@@ -176,7 +176,7 @@ def handle_invalid_domain(search_term_as_hex):
 
 @app.route('/search')
 def search_async():
-    """Chunked endpoint supporting search."""
+    """New endpoint supporting async search."""
     encoded_domain_parameter = flask.request.args.get('ed')
 
     domain_parameter = tools.parse_domain(encoded_domain_parameter)
