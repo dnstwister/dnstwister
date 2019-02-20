@@ -50,14 +50,14 @@ def test_csv_export(webapp, monkeypatch):
         a.com,Bitsquatting,e.com,999.999.999.999,False
         a.com,Bitsquatting,i.com,999.999.999.999,False
         a.com,Bitsquatting,q.com,999.999.999.999,False
-        a.com,Replacement,w.com,999.999.999.999,False
-        a.com,Replacement,s.com,999.999.999.999,False
-        a.com,Replacement,z.com,999.999.999.999,False
-        a.com,Replacement,y.com,999.999.999.999,False
-        a.com,Replacement,2.com,999.999.999.999,False
         a.com,Replacement,1.com,999.999.999.999,False
-        a.com,Vowel swap,o.com,999.999.999.999,False
+        a.com,Replacement,s.com,999.999.999.999,False
+        a.com,Replacement,2.com,999.999.999.999,False
+        a.com,Replacement,w.com,999.999.999.999,False
+        a.com,Replacement,y.com,999.999.999.999,False
+        a.com,Replacement,z.com,999.999.999.999,False
         a.com,Vowel swap,u.com,999.999.999.999,False
+        a.com,Vowel swap,o.com,999.999.999.999,False
         a.com,Various,wwa.com,999.999.999.999,False
         a.com,Various,wwwa.com,999.999.999.999,False
         a.com,Various,www-a.com,999.999.999.999,False
@@ -174,6 +174,7 @@ def test_json_export_no_fuzzy(webapp, monkeypatch):
             ]
         }
     }
+
 
 
 def test_json_export_formatting(webapp, monkeypatch):
@@ -321,30 +322,30 @@ def test_unicode_csv_export(webapp, monkeypatch):
         xn--a-sfa.com,Bitsquatting,xn--e-sfa.com,999.999.999.999,False
         xn--a-sfa.com,Bitsquatting,xn--i-sfa.com,999.999.999.999,False
         xn--a-sfa.com,Bitsquatting,xn--q-sfa.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0caa.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0cab.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caa.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca3e.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0cad.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0caf.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0cah.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0caj.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0ca15e.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0ca90o.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca743m.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca98b.com,999.999.999.999,False
-        xn--a-sfa.com,Homoglyph,xn--0ca3e.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caf.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0caj.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0cah.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca15e.com,999.999.999.999,False
+        xn--a-sfa.com,Homoglyph,xn--0ca90o.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca76d.com,999.999.999.999,False
         xn--a-sfa.com,Homoglyph,xn--0ca53r.com,999.999.999.999,False
         xn--a-sfa.com,Hyphenation,xn--a--kia.com,999.999.999.999,False
-        xn--a-sfa.com,Omission,xn--0ca.com,999.999.999.999,False
         xn--a-sfa.com,Omission,a.com,999.999.999.999,False
-        xn--a-sfa.com,Repetition,xn--aa-kia.com,999.999.999.999,False
+        xn--a-sfa.com,Omission,xn--0ca.com,999.999.999.999,False
         xn--a-sfa.com,Repetition,xn--a-sfaa.com,999.999.999.999,False
-        xn--a-sfa.com,Replacement,xn--w-sfa.com,999.999.999.999,False
-        xn--a-sfa.com,Replacement,xn--s-sfa.com,999.999.999.999,False
-        xn--a-sfa.com,Replacement,xn--z-sfa.com,999.999.999.999,False
-        xn--a-sfa.com,Replacement,xn--y-sfa.com,999.999.999.999,False
-        xn--a-sfa.com,Replacement,xn--2-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Repetition,xn--aa-kia.com,999.999.999.999,False
         xn--a-sfa.com,Replacement,xn--1-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--w-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--y-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--z-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--2-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Replacement,xn--s-sfa.com,999.999.999.999,False
         xn--a-sfa.com,Subdomain,a.xn--0ca.com,999.999.999.999,False
         xn--a-sfa.com,Transposition,xn--a-rfa.com,999.999.999.999,False
         xn--a-sfa.com,Vowel swap,xn--o-sfa.com,999.999.999.999,False

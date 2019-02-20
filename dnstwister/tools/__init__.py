@@ -40,11 +40,6 @@ def fuzzy_domains(domain):
     return list(fuzzer.domains)
 
 
-def fuzzy_domains_iter(domain):
-    """Return the fuzzy domains iterator."""
-    return dnstwist.DomainFuzzer(domain).fuzz_iter()
-
-
 def analyse(domain):
     """Analyse a domain."""
     data = {'fuzzy_domains': []}

@@ -28,16 +28,3 @@ def test_fuzzer(webapp):
         u'resolve_ip_url': u'http://localhost:80/api/ip/7777772e6578616d706c652e636f6d',
         u'url': u'http://localhost:80/api/fuzz/7777772e6578616d706c652e636f6d'
     }
-
-
-def test_chunking_api_endpoint(webapp):
-    """The new API endpoint uses chunked responses to handle long requests and
-    to speed up page load times.
-    """
-    domain = 'a.com'
-    hexdomain = binascii.hexlify(domain)
-    response = webapp.get('/api/fuzz_chunked/{}'.format(hexdomain)).text
-
-    assert response.startswith(
-        u'{"ed": "612e636f6d", "d": "a.com", "pd": "a.com"}\n\n{"ed": "61612e636f6d", "d": "aa.com", "pd": "aa.com"}\n\n'
-    )
