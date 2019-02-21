@@ -149,6 +149,10 @@ var dnstwistjs = (function () {
     // Insertion
     range(totalLayouts * longestSet * 2).map(function (l) {
       return function (d, i) {
+        if (i === 0) {
+          return null
+        }
+
         var layoutIndex = l % totalLayouts
         var charIndex = Math.floor((l / totalLayouts) / 2)
 

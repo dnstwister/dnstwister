@@ -23,13 +23,13 @@ document.onreadystatechange = () => {
       if (result === null) {
         for (var i = 0; i < unicodeIdentified.length; i++) {
           if (!unicodeExpected.includes(unicodeIdentified[i])) {
-            console.log('ONLY IN NEW: ' + unicodeIdentified[i])
+            console.log('ONLY IN JS VERSION: ' + unicodeIdentified[i])
           }
         }
 
         for (var j = 0; j < unicodeExpected.length; j++) {
           if (!unicodeIdentified.includes(unicodeExpected[j])) {
-            console.log('ONLY IN ORIGINAL: ' + unicodeExpected[j])
+            console.log('ONLY IN PYTHON VERSION: ' + unicodeExpected[j])
           }
         }
 
