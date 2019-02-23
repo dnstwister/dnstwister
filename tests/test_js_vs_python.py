@@ -14,10 +14,10 @@ def test_js_module_has_all_the_python_module_domains():
     js_domains = load_js_domains(domain)
     py_domains = load_py_domains(domain)
 
-    missing_from_js = []
-    for d in py_domains:
-        if d not in js_domains:
-            missing_from_js.append(d)
+    missing_from_js = [d
+                       for d
+                       in py_domains
+                       if d not in js_domains]
 
     assert missing_from_js == []
 
@@ -28,10 +28,10 @@ def test_python_module_has_all_the_js_module_domains():
     js_domains = load_js_domains(domain)
     py_domains = load_py_domains(domain)
 
-    missing_from_py = []
-    for d in js_domains:
-        if d not in py_domains:
-            missing_from_py.append(d)
+    missing_from_py = [d
+                       for d
+                       in js_domains
+                       if d not in py_domains]
 
     assert missing_from_py == []
 
