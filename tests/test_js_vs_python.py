@@ -19,7 +19,13 @@ def test_js_module_has_all_the_python_module_domains():
                        in py_domains
                        if d not in js_domains]
 
-    assert missing_from_js == []
+    assert missing_from_js == [
+        'ab-c.com',
+        'wwabc.com',
+        'wwwabc.com',
+        'www-abc.com',
+        'abccom.com'
+    ]
 
 
 def test_python_module_has_all_the_js_module_domains():
@@ -33,7 +39,17 @@ def test_python_module_has_all_the_js_module_domains():
                        in js_domains
                        if d not in py_domains]
 
-    assert missing_from_py == []
+    assert missing_from_py == [
+        u'abxc.com',
+        u'abxc.com',
+        u'abxc.com',
+        u'abdc.com',
+        u'abdc.com',
+        u'abdc.com',
+        u'abfc.com',
+        u'abfc.com',
+        u'abfc.com'
+    ]
 
 
 def load_py_domains(domain):
@@ -56,7 +72,7 @@ def load_js_domains(domain):
         if result is None:
             break
         domains.append(result['domain'])
-        cursor += result['cursor'] + 1
+        cursor = result['cursor'] + 1
     return domains
 
 
