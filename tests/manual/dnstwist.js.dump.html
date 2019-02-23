@@ -1,0 +1,30 @@
+<!-- Open locally in browser to compare the JS to the real dnstwist. -->
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../../dnstwister/static/sources/tld.min.js"></script>
+<script src="../../dnstwister/static/sources/dnstwist.js"></script>
+<script>
+
+var domain = 'abc.com'
+
+document.onreadystatechange = () => {
+  var target = document.getElementById('out')
+  if (document.readyState === 'interactive') {
+    var findNext = function (cursor) {
+      var result = dnstwistjs.tweak(domain, cursor)
+      if (result === null) {
+        return
+      }
+      target.innerText += result.domain + '\n'
+      findNext(result.cursor + 1)
+    }
+    findNext(0)
+  }
+}
+</script>
+</head>
+<body>
+  <pre id="out"></pre>
+</body>
+</html>
