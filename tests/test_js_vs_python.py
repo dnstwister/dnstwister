@@ -24,7 +24,6 @@ def test_js_module_has_all_the_python_module_domains():
                        if d not in js_domains]
 
     assert missing_from_js == [
-        'abcdefghij-k-lmnopqrstuvwxyz.com',
         'wwabcdefghijk-lmnopqrstuvwxyz.com',
         'wwwabcdefghijk-lmnopqrstuvwxyz.com',
         'www-abcdefghijk-lmnopqrstuvwxyz.com',
@@ -58,19 +57,22 @@ def load_py_domains(domain):
 
 
 def load_js_domains(domain):
-    tld_js = load_js('tld.min.js')
-    dnstwist_js = load_js('dnstwist.js')
-    js2py_obj = js2py.eval_js(tld_js + '\n' + dnstwist_js)
-
     cursor = 0
     domains = []
     while True:
-        result = js2py_obj.tweak(domain, cursor)
+        result = JS.tweak(domain, cursor)
         if result is None:
             break
         domains.append(result['domain'].encode('utf-8'))
         cursor = result['cursor'] + 1
     return domains
+
+
+def build_js():
+    tld_js = load_js('tld.min.js')
+    dnstwist_js = load_js('dnstwist.js')
+    js2py_obj = js2py.eval_js(tld_js + '\n' + dnstwist_js)
+    return js2py_obj
 
 
 def load_js(filename):
@@ -83,3 +85,7 @@ def load_js(filename):
     )
 
     return io.open(js_src_path, mode='r', encoding='utf-8').read()
+
+
+# Save a little time in the tests.
+JS = build_js()

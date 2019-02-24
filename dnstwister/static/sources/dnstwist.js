@@ -156,7 +156,7 @@ var dnstwistjs = (function () {
       if (i === 0 || i === d.length) {
         return null
       }
-      if (d[i] === '.' || d[i - 1] === '.' || d[i + 1] === '-') {
+      if (d[i] === '.' || d[i - 1] === '.' || d[i] === '-') {
         return null
       }
       return d.substr(0, i) + '-' + d.substr(i)
