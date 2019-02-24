@@ -232,7 +232,7 @@ class fuzz_domain(object):
     def __insertion(self):
         result = set()
 
-        for i in range(1, len(self.domain)-1):
+        for i in range(1, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
