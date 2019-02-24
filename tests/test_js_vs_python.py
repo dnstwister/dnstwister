@@ -12,6 +12,9 @@ import js2py
 import dnstwister.dnstwist.dnstwist as dnstwist
 
 
+JS = None
+
+
 def test_js_module_has_all_the_python_module_domains():
     """Run the JS in the browser, compare to the python output."""
     domain = 'abcdefghijk-lmnopqrstuvwxyz.com'
@@ -54,6 +57,11 @@ def load_py_domains(domain):
 
 
 def load_js_domains(domain):
+    # Save a little time in the tests.
+    global JS
+    if JS is None:
+        JS = build_js()
+
     cursor = 0
     domains = []
     while True:
@@ -82,7 +90,3 @@ def load_js(filename):
     )
 
     return io.open(js_src_path, mode='r', encoding='utf-8').read()
-
-
-# Save a little time in the tests.
-JS = build_js()
