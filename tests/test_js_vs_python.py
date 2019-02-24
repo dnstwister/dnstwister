@@ -52,7 +52,7 @@ def test_python_module_has_all_the_js_module_domains():
 def load_py_domains(domain):
     fuzzer = dnstwist.fuzz_domain(domain)
     fuzzer.fuzz()
-    return [d['domain-name']
+    return [d['domain-name'].encode('utf-8')
             for d
             in fuzzer.domains]
 
@@ -68,7 +68,7 @@ def load_js_domains(domain):
         result = js2py_obj.tweak(domain, cursor)
         if result is None:
             break
-        domains.append(result['domain'])
+        domains.append(result['domain'].encode('utf-8'))
         cursor = result['cursor'] + 1
     return domains
 
