@@ -10,7 +10,7 @@ import dnstwister.dnstwist.dnstwist as dnstwist
 
 def test_js_module_has_all_the_python_module_domains():
     """Run the JS in the browser, compare to the python output."""
-    domain = 'abc.com'
+    domain = 'abcdefghijk-lmnopqrstuvwxyz.com'
     js_domains = load_js_domains(domain)
     py_domains = load_py_domains(domain)
 
@@ -20,16 +20,17 @@ def test_js_module_has_all_the_python_module_domains():
                        if d not in js_domains]
 
     assert missing_from_js == [
-        'wwabc.com',
-        'wwwabc.com',
-        'www-abc.com',
-        'abccom.com'
+        'abcdefghij-k-lmnopqrstuvwxyz.com',
+        'wwabcdefghijk-lmnopqrstuvwxyz.com',
+        'wwwabcdefghijk-lmnopqrstuvwxyz.com',
+        'www-abcdefghijk-lmnopqrstuvwxyz.com',
+        'abcdefghijk-lmnopqrstuvwxyzcom.com'
     ]
 
 
 def test_python_module_has_all_the_js_module_domains():
     """Run the JS in the browser, compare to the python output."""
-    domain = 'abc.com'
+    domain = 'abcdefghijk-lmnopqrstuvwxyz.com'
     js_domains = load_js_domains(domain)
     py_domains = load_py_domains(domain)
 
@@ -38,11 +39,27 @@ def test_python_module_has_all_the_js_module_domains():
                        in js_domains
                        if d not in py_domains]
 
-    assert missing_from_py == []
+    assert missing_from_py == [
+        u'abcdefghij\U0001d590-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d4f4-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d694-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d528-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d48c-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d62c-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d4c0-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d660-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d424-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d5c4-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d458-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d5f8-lmnopqrstuvwxyz.com',
+        u'abcdefghij\U0001d55c-lmnopqrstuvwxyz.com',
+        u'abcdefghijk-lmnopqrstuvwxwyz.com',
+        u'abcdefghijk-lmnopqrstuvwwyz.com'
+    ]
 
 
 def load_py_domains(domain):
-    fuzzer = dnstwist.fuzz_domain('abc.com')
+    fuzzer = dnstwist.fuzz_domain(domain)
     fuzzer.fuzz()
     return [d['domain-name']
             for d
