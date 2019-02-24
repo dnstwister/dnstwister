@@ -1,4 +1,8 @@
-"""A test that compares the two implementations."""
+"""A test that compares the two implementations.
+
+The comparison runs the JavaScript implementation in js2py and compares it
+to the original Python version (from elceef) that I've slightly modified.
+"""
 # -*- coding: UTF-8 -*-
 import io
 import os
@@ -40,19 +44,6 @@ def test_python_module_has_all_the_js_module_domains():
                        if d not in py_domains]
 
     assert missing_from_py == [
-        u'abcdefghij\U0001d590-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d4f4-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d694-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d528-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d48c-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d62c-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d4c0-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d660-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d424-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d5c4-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d458-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d5f8-lmnopqrstuvwxyz.com',
-        u'abcdefghij\U0001d55c-lmnopqrstuvwxyz.com',
         u'abcdefghijk-lmnopqrstuvwxwyz.com',
         u'abcdefghijk-lmnopqrstuvwwyz.com'
     ]
