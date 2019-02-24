@@ -26,12 +26,7 @@ def test_js_module_has_all_the_python_module_domains():
                        in py_domains
                        if d not in js_domains]
 
-    assert missing_from_js == [
-        'wwabcdefghijk-lmnopqrstuvwxyz.com',
-        'wwwabcdefghijk-lmnopqrstuvwxyz.com',
-        'www-abcdefghijk-lmnopqrstuvwxyz.com',
-        'abcdefghijk-lmnopqrstuvwxyzcom.com'
-    ]
+    assert missing_from_js == []
 
 
 def test_python_module_has_all_the_js_module_domains():
