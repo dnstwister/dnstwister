@@ -43,6 +43,33 @@ def test_python_module_has_all_the_js_module_domains():
     assert missing_from_py == []
 
 
+def test_python_v_js_with_www():
+    """Some of the conditionals I'd like to test."""
+    domain = 'www.abc.com'
+    js_domains = load_js_domains(domain)
+    py_domains = load_py_domains(domain)
+
+    assert set(js_domains) == set(py_domains)
+
+
+def test_python_v_js_with_no_dot_com():
+    """Some of the conditionals I'd like to test."""
+    domain = 'abc.net'
+    js_domains = load_js_domains(domain)
+    py_domains = load_py_domains(domain)
+
+    assert set(js_domains) == set(py_domains)
+
+
+def test_python_v_js_with_dot_com_dot_au():
+    """Some of the conditionals I'd like to test."""
+    domain = 'abc.com.au'
+    js_domains = load_js_domains(domain)
+    py_domains = load_py_domains(domain)
+
+    assert set(js_domains) == set(py_domains)
+
+
 def load_py_domains(domain):
     fuzzer = dnstwist.fuzz_domain(domain)
     fuzzer.fuzz()
