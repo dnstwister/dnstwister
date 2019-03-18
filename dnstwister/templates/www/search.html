@@ -3,7 +3,7 @@
 {% block head %}
         <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
         <script type="text/javascript">
-          document.onreadystatechange = () => {
+          document.onreadystatechange = function () {
             if (document.readyState === 'interactive') {
               search.run('{{ domain }}')
             }
