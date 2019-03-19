@@ -70,6 +70,7 @@ var ui = (function () {
   var reportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
+    var mxCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
@@ -86,6 +87,7 @@ var ui = (function () {
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(ipCellElem)
+    rowElem.appendChild(mxCellElem)
     rowElem.appendChild(toolsCellElem)
     rowElem.className = 'domain-row resolved'
 
@@ -108,6 +110,12 @@ var ui = (function () {
     td.appendChild(document.createTextNode(ipText))
   }
 
+  var addMxRecord = function (domain) {
+    var row = rowMap[domain]
+    var td = row.childNodes[2]
+    td.insertAdjacentHTML('afterbegin', '&#10004;')
+  }
+
   var addUnresolvedARecord = function (domain) {
     var row = rowMap[domain]
     var td = row.childNodes[1]
@@ -121,5 +129,6 @@ var ui = (function () {
     addResolvedRow: addResolvedRow,
     addARecordInfo: addARecordInfo,
     addUnresolvedARecord: addUnresolvedARecord,
+    addMxRecord: addMxRecord
   }
 })()

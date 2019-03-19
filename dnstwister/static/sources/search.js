@@ -34,6 +34,28 @@ var search = (function () {
     }
   }
 
+  var resolveMx = function (idnaEncodedDomain, callback) {
+    var request = new XMLHttpRequest()
+    var url = 'https://dnstwister.report/api/mx?pd=' + idnaEncodedDomain
+    request.open('GET', url)
+    request.send()
+    request.onreadystatechange = (e) => {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          var responseText = request.responseText
+          var response = JSON.parse(responseText)
+          if (response.mx === undefined) {
+            callback(null)
+          } else {
+            callback(response.mx)
+          }
+        } else {
+          callback(null)
+        }
+      }
+    }
+  }
+
   var runSearch = function (domain) {
     var identified = []
     var allIdentified = false
@@ -86,8 +108,21 @@ var search = (function () {
           ui.addARecordInfo(nextDomain, ip)
         }
 
-        ui.updateProgress(identifiedCount, checkedCount, resolvedCount, allIdentified)
-        resolveMomentarily()
+        resolveMx(idnaEncodedDomain, function (mxExists) {
+          if (mxExists === true) {
+            if (ip === null || ip === false) {
+              resolvedCount += 1
+              ui.addResolvedRow(reportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
+              ui.addUnresolvedARecord(nextDomain)
+            }
+            ui.addMxRecord(nextDomain)
+          } else if (mxExists === null && ip !== null) {
+            erroredA.push([nextDomain, idnaEncodedDomain])
+          }
+
+          ui.updateProgress(identifiedCount, checkedCount, resolvedCount, allIdentified)
+          resolveMomentarily()
+        })
       })
     }
 
