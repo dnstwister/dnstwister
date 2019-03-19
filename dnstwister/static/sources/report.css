@@ -36,3 +36,42 @@
 .domain_nav .ico {
     margin-left: 2px;
 }
+
+.progress {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.result_highlight {
+    font-weight: bold;
+}
+
+.result_highlight.counter {
+    font-size: 130%;
+    color: #1eaedb;
+}
+
+.result_highlight.counter.error {
+    color: red;
+}
+
+#error_summary {
+    font-size: 60%;
+    display: none;
+}
+
+.re-search {
+    margin-bottom: 0;
+}
+
+.search_result {
+    margin-bottom: 0;
+}
+
+.re-search input[type="submit"] {
+    padding: 0 15px;
+}
+
+.re-search div.buttons {
+    margin-left: 1rem;
+}

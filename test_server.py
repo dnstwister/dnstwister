@@ -1,6 +1,4 @@
 """Launch."""
-import os
-
 import threading
 import waitress
 import werkzeug.serving

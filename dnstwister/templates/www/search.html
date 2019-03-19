@@ -1,0 +1,79 @@
+{% extends "www/layout.html" %}
+{% block title %}Report for {{ domain | domain_renderer }}{% endblock %}
+{% block head %}
+        <script type="text/javascript" src="{{ url_for('static', filename='search.min.js') }}"></script>
+        <script type="text/javascript">
+          document.onreadystatechange = function () {
+            if (document.readyState === 'interactive') {
+              search.run('{{ domain }}')
+            }
+          }
+        </script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
+{% endblock %}
+{% block header %}
+        <h1>dnstwister report</h1>
+        <form action="/search" method="post" class="re-search" autocomplete="off">
+            <div class="row">
+                <div class="six columns">
+                    <input type="text" autocapitalize="none" name="domains" value="{{ domain }}" size="49" class="u-full-width" />
+                </div>
+                <div class="six columns buttons">
+                    <input type="submit" value="&#128270;" class="button-primary" alt="search" />
+                </div>
+            </div>
+        </form>
+{% endblock %}
+{% block body %}
+        <section class="progress">
+            <h4 class="search_progress">
+                Searching<span id="search_dots">.</span>
+            </h4>
+            <h6 class="search_result">
+                <div>
+                    We<span class="wip_text">'ve</span> identified
+                    <span id="identified_count" class="result_highlight counter">0</span>
+                    domains similar to
+                    <span class="result_highlight">{{ domain | domain_renderer }}</span>.
+                    <br />
+                    <span class="wip_text">
+                        We've checked
+                        <span id="checked_count" class="result_highlight counter">0</span>
+                        of those domains.
+                        <br />
+                    </span>
+                    <span id="resolved_count" class="result_highlight counter">None</span>
+                    domains
+                    <span class="wip_text">have</span>
+                    resolved to an IP address.
+                    <span id="error_summary">
+                        <br />
+                        There was an unexpected error resolving
+                        <span id="errored_count" class="result_highlight counter error"></span>
+                        of those domains.
+                    </span>
+                </div>
+            </h6>
+        </section>
+        <section>
+            <section class="exports">
+                export:
+                {% for (title, format) in exports.items() %}
+                    <a href="/search/{{ domain | domain_encoder }}/{{ format }}">{{ title }}</a>
+                {% endfor %}
+            </section>
+        </section>
+        <section>
+            <table class="report u-full-width" id="main_report">
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>IP Address / A record</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="report_target">
+                </tbody>
+            </table>
+        </section>
+{% endblock %}

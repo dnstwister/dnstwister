@@ -10,7 +10,7 @@
 {% endblock %}
 {% block body %}
         <section class="searchbox">
-            <form action="/search" method="post">
+            <form action="/search" method="post" autocomplete="off">
                 <div class="row">
                     <div class="ten columns offset-by-one input_field">
                         <input type="text" autocapitalize="none" name="domains" placeholder="Enter a domain" class="u-full-width" {% if suggestion is not none %}value="{{ suggestion }}"{% endif %} />

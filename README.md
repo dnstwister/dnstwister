@@ -9,6 +9,8 @@ A Heroku-hosted version of the very excellent
 |[![Production Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=heroku-deploy)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=heroku-deploy)|[![Development Branch Coverage Status](https://coveralls.io/repos/github/thisismyrobot/dnstwister/badge.svg?branch=master)](https://coveralls.io/github/thisismyrobot/dnstwister?branch=master)|
 |[![Production Branch Code Health](https://landscape.io/github/thisismyrobot/dnstwister/heroku-deploy/landscape.svg?style=flat)](https://landscape.io/github/thisismyrobot/dnstwister/heroku-deploy)|[![Development Branch Code Health](https://landscape.io/github/thisismyrobot/dnstwister/master/landscape.svg?style=flat)](https://landscape.io/github/thisismyrobot/dnstwister/master)|
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/thisismyrobot/dnstwister/tree/heroku-deploy)
+
 ## dnstwist vs. dnstwister
 
 In the author's words, dnstwist helps you
@@ -45,26 +47,23 @@ address your concern as quickly as possible.
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
 
-## Running dnstwister
+## Developing dnstwister
 
-Setup:
+Once-off setup:
 
-    pip install -r requirements.txt
+    pip install pipenv
+    pipenv install
+    pipenv install --dev
 
 Running:
 
-    python test_server.py
+    pipenv run python test_server.py
 
 ## Tests
 
-Setup:
-
-    pip install -r requirements.txt
-    pip install -r tests/extra_requirements.txt
-
 Running:
 
-    py.test
+    pipenv run py.test
 
 ## Say hello
 

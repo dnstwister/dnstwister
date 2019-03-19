@@ -1,2 +1,0 @@
-csscompressor==0.9.5
-watchdog==0.8.3

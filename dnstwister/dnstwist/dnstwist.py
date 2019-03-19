@@ -94,7 +94,7 @@ class fuzz_domain(object):
         '1': '2a', '2': '3za1', '3': '4ez2', '4': '5re3', '5': '6tr4', '6': '7yt5', '7': '8uy6', '8': '9iu7', '9': '0oi8', '0': 'po9',
         'a': '2zq1', 'z': '3esqa2', 'e': '4rdsz3', 'r': '5tfde4', 't': '6ygfr5', 'y': '7uhgt6', 'u': '8ijhy7', 'i': '9okju8', 'o': '0plki9', 'p': 'lo0m',
         'q': 'zswa', 's': 'edxwqz', 'd': 'rfcxse', 'f': 'tgvcdr', 'g': 'yhbvft', 'h': 'ujnbgy', 'j': 'iknhu', 'k': 'olji', 'l': 'kopm', 'm': 'lp',
-        'w': 'sxq', 'x': 'zsdc', 'c': 'xdfv', 'v': 'cfgb', 'b': 'vghn', 'n': 'bhj'
+        'w': 'sxq', 'x': 'wsdc', 'c': 'xdfv', 'v': 'cfgb', 'b': 'vghn', 'n': 'bhj'
         }
         self.keyboards = [ self.qwerty, self.qwertz, self.azerty ]
 
@@ -179,11 +179,11 @@ class fuzz_domain(object):
         'h': ['lh', 'ih', u'һ', u'հ', u'Ꮒ', u'н'],
         'i': ['1', 'l', u'Ꭵ', u'í', u'ï', u'ı', u'ɩ', u'ι', u'ꙇ', u'ǐ', u'ĭ', u'ì'],
         'j': [u'ј', u'ʝ', u'ϳ', u'ɉ'],
-        'k': ['lk', 'ik', 'lc', u'κ', u'ⲕ', u'κ'],
+        'k': [u'lk', u'ik', u'lc', u'κ', u'ⲕ', u'κ', u'𝖐', u'𝓴', u'𝚔', u'𝔨', u'𝒌', u'𝘬', u'𝓀', u'𝙠', u'𝐤', u'𝗄', u'𝑘', u'𝗸', u'𝕜'],
         'l': ['1', 'i', u'ɫ', u'ł'],
         'm': ['n', 'nn', 'rn', 'rr', u'ṃ', u'ᴍ', u'м', u'ɱ'],
         'n': ['m', 'r', u'ń'],
-        'o': ['0', u'Ο', u'ο', u'О', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
+        'o': ['0', u'ο', u'о', u'Օ', u'ȯ', u'ọ', u'ỏ', u'ơ', u'ó', u'ö', u'ӧ'],
         'p': [u'ρ', u'р', u'ƿ', u'Ϸ', u'Þ'],
         'q': ['g', u'զ', u'ԛ', u'գ', u'ʠ'],
         'r': [u'ʀ', u'Г', u'ᴦ', u'ɼ', u'ɽ'],
@@ -232,7 +232,7 @@ class fuzz_domain(object):
     def __insertion(self):
         result = set()
 
-        for i in range(1, len(self.domain)-1):
+        for i in range(1, len(self.domain)):
             for keys in self.keyboards:
                 if self.domain[i] in keys:
                     for c in keys[self.domain[i]]:
