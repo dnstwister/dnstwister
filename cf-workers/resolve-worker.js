@@ -2,10 +2,14 @@
 // Routes:
 //  * https://dnstwister.report/api/a*
 //  * https://dnstwister.report/api/mx*
+//
+// Map A_RECORDS as KV_A_RECORDS
+//
 addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
+  event.respondWith(handleRequest(event))
 })
 
+const cacheTime = 60 * 60 * 24  // 24 hours.
 const urlStart = 'https://cloudflare-dns.com/dns-query?ct=application/dns-json&name='
 
 const jsonHeaders = new Headers([
@@ -14,8 +18,8 @@ const jsonHeaders = new Headers([
   ['Cache-Control', 'public, max-age=86400']
 ])
 
-async function handleRequest (request) {
-  const parsedUrl = new URL(request.url)
+async function handleRequest (event) {
+  const parsedUrl = new URL(event.request.url)
   if (!parsedUrl.searchParams.has('pd')) {
     return new Response('Missing encoded domain parameter', { status: 403 })
   }
@@ -23,7 +27,7 @@ async function handleRequest (request) {
 
   const mode = parsedUrl.pathname.split('/').slice(-1)[0]
   if (mode === 'a') {
-    return aRecord(domain)
+    return await aRecord(event, domain)
   } else if (mode === 'mx') {
     return mxRecord(domain)
   }
@@ -31,7 +35,25 @@ async function handleRequest (request) {
   return new Response('', { status: 404 })
 }
 
-function aRecord (domain) {
+async function aRecord (event, domain) {
+  let stored = null
+  const cachedRecord = await cachedA(domain)
+  if (cachedRecord !== null) {
+    const updated = new Date(cachedRecord.updated)
+    const age = (new Date() - updated) / 1000
+    console.log(age)
+    if (age < cacheTime) {
+      response = {
+        ip: cachedRecord.ip,
+        error: false,
+        when: cachedRecord.updated
+      }
+      return new Response(JSON.stringify(response), {
+        headers: jsonHeaders
+      })
+    }
+  }
+
   return fetch(urlStart + domain + '&type=A', { cf: { cacheTtl: 86400 } })
     .then(function (response) {
       if (response.ok) {
@@ -44,9 +66,13 @@ function aRecord (domain) {
         error: false
       }
       if (data.Answer !== undefined && data.Answer.length > 0) {
-        response.ip = data.Answer.find(function (element) {
+        const ip = data.Answer.find(function (element) {
           return element.type === 1
         }).data
+        response.ip = ip
+        response.when = new Date()
+
+        event.waitUntil(cacheA(event, domain, ip))
       }
       return new Response(JSON.stringify(response), {
         headers: jsonHeaders
@@ -61,6 +87,20 @@ function aRecord (domain) {
         headers: jsonHeaders
       })
     })
+}
+
+async function cachedA(domain) {
+  const key = 'a-'+domain
+  return await KV_A_RECORDS.get(key, 'json')
+}
+
+function cacheA(event, domain, ip) {
+  const key = 'a-'+domain
+  const value = JSON.stringify({
+    ip: ip,
+    updated: new Date()
+  })
+  event.waitUntil(KV_A_RECORDS.put(key, value))
 }
 
 function mxRecord (domain) {
