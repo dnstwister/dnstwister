@@ -14,8 +14,7 @@ const urlStart = 'https://cloudflare-dns.com/dns-query?ct=application/dns-json&n
 
 const jsonHeaders = new Headers([
   ['Content-Type', 'application/json'],
-  ['Access-Control-Allow-Origin', '*'],
-  ['Cache-Control', 'public, max-age=86400']
+  ['Access-Control-Allow-Origin', '*']
 ])
 
 async function handleRequest (event) {
