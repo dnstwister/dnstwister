@@ -34,6 +34,7 @@ Flask = "==0.12.4"
 Flask-Cache = "==0.13.1"
 "zope.interface" = "==4.3.2"
 "js2py" = "*"
+pyyaml = "==5.1"
 
 [requires]
 python_version = "2.7"
