@@ -8,7 +8,7 @@ def test_feature_flag_not_true_uses_old_search(webapp):
     domain = 'a.com'
     response = webapp.post('/search', {'domains': domain})
 
-    assert response.headers['location'] == 'http://localhost:80/search/612e636f6d'
+    assert response.headers['location'] == 'http://localhost/search/612e636f6d'
 
 
 def test_feature_flag_set_to_true_uses_new_search(webapp, monkeypatch):
@@ -18,7 +18,7 @@ def test_feature_flag_set_to_true_uses_new_search(webapp, monkeypatch):
     domain = 'a.com'
     response = webapp.post('/search', {'domains': domain})
 
-    assert response.headers['location'] == 'http://localhost:80/search?ed=612e636f6d'
+    assert response.headers['location'] == 'http://localhost/search?ed=612e636f6d'
 
 
 def test_feature_flag_set_to_true_redirects_get_urls(webapp, monkeypatch):
@@ -28,7 +28,7 @@ def test_feature_flag_set_to_true_redirects_get_urls(webapp, monkeypatch):
     domain = 'a.com'
     response = webapp.get('/search/{}'.format(binascii.hexlify(domain)))
 
-    assert response.headers['location'] == 'http://localhost:80/search?ed=612e636f6d'
+    assert response.headers['location'] == 'http://localhost/search?ed=612e636f6d'
 
 
 def test_feature_flag_not_true_does_not_redirect_get_urls(webapp, monkeypatch):
