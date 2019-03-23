@@ -11,7 +11,7 @@ def test_invalid_sub_redirects_to_home(webapp):
     response = webapp.get('/email/234234234/noisy')
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/'
+    assert response.headers['location'] == 'http://localhost/'
 
 
 @mock.patch('redis.from_url', fakeredis.FakeStrictRedis)

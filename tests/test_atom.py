@@ -18,7 +18,7 @@ import patches
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_unicode_atom(webapp):
     """Unicode should just work too, this is just a sanity check."""
-    unicode_domain =  'xn--plnt-1na.com'.decode('idna')  # 'plànt.com'
+    unicode_domain = 'xn--plnt-1na.com'.decode('idna')  # 'plànt.com'
     get_path = tools.encode_domain(unicode_domain)
     with pytest.raises(webtest.app.AppError) as err:
         webapp.get('/atom/{}'.format(get_path))
@@ -93,51 +93,51 @@ class TestAtom(unittest.TestCase):
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
               <title type="text">dnstwister report for www.example.com</title>
-              <id>http://localhost:80/atom/7777772e6578616d706c652e636f6d</id>
+              <id>http://localhost/atom/7777772e6578616d706c652e636f6d</id>
               <updated>2016-02-28T11:10:34Z</updated>
-              <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
-              <link href="http://localhost:80/atom/7777772e6578616d706c652e636f6d" rel="self" />
+              <link href="http://localhost/search/7777772e6578616d706c652e636f6d" />
+              <link href="http://localhost/atom/7777772e6578616d706c652e636f6d" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="http://localhost:80/atom/7777772e6578616d706c652e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e6578616d706c652e636f6d">
                 <title type="text">NEW: www.examp1e.com</title>
                 <id>new:www.examp1e.com:127.0.0.1:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
+                <link href="http://localhost/search/7777772e6578616d706c652e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;h1&gt;IP: 127.0.0.1&lt;/h1&gt;
             &lt;a href=&quot;https://dnstwister.report/analyse/7777772e6578616d7031652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
-              <entry xml:base="http://localhost:80/atom/7777772e6578616d706c652e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e6578616d706c652e636f6d">
                 <title type="text">UPDATED: wwwexa.mple.com</title>
                 <id>updated:wwwexa.mple.com:127.0.0.1:127.0.0.2:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
+                <link href="http://localhost/search/7777772e6578616d706c652e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;h1&gt;IP: 127.0.0.1 &amp;gt; 127.0.0.2&lt;/h1&gt;
             &lt;a href=&quot;https://dnstwister.report/analyse/7777776578612e6d706c652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
-              <entry xml:base="http://localhost:80/atom/7777772e6578616d706c652e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e6578616d706c652e636f6d">
                 <title type="text">DELETED: www.eeexample.com</title>
                 <id>deleted:www.eeexample.com:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
+                <link href="http://localhost/search/7777772e6578616d706c652e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
               </entry>
-              <entry xml:base="http://localhost:80/atom/7777772e6578616d706c652e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e6578616d706c652e636f6d">
                 <title type="text">DELETED: www2.example.com.au</title>
                 <id>deleted:www2.example.com.au:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e6578616d706c652e636f6d" />
+                <link href="http://localhost/search/7777772e6578616d706c652e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
@@ -268,51 +268,51 @@ class TestAtomUnicode(unittest.TestCase):
             <?xml version="1.0" encoding="utf-8"?>
             <feed xmlns="http://www.w3.org/2005/Atom">
               <title type="text">dnstwister report for www.\xd1\x94xample.com (www.xn--xample-9uf.com)</title>
-              <id>http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d</id>
+              <id>http://localhost/atom/7777772e786e2d2d78616d706c652d3975662e636f6d</id>
               <updated>2016-02-28T11:10:34Z</updated>
-              <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
-              <link href="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d" rel="self" />
+              <link href="http://localhost/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+              <link href="http://localhost/atom/7777772e786e2d2d78616d706c652d3975662e636f6d" rel="self" />
               <generator>Werkzeug</generator>
-              <entry xml:base="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
                 <title type="text">NEW: www.examp1e.com</title>
                 <id>new:www.examp1e.com:127.0.0.1:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+                <link href="http://localhost/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;h1&gt;IP: 127.0.0.1&lt;/h1&gt;
             &lt;a href=&quot;https://dnstwister.report/analyse/7777772e6578616d7031652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
-              <entry xml:base="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
                 <title type="text">UPDATED: www\xd1\x94xa.mple.com (xn--wwwxa-d2e.mple.com)</title>
                 <id>updated:xn--wwwxa-d2e.mple.com:127.0.0.1:127.0.0.2:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+                <link href="http://localhost/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
                 <content type="html">&lt;h1&gt;IP: 127.0.0.1 &amp;gt; 127.0.0.2&lt;/h1&gt;
             &lt;a href=&quot;https://dnstwister.report/analyse/786e2d2d77777778612d6432652e6d706c652e636f6d&quot;&gt;analyse&lt;/a&gt;</content>
               </entry>
-              <entry xml:base="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
                 <title type="text">DELETED: www.\xd1\x94xampl\xd1\x94.com (www.xn--xampl-91ef.com)</title>
                 <id>deleted:www.xn--xampl-91ef.com:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+                <link href="http://localhost/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>
               </entry>
-              <entry xml:base="http://localhost:80/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
+              <entry xml:base="http://localhost/atom/7777772e786e2d2d78616d706c652d3975662e636f6d">
                 <title type="text">DELETED: www2.example.com.au</title>
                 <id>deleted:www2.example.com.au:1456657834.0</id>
                 <updated>2016-02-28T11:10:34Z</updated>
                 <published>2016-02-28T11:10:34Z</published>
-                <link href="http://localhost:80/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
+                <link href="http://localhost/search/7777772e786e2d2d78616d706c652d3975662e636f6d" />
                 <author>
                   <name>dnstwister</name>
                 </author>

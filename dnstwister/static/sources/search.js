@@ -17,7 +17,7 @@ var search = (function () {
     var url = 'https://dnstwister.report/api/a?pd=' + idnaEncodedDomain
     request.open('GET', url)
     request.send()
-    request.onreadystatechange = (e) => {
+    request.onreadystatechange = function (e) {
       if (request.readyState === 4) {
         if (request.status === 200) {
           var responseText = request.responseText

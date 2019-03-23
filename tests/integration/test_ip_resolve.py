@@ -21,9 +21,9 @@ def test_resolve(webapp):
         u'domain': u'dnstwister.report',
         u'domain_as_hexadecimal': hexdomain,
         u'error': False,
-        u'fuzz_url': u'http://localhost:80/api/fuzz/{}'.format(hexdomain),
-        u'parked_score_url': u'http://localhost:80/api/parked/{}'.format(hexdomain),
-        u'url': u'http://localhost:80/api/ip/{}'.format(hexdomain),
+        u'fuzz_url': u'http://localhost/api/fuzz/{}'.format(hexdomain),
+        u'parked_score_url': u'http://localhost/api/parked/{}'.format(hexdomain),
+        u'url': u'http://localhost/api/ip/{}'.format(hexdomain),
     }
 
     # Will throw socket.error exception if this is not a valid IP address.
@@ -47,9 +47,9 @@ def test_unicode_resolve(webapp):
         u'domain': u'xn--sterreich-z7a.icom.museum',
         u'domain_as_hexadecimal': u'786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
         u'error': False,
-        u'fuzz_url': u'http://localhost:80/api/fuzz/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
-        u'parked_score_url': u'http://localhost:80/api/parked/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
-        u'url': u'http://localhost:80/api/ip/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d'
+        u'fuzz_url': u'http://localhost/api/fuzz/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'parked_score_url': u'http://localhost/api/parked/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d',
+        u'url': u'http://localhost/api/ip/786e2d2d7374657272656963682d7a37612e69636f6d2e6d757365756d'
     }
 
     # Will throw socket.error exception if this is not a valid IP address.

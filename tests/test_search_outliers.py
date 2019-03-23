@@ -8,7 +8,7 @@ def test_no_domains_key(webapp):
     response = webapp.post('/search')
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/2'
+    assert response.headers['location'] == 'http://localhost/error/2'
 
 
 def test_empty_domains_key(webapp):
@@ -16,7 +16,7 @@ def test_empty_domains_key(webapp):
     response = webapp.post('/search', {'domains': ' '})
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/2'
+    assert response.headers['location'] == 'http://localhost/error/2'
 
 
 def test_suggestion(webapp):
@@ -30,7 +30,7 @@ def test_suggestion(webapp):
 
     domain = 'example.com'
     enc_domain = binascii.hexlify(domain)
-    expected_redirect = 'http://localhost:80/error/0?suggestion=' + enc_domain
+    expected_redirect = 'http://localhost/error/0?suggestion=' + enc_domain
     assert response.headers['location'] == expected_redirect
 
 
@@ -56,7 +56,7 @@ def test_get_errors(webapp):
     response = webapp.get('/search/__<<>')
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/0'
+    assert response.headers['location'] == 'http://localhost/error/0'
 
 
 def test_no_suggestion_many_words(webapp):
@@ -65,7 +65,7 @@ def test_no_suggestion_many_words(webapp):
     response = webapp.post('/search', {'domains': query}).follow()
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/error/0'
+    assert response.headers['location'] == 'http://localhost/error/0'
 
 
 def test_suggestion_bad_data(webapp):
