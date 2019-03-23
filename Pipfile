@@ -16,6 +16,7 @@ mock = "==2.0.0"
 pbr = "==3.1.1"
 py = "==1.4.31"
 pytest = "==3.0.3"
+pyyaml = "==5.1"
 six = "==1.11.0"
 watchdog = "==0.9.0"
 WebOb = "==1.7.4"
@@ -36,4 +37,4 @@ Flask-Cache = "==0.13.1"
 "js2py" = "*"
 
 [requires]
-python_version = "2.7"
+python_version = "2.7.16"

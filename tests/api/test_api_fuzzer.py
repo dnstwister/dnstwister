@@ -19,12 +19,12 @@ def test_fuzzer(webapp):
         u'fuzzy_domains': [{
             u'domain': u'www.example.com',
             u'domain_as_hexadecimal': u'7777772e6578616d706c652e636f6d',
-            u'fuzz_url': u'http://localhost:80/api/fuzz/7777772e6578616d706c652e636f6d',
+            u'fuzz_url': u'http://localhost/api/fuzz/7777772e6578616d706c652e636f6d',
             u'fuzzer': u'Original*',
-            u'parked_score_url': u'http://localhost:80/api/parked/7777772e6578616d706c652e636f6d',
-            u'resolve_ip_url': u'http://localhost:80/api/ip/7777772e6578616d706c652e636f6d'
+            u'parked_score_url': u'http://localhost/api/parked/7777772e6578616d706c652e636f6d',
+            u'resolve_ip_url': u'http://localhost/api/ip/7777772e6578616d706c652e636f6d'
         }],
-        u'parked_score_url': u'http://localhost:80/api/parked/7777772e6578616d706c652e636f6d',
-        u'resolve_ip_url': u'http://localhost:80/api/ip/7777772e6578616d706c652e636f6d',
-        u'url': u'http://localhost:80/api/fuzz/7777772e6578616d706c652e636f6d'
+        u'parked_score_url': u'http://localhost/api/parked/7777772e6578616d706c652e636f6d',
+        u'resolve_ip_url': u'http://localhost/api/ip/7777772e6578616d706c652e636f6d',
+        u'url': u'http://localhost/api/fuzz/7777772e6578616d706c652e636f6d'
     }
