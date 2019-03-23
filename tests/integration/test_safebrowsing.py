@@ -13,11 +13,11 @@ def test_safebrowsing_query(webapp):
     assert response.json == {
         u'domain': u'dnstwister.report',
         u'domain_as_hexadecimal': hexdomain,
-        u'fuzz_url': u'http://localhost:80/api/fuzz/{}'.format(hexdomain),
+        u'fuzz_url': u'http://localhost/api/fuzz/{}'.format(hexdomain),
         u'issue_detected': False,
-        u'parked_score_url': u'http://localhost:80/api/parked/{}'.format(hexdomain),
-        u'resolve_ip_url': u'http://localhost:80/api/ip/{}'.format(hexdomain),
-        u'url': u'http://localhost:80/api/safebrowsing/{}'.format(hexdomain),
+        u'parked_score_url': u'http://localhost/api/parked/{}'.format(hexdomain),
+        u'resolve_ip_url': u'http://localhost/api/ip/{}'.format(hexdomain),
+        u'url': u'http://localhost/api/safebrowsing/{}'.format(hexdomain),
     }
 
 

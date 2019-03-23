@@ -36,7 +36,7 @@ def test_verification_with_bad_id(webapp):
     response = webapp.get('/email/verify/1234')
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/'
+    assert response.headers['location'] == 'http://localhost/'
 
 
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
@@ -84,7 +84,7 @@ def test_email_address_required():
     response = subscribe_page.form.submit()
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/email/subscribe/{}/0?hide_noisy=False'.format(hexdomain)
+    assert response.headers['location'] == 'http://localhost/email/subscribe/{}/0?hide_noisy=False'.format(hexdomain)
 
     assert 'Email address is required' in response.follow().body
 
@@ -105,7 +105,7 @@ def test_email_address_validation_remembers_hide_noisy_flag():
     response = subscribe_page.form.submit()
 
     assert response.status_code == 302
-    assert response.headers['location'] == 'http://localhost:80/email/subscribe/{}/0?hide_noisy=True'.format(hexdomain)
+    assert response.headers['location'] == 'http://localhost/email/subscribe/{}/0?hide_noisy=True'.format(hexdomain)
 
     assert 'Email address is required' in response.follow().body
 
@@ -140,7 +140,7 @@ def test_isubscriptions_link():
     verify_path = '/email/verify/{}'.format(
         verify_code
     )
-    verify_url = 'http://localhost:80{}'.format(verify_path)
+    verify_url = 'http://localhost{}'.format(verify_path)
 
     assert len(emailer.sent_emails) == 1
 
@@ -217,7 +217,7 @@ def test_isubscriptions_link_unicode():
     verify_path = '/email/verify/{}'.format(
         verify_code
     )
-    verify_url = 'http://localhost:80{}'.format(verify_path)
+    verify_url = 'http://localhost{}'.format(verify_path)
 
     assert len(emailer.sent_emails) == 1
 
