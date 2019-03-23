@@ -1,5 +1,4 @@
 """The analysis API endpoint."""
-import binascii
 import urlparse
 import whois as whois_mod
 
