@@ -10,7 +10,7 @@ def test_small_domain_stats():
     assert breakdown(fuzzer.domains) == {
         'Addition': 26,
         'Bitsquatting': 13,
-        'Homoglyph': 27,
+        'Homoglyph': 28,
         'Hyphenation': 2,
         'Insertion': 11,
         'Omission': 3,
@@ -32,7 +32,7 @@ def test_medium_domain_stats():
     assert breakdown(fuzzer.domains) == {
         'Addition': 26,
         'Bitsquatting': 33,
-        'Homoglyph': 59,
+        'Homoglyph': 61,
         'Hyphenation': 6,
         'Insertion': 53,
         'Omission': 7,
@@ -54,7 +54,7 @@ def test_medium_domain_with_subdomain_stats():
     assert breakdown(fuzzer.domains) == {
         'Addition': 26,
         'Bitsquatting': 49,
-        'Homoglyph': 96,
+        'Homoglyph': 99,
         'Hyphenation': 8,
         'Insertion': 84,
         'Omission': 10,
@@ -233,6 +233,8 @@ def test_basic_fuzz():
         {'domain-name': 'www.4example.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.4xample.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'www.axample.com', 'fuzzer': 'Bitsquatting'},
+        {'domain-name': 'www.cxamplc.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.cxample.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.dexample.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.dxample.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.e-xample.com', 'fuzzer': 'Hyphenation'},
@@ -308,6 +310,7 @@ def test_basic_fuzz():
         {'domain-name': 'www.exampl4.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'www.exampl4e.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.exampla.com', 'fuzzer': 'Bitsquatting'},
+        {'domain-name': 'www.examplc.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.exampld.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.examplde.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.example.com', 'fuzzer': 'Original*'},
