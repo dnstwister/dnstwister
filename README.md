@@ -59,6 +59,24 @@ Running:
 
     pipenv run python test_server.py
 
+## Running dnstwister using Docker
+If you don't have [Docker](https://hub.docker.com/) installed, you can click [here](https://www.docker.com/community-edition/ "Docker : Community Edition") for **Docker CE**, and follow the installation steps.
+
+### Building and Running locally
+```sh
+git clone https://github.com/thisismyrobot/dnstwister
+cd dnstwister
+docker build -t dnstwister .
+docker run -td -p 5000:5000 --name myapp dnstwister
+```
+
+### Fetching pre-built image
+Alternatively, you can pull the pre-built image from DockerHub, and run locally. This way, you wouldn't have to wait for the build time.
+```sh
+docker pull coolboi567/dnstwister:2.9.3
+docker run -td -p 5000:5000 --name myapp dnstwister:2.9.3
+```
+
 ## Tests
 
 Running:
