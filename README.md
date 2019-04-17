@@ -73,8 +73,8 @@ docker run -td -p 5000:5000 --name myapp dnstwister
 ### Fetching pre-built image
 Alternatively, you can pull the pre-built image from DockerHub, and run locally. This way, you wouldn't have to wait for the build time.
 ```sh
-docker pull coolboi567/dnstwister:2.9.3
-docker run -td -p 5000:5000 --name myapp dnstwister:2.9.3
+docker pull dnstwister/dnstwister:2.9.3
+docker run -td -p 5000:5000 --name myapp dnstwister/dnstwister:2.9.3
 ```
 
 ## Tests
