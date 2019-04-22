@@ -46,6 +46,7 @@ address your concern as quickly as possible.
 
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
+ * [@coolboi567](https://github.com/coolboi567) (dockerfile configuration)
 
 ## Developing dnstwister
 
