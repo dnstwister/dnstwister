@@ -70,7 +70,7 @@ def test_isubscriptions_during_subscription():
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_email_address_required():
-    app = flask.ext.webtest.TestApp(dnstwister.app)
+    app = flask_webtest.TestApp(dnstwister.app)
 
     domain = 'a.com'
     hexdomain = binascii.hexlify(domain)
@@ -92,7 +92,7 @@ def test_email_address_required():
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_email_address_validation_remembers_hide_noisy_flag():
-    app = flask.ext.webtest.TestApp(dnstwister.app)
+    app = flask_webtest.TestApp(dnstwister.app)
 
     domain = 'a.com'
     hexdomain = binascii.hexlify(domain)
@@ -113,7 +113,7 @@ def test_email_address_validation_remembers_hide_noisy_flag():
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_isubscriptions_link():
-    app = flask.ext.webtest.TestApp(dnstwister.app)
+    app = flask_webtest.TestApp(dnstwister.app)
     emailer = dnstwister.views.www.email.emailer
     repository = dnstwister.repository
 
@@ -163,7 +163,7 @@ def test_isubscriptions_link():
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_unsubscribe():
     """Test can unsubscribe."""
-    app = flask.ext.webtest.TestApp(dnstwister.app)
+    app = flask_webtest.TestApp(dnstwister.app)
     repository = dnstwister.repository
 
     domain = 'www.example.com'
@@ -185,7 +185,7 @@ def test_unsubscribe():
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_isubscriptions_link_unicode():
-    app = flask.ext.webtest.TestApp(dnstwister.app)
+    app = flask_webtest.TestApp(dnstwister.app)
     emailer = dnstwister.views.www.email.emailer
     repository = dnstwister.repository
 
@@ -241,7 +241,7 @@ def test_isubscriptions_link_unicode():
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_unsubscribe_unicode():
     """Test can unsubscribe."""
-    app = flask.ext.webtest.TestApp(dnstwister.app)
+    app = flask_webtest.TestApp(dnstwister.app)
     repository = dnstwister.repository
 
     domain = u'www.\u0454xample.com'

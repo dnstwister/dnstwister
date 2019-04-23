@@ -51,7 +51,6 @@ Once-off setup:
 
 ```sh
 pip install pipenv
-pipenv install
 pipenv install --dev
 ```
 
