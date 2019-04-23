@@ -1,6 +1,6 @@
 """Tests of the email subscription mechanism."""
 import binascii
-import flask
+import flask_webtest
 import mock
 import pytest
 import webtest.app
@@ -26,14 +26,18 @@ def test_bad_domains_fail(webapp):
 def test_bad_error_codes(webapp):
     """Test the email error codes being weird doesn't break the page."""
     normal_html = webapp.get('/email/subscribe/7777772e6578616d706c652e636f6d').html
-    assert webapp.get('/email/subscribe/7777772e6578616d706c652e636f6d/9').html == normal_html
+
+    assert webapp.get(
+        '/email/subscribe/7777772e6578616d706c652e636f6d/9',
+        expect_errors=True
+    ).html == normal_html
 
 
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
 def test_verification_with_bad_id(webapp):
     """Test that verifying with a dud subscription id just redirects to root.
     """
-    response = webapp.get('/email/verify/1234')
+    response = webapp.get('/email/verify/1234', expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/'

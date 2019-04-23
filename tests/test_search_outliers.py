@@ -5,7 +5,7 @@ import binascii
 
 def test_no_domains_key(webapp):
     """Test a POST without 'domains' being set fails."""
-    response = webapp.post('/search')
+    response = webapp.post('/search', expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/2'
@@ -13,7 +13,7 @@ def test_no_domains_key(webapp):
 
 def test_empty_domains_key(webapp):
     """Test a POST with 'domains' being set to whitespace fails."""
-    response = webapp.post('/search', {'domains': ' '})
+    response = webapp.post('/search', {'domains': ' '}, expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/2'
@@ -24,7 +24,7 @@ def test_suggestion(webapp):
 
     Where a domain could be reasonably suggested, it is.
     """
-    response = webapp.post('/search', {'domains': 'example'}).follow()
+    response = webapp.post('/search', {'domains': 'example'}).follow(expect_errors=True)
 
     assert response.status_code == 302
 
@@ -37,7 +37,7 @@ def test_suggestion(webapp):
 def test_no_valid_domains_only(webapp):
     """Test invalid domains not in suggestions."""
     query = 'abc ?@<>.'
-    response = webapp.post('/search', {'domains': query}).follow()
+    response = webapp.post('/search', {'domains': query}).follow(expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'].endswith('=6162632e636f6d')
@@ -46,14 +46,14 @@ def test_no_valid_domains_only(webapp):
 
 def test_suggestion_rendered(webapp):
     """Test suggestion rendered on index."""
-    response = webapp.post('/search', {'domains': 'example'}).follow().follow()
+    response = webapp.post('/search', {'domains': 'example'}).follow(expect_errors=True).follow()
 
     assert 'example.com' in response.body
 
 
 def test_get_errors(webapp):
     """Test funny URLs for a GET search."""
-    response = webapp.get('/search/__<<>')
+    response = webapp.get('/search/__<<>', expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/0'
@@ -62,7 +62,7 @@ def test_get_errors(webapp):
 def test_no_suggestion_many_words(webapp):
     """Test many search terms are dropped in suggestions."""
     query = 'j s d f i j s'
-    response = webapp.post('/search', {'domains': query}).follow()
+    response = webapp.post('/search', {'domains': query}).follow(expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/0'
@@ -93,7 +93,7 @@ def test_fix_comma_typo(webapp):
     malformed_domain = 'example,com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow(expect_errors=True).follow()
 
     assert expected_suggestion in response.body
 
@@ -104,7 +104,7 @@ def test_fix_slash_typo(webapp):
     malformed_domain = 'example/com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow(expect_errors=True).follow()
 
     assert expected_suggestion in response.body
 
@@ -115,7 +115,7 @@ def test_fix_space_typo(webapp):
     malformed_domain = 'example com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow().follow()
+    response = webapp.post('/search', {'domains': malformed_domain}).follow(expect_errors=True).follow()
 
     assert expected_suggestion in response.body
 
