@@ -2,15 +2,16 @@ FROM python:2.7.16-alpine
 
 ARG BRANCH=heroku-deploy
 
-MAINTAINER coolboi567 <PrashantShahi567@gmail.com>
+MAINTAINER coolboi567 <coolboi567@gmail.com>
 
 WORKDIR /opt/dnstwister
 
+COPY . /opt/dnstwister
+
 RUN apk update && apk add --virtual .build-deps gcc musl-dev && \
-    apk add git postgresql-dev && \
-    git clone https://github.com/thisismyrobot/dnstwister . --branch $BRANCH && \
+    apk add postgresql-dev && \
     pip install pipenv && pipenv install && pipenv install --dev && \
-    apk del .build-deps git
+    apk del .build-deps
 
 ENTRYPOINT ["pipenv", "run"]
 
