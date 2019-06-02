@@ -1,7 +1,7 @@
 """ Test setup."""
 import sys
 
-import flask.ext.webtest
+import flask_webtest
 import httpretty
 import pytest
 
@@ -19,7 +19,7 @@ def webapp():
     Just include 'webapp' as an argument to the test method to use.
     """
     # Create a webtest Test App for use
-    testapp = flask.ext.webtest.TestApp(dnstwister.app)
+    testapp = flask_webtest.TestApp(dnstwister.app)
     testapp.app.debug = True
 
     # Clear the cache
