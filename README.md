@@ -83,6 +83,8 @@ docker build -t dnstwister .
 docker run -td -p 5000:5000 --name myapp dnstwister
 ```
 
+Now, go to `http://localhost:5000` using any browser to use dnstwister.
+
 ### Fetching pre-built image
 
 Alternatively, you can pull the pre-built image from DockerHub, and run locally. This way, you wouldn't have to wait for the build time. The image present in docker hub is from the stable branch **heroku-deploy**.
@@ -91,6 +93,8 @@ Alternatively, you can pull the pre-built image from DockerHub, and run locally.
 docker pull dnstwister/dnstwister:2.9.3
 docker run -td -p 5000:5000 --name myapp dnstwister/dnstwister:2.9.3
 ```
+
+Now, go to `http://localhost:5000` using any browser to use dnstwister.
 
 ## Tests
 
