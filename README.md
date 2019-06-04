@@ -46,24 +46,65 @@ address your concern as quickly as possible.
 
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
+ * [@coolboi567](https://github.com/coolboi567) (docker configuration)
 
 ## Developing dnstwister
 
 Once-off setup:
 
-    pip install pipenv
-    pipenv install
-    pipenv install --dev
+```sh
+pip install pipenv
+pipenv install --dev
+```
 
 Running:
 
-    pipenv run python test_server.py
+```sh
+pipenv run python test_server.py
+```
+
+## Running dnstwister using Docker
+
+If you don't have [Docker](https://hub.docker.com/) installed, you can click [here](https://www.docker.com/community-edition/ "Docker : Community Edition") for **Docker CE**, and follow the installation steps.
+
+### Building and Running locally
+
+```sh
+# Cloning latest source code
+git clone https://github.com/thisismyrobot/dnstwister
+
+# Changing directory
+cd dnstwister
+
+# Checkout to the stable branch i.e. heroku-deploy
+git checkout heroku-deploy
+
+# Building dnstwister image using Dockerfile
+docker build -t dnstwister .
+
+# Running the application inside a container
+docker run -td -p 5000:5000 --name myapp dnstwister
+```
+
+Now, go to `http://localhost:5000` using any browser to use dnstwister.
+
+### Fetching pre-built image
+
+Alternatively, you can pull the pre-built image from DockerHub, and run locally. This way, you wouldn't have to wait for the build time. The image present in docker hub is from the stable branch **heroku-deploy**.
+
+```sh
+docker pull dnstwister/dnstwister:2.9.3
+docker run -td -p 5000:5000 --name myapp dnstwister/dnstwister:2.9.3
+```
+
+Now, go to `http://localhost:5000` using any browser to use dnstwister.
 
 ## Tests
 
 Running:
-
+```sh
     pipenv run py.test
+```
 
 ## Say hello
 
