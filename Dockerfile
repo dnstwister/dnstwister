@@ -1,7 +1,5 @@
 FROM python:2.7.16-alpine
 
-ARG BRANCH=heroku-deploy
-
 MAINTAINER coolboi567 <coolboi567@gmail.com>
 
 WORKDIR /opt/dnstwister
