@@ -62,7 +62,9 @@ pipenv run python test_server.py
 
 ## Running dnstwister using Docker
 
-If you don't have [Docker](https://hub.docker.com/) installed, you can click [here](https://www.docker.com/community-edition/ "Docker : Community Edition") for **Docker CE**, and follow the installation steps.
+If you don't have [Docker](https://hub.docker.com/) installed, you can click
+[here](https://www.docker.com/community-edition/ "Docker : Community Edition")
+for **Docker CE**, and follow the installation steps.
 
 ### Building and Running locally
 
@@ -87,7 +89,9 @@ Now, go to `http://localhost:5000` using any browser to use dnstwister.
 
 ### Fetching pre-built image
 
-Alternatively, you can pull the pre-built image from DockerHub, and run locally. This way, you wouldn't have to wait for the build time. The image present in docker hub is from the stable branch **heroku-deploy**.
+Alternatively, you can pull the pre-built image from DockerHub, and run
+locally. This way, you wouldn't have to wait for the build time. The image
+present in docker hub is from the stable branch **heroku-deploy**.
 
 ```sh
 docker pull dnstwister/dnstwister:2.9.3
@@ -106,4 +110,6 @@ pipenv run py.test
 
 ## Say hello
 
-I'd love to hear your feedback so [email me](mailto:hello@dnstwister.report), fire off a [tweet](https://twitter.com/dnstwister) in my general direction or you can just [say thanks](https://saythanks.io/to/thisismyrobot)!... :)
+I'd love to hear your feedback so [email me](mailto:hello@dnstwister.report),
+fire off a [tweet](https://twitter.com/dnstwister) in my general direction or
+you can just [say thanks](https://saythanks.io/to/thisismyrobot)!... :)
