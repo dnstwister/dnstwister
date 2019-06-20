@@ -6,7 +6,7 @@ import textwrap
 import unittest
 
 import pytest
-import flask.ext.webtest
+import flask_webtest
 import mock
 import webtest.app
 
@@ -42,7 +42,7 @@ class TestAtom(unittest.TestCase):
     def setUp(self):
         """Set up the app for testing."""
         # Create a webtest Test App for use
-        self.app = flask.ext.webtest.TestApp(dnstwister.app)
+        self.app = flask_webtest.TestApp(dnstwister.app)
 
         # Clear the webapp cache
         dnstwister.cache.clear()
@@ -216,7 +216,7 @@ class TestAtomUnicode(unittest.TestCase):
     def setUp(self):
         """Set up the app for testing."""
         # Create a webtest Test App for use
-        self.app = flask.ext.webtest.TestApp(dnstwister.app)
+        self.app = flask_webtest.TestApp(dnstwister.app)
 
         # Clear the webapp cache
         dnstwister.cache.clear()

@@ -1,7 +1,7 @@
 """ Tests of the main module.
 """
 import binascii
-import flask.ext.webtest
+import flask_webtest
 import mock
 import unittest
 
@@ -16,7 +16,7 @@ class TestMain(unittest.TestCase):
         """ Set up the mock memcache.
         """
         # Create a webtest Test App for use
-        self.app = flask.ext.webtest.TestApp(dnstwister.app)
+        self.app = flask_webtest.TestApp(dnstwister.app)
 
     def test_index(self):
         """ Test the index page
