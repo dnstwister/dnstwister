@@ -69,15 +69,21 @@ If you don't have [Docker](https://hub.docker.com/) installed, you can click [he
 ```sh
 # Cloning latest source code
 git clone https://github.com/thisismyrobot/dnstwister
+
 # Changing directory
 cd dnstwister
+
 # Checkout to the stable branch i.e. heroku-deploy
 git checkout heroku-deploy
-# Building dnstwister image using Dockerfile (Default branch is heroku-deploy, if build-arg is not passed)
-docker build -t dnstwister --build-arg BRANCH=heroku-deploy .
+
+# Building dnstwister image using Dockerfile
+docker build -t dnstwister .
+
 # Running the application inside a container
 docker run -td -p 5000:5000 --name myapp dnstwister
 ```
+
+Now, go to `http://localhost:5000` using any browser to use dnstwister.
 
 ### Fetching pre-built image
 
@@ -87,6 +93,8 @@ Alternatively, you can pull the pre-built image from DockerHub, and run locally.
 docker pull dnstwister/dnstwister:2.9.3
 docker run -td -p 5000:5000 --name myapp dnstwister/dnstwister:2.9.3
 ```
+
+Now, go to `http://localhost:5000` using any browser to use dnstwister.
 
 ## Tests
 
