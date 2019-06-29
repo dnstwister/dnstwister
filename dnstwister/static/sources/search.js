@@ -50,6 +50,8 @@ var search = (function () {
 
     var progressTimer = ui.startProgressDots()
 
+    ui.placeFooter()
+
     var resolveMomentarily = function () {
       // To give the UI thread a chance.
       setTimeout(function () {
