@@ -85,7 +85,7 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody id="report_target">
+                            <tbody id="resolved_report_target">
                             </tbody>
                         </table>
                     </div>
@@ -94,7 +94,32 @@
                     <input type="radio" name="tabs-report" id="tab-2" class="tab-switch" autocomplete="off" />
                     <label for="tab-2" class="tab-label" onclick="ui.placeFooter()">Available</label>
                     <div class="tab-content">
-                        Woo
+                        <table class="report u-full-width" id="unresolved_report">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="unresolved_report_target">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab">
+                    <input type="radio" name="tabs-report" id="tab-3" class="tab-switch" autocomplete="off" />
+                    <label for="tab-3" class="tab-label" onclick="ui.placeFooter()">Errors</label>
+                    <div class="tab-content">
+                        <table class="report u-full-width" id="errored_report">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="errored_report_target">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 /* global Velocity */
 var ui = (function () {
   var reportShown = false
-  var rowMap = {}
+  var resolvedRowMap = {}
 
   var anchorElem = function (innerHtml, href, className) {
     var elem = document.createElement('a')
@@ -67,7 +67,7 @@ var ui = (function () {
     }
   }
 
-  var reportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+  var resolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
@@ -92,26 +92,55 @@ var ui = (function () {
     return rowElem
   }
 
+  var erroredReportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+    var rowElem = document.createElement('tr')
+    var domainCellElem = document.createElement('td')
+    var toolsCellElem = document.createElement('td')
+
+    var domainText = domain
+    if (domain !== idnaEncodedDomain) {
+      domainText += ' (' + idnaEncodedDomain + ')'
+    }
+    domainCellElem.appendChild(document.createTextNode(domainText))
+    toolsCellElem.className = 'tools'
+
+    toolsCellElem.appendChild(
+      anchorElem('retry', '/analyse/' + encodedDomain)
+    )
+
+    rowElem.appendChild(domainCellElem)
+    rowElem.appendChild(toolsCellElem)
+    rowElem.className = 'domain-row resolved'
+
+    return rowElem
+  }
+
   var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
-    if (rowMap[domain] !== undefined) {
+    if (resolvedRowMap[domain] !== undefined) {
       return
     }
 
-    var rowElem = reportRowElem(domain, idnaEncodedDomain, encodedDomain)
-    rowMap[domain] = rowElem
+    var rowElem = resolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain)
+    resolvedRowMap[domain] = rowElem
+    reportElem.appendChild(rowElem)
+    ui.placeFooter()
+  }
+
+  var addErroredRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
+    var rowElem = erroredReportRowElem(domain, idnaEncodedDomain, encodedDomain)
     reportElem.appendChild(rowElem)
     ui.placeFooter()
   }
 
   var addARecordInfo = function (domain, ipText) {
-    var row = rowMap[domain]
+    var row = resolvedRowMap[domain]
     var td = row.childNodes[1]
     td.appendChild(document.createTextNode(ipText))
     ui.placeFooter()
   }
 
   var addUnresolvedARecord = function (domain) {
-    var row = rowMap[domain]
+    var row = resolvedRowMap[domain]
     var td = row.childNodes[1]
     td.insertAdjacentHTML('afterbegin', '&#10006;')
     ui.placeFooter()
@@ -138,6 +167,7 @@ var ui = (function () {
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
     addResolvedRow: addResolvedRow,
+    addErroredRow: addErroredRow,
     addARecordInfo: addARecordInfo,
     addUnresolvedARecord: addUnresolvedARecord,
     placeFooter: function () {

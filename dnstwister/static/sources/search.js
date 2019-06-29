@@ -44,7 +44,9 @@ var search = (function () {
     var cleaningUp = false
     var erroredA = []
 
-    var reportElem = document.getElementById('report_target')
+    var resolvedReportElem = document.getElementById('resolved_report_target')
+    var unresolvedReportElem = document.getElementById('unresolved_report_target')
+    var erroredReportElem = document.getElementById('errored_report_target')
 
     var progressTimer = ui.startProgressDots()
 
@@ -79,10 +81,12 @@ var search = (function () {
 
       resolveA(idnaEncodedDomain, function (ip) {
         if (ip === null) {
+          console.log(idnaEncodedDomain)
           erroredA.push([nextDomain, idnaEncodedDomain])
+          ui.addErroredRow(erroredReportElem, nextDomain, idnaEncodedDomain)
         } else if (ip !== false) {
           resolvedCount += 1
-          ui.addResolvedRow(reportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
+          ui.addResolvedRow(resolvedReportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
           ui.addARecordInfo(nextDomain, ip)
         }
 
