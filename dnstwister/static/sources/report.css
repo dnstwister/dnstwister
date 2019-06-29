@@ -75,3 +75,42 @@
 .re-search div.buttons {
     margin-left: 1rem;
 }
+
+
+
+
+
+.report-tabs {
+    color: green;
+    position: relative;
+}
+
+.tab {
+    float: left;
+    width: 100%;
+}
+
+.tab-label {
+    display: block;
+    cursor: pointer;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-switch {
+    display: none !important;
+}
+
+.tab-switch:checked + .tab-label {
+    display: block;
+}
+
+.tab-switch:checked + label + .tab-content {
+    display: block;
+}
+
+footer {
+    clear: both;
+}
