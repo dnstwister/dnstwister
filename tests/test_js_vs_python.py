@@ -1,9 +1,9 @@
+# -*- coding: UTF-8 -*-
 """A test that compares the two implementations.
 
 The comparison runs the JavaScript implementation in js2py and compares it
 to the original Python version (from elceef) that I've slightly modified.
 """
-# -*- coding: UTF-8 -*-
 import io
 import os
 
@@ -27,6 +27,14 @@ def test_js_module_has_all_the_python_module_domains():
                        if d not in js_domains]
 
     assert missing_from_js == []
+
+
+def test_js_module_handles_short_domains():
+    """'à.com' needs to not return '.com' as a result."""
+    domain = 'à.com'.decode('utf-8')
+    js_domains = load_js_domains(domain)
+
+    assert '.com' not in js_domains
 
 
 def test_python_module_has_all_the_js_module_domains():

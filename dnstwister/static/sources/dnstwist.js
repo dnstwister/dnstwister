@@ -321,7 +321,7 @@ var dnstwistjs = (function () {
     }
 
     var tweakedDomain = tweakFunc(subdomains, charIndex)
-    if (tweakedDomain === null) {
+    if (tweakedDomain === null || tweakedDomain === '') {
       return tweak(domain, cursor + 1)
     }
 
