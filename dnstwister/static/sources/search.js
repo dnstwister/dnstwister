@@ -81,7 +81,6 @@ var search = (function () {
 
       resolveA(idnaEncodedDomain, function (ip) {
         if (ip === null) {
-          console.log(idnaEncodedDomain)
           erroredA.push([nextDomain, idnaEncodedDomain])
           ui.addErroredRow(erroredReportElem, nextDomain, idnaEncodedDomain)
         } else if (ip !== false) {

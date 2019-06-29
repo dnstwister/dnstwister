@@ -1,6 +1,5 @@
 /* global Velocity */
 var ui = (function () {
-  var reportShown = false
   var resolvedRowMap = {}
 
   var anchorElem = function (innerHtml, href, className) {
@@ -15,7 +14,6 @@ var ui = (function () {
     var identifiedCountElem = document.getElementById('identified_count')
     var checkedCountElem = document.getElementById('checked_count')
     var resolvedCountElem = document.getElementById('resolved_count')
-    var reportTabsElem = document.getElementsByClassName('report-tabs')[0]
 
     if (identifiedCount > 0) {
       identifiedCountElem.innerHTML = identifiedCount
@@ -31,10 +29,6 @@ var ui = (function () {
 
     if (resolvedCount > 0) {
       resolvedCountElem.innerHTML = resolvedCount
-      if (reportShown === false) {
-        reportShown = true
-        reportTabsElem.style.display = 'block'
-      }
     }
   }
 
