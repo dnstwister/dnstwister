@@ -15,7 +15,7 @@ var ui = (function () {
     var identifiedCountElem = document.getElementById('identified_count')
     var checkedCountElem = document.getElementById('checked_count')
     var resolvedCountElem = document.getElementById('resolved_count')
-    var reportTableElem = document.getElementById('main_report')
+    var reportTabsElem = document.getElementsByClassName('report-tabs')[0]
 
     if (identifiedCount > 0) {
       identifiedCountElem.innerHTML = identifiedCount
@@ -33,7 +33,7 @@ var ui = (function () {
       resolvedCountElem.innerHTML = resolvedCount
       if (reportShown === false) {
         reportShown = true
-        reportTableElem.style.display = 'table'
+        reportTabsElem.style.display = 'block'
       }
     }
   }

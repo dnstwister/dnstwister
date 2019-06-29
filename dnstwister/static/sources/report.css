@@ -80,6 +80,10 @@
     clear: both;
 }
 
+.report-tabs .report {
+    display: table;
+}
+
 .tab {
     float: left;
 }
