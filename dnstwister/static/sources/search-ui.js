@@ -75,13 +75,15 @@ var ui = (function () {
     var ipCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
-    var domainText = domain
+    domainCellElem.appendChild(document.createTextNode(domain))
     if (domain !== idnaEncodedDomain) {
-      domainText += ' (' + idnaEncodedDomain + ')'
+      var encodedSpan = document.createElement('span')
+      encodedSpan.className = 'ed'
+      encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
+      domainCellElem.appendChild(encodedSpan)
     }
-    domainCellElem.appendChild(document.createTextNode(domainText))
-    toolsCellElem.className = 'tools'
 
+    toolsCellElem.className = 'tools'
     toolsCellElem.appendChild(
       anchorElem('analyse', '/analyse/' + encodedDomain)
     )
@@ -99,13 +101,15 @@ var ui = (function () {
     var domainCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
-    var domainText = domain
+    domainCellElem.appendChild(document.createTextNode(domain))
     if (domain !== idnaEncodedDomain) {
-      domainText += ' (' + idnaEncodedDomain + ')'
+      var encodedSpan = document.createElement('span')
+      encodedSpan.className = 'ed'
+      encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
+      domainCellElem.appendChild(encodedSpan)
     }
-    domainCellElem.appendChild(document.createTextNode(domainText))
-    toolsCellElem.className = 'tools'
 
+    toolsCellElem.className = 'tools'
     toolsCellElem.appendChild(
       anchorElem('retry', '/analyse/' + encodedDomain)
     )
@@ -122,13 +126,15 @@ var ui = (function () {
     var domainCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
-    var domainText = domain
+    domainCellElem.appendChild(document.createTextNode(domain))
     if (domain !== idnaEncodedDomain) {
-      domainText += ' (' + idnaEncodedDomain + ')'
+      var encodedSpan = document.createElement('span')
+      encodedSpan.className = 'ed'
+      encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
+      domainCellElem.appendChild(encodedSpan)
     }
-    domainCellElem.appendChild(document.createTextNode(domainText))
-    toolsCellElem.className = 'tools'
 
+    toolsCellElem.className = 'tools'
     toolsCellElem.appendChild(
       anchorElem('buy', '/analyse/' + encodedDomain)
     )

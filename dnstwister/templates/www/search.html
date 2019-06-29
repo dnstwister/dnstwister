@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="six columns">
                     <input type="text" autocapitalize="none" name="domains" value="{{ domain }}" size="49" class="u-full-width" />
-                    <div>
+                    <div class="subscribe_wrapper">
                         <a alt="email alert subscribe link" title="Subscribe for email alerts" href="/email/subscribe/{{ domain | domain_encoder }}">
                             Subscribe for email alerts
                         </a>
@@ -81,8 +81,7 @@
                             <thead>
                                 <tr>
                                     <th>Domain</th>
-                                    <th>IP Address / A record</th>
-                                    <th></th>
+                                    <th colspan="2">IP Address / A record</th>
                                 </tr>
                             </thead>
                             <tbody id="resolved_report_target">
