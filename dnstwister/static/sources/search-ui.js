@@ -100,18 +100,37 @@ var ui = (function () {
     var rowElem = reportRowElem(domain, idnaEncodedDomain, encodedDomain)
     rowMap[domain] = rowElem
     reportElem.appendChild(rowElem)
+    ui.placeFooter()
   }
 
   var addARecordInfo = function (domain, ipText) {
     var row = rowMap[domain]
     var td = row.childNodes[1]
     td.appendChild(document.createTextNode(ipText))
+    ui.placeFooter()
   }
 
   var addUnresolvedARecord = function (domain) {
     var row = rowMap[domain]
     var td = row.childNodes[1]
     td.insertAdjacentHTML('afterbegin', '&#10006;')
+    ui.placeFooter()
+  }
+
+  var placeFooter = function () {
+    var contents = document.getElementsByClassName('tab-content')
+
+    var visibleHeight = 0
+    for (var i = 0; i < contents.length; i++) {
+      var tabContents = contents[i]
+      if (tabContents.clientHeight > 0) { // AKA it's visible.
+        visibleHeight = tabContents.offsetHeight + tabContents.parentNode.offsetHeight + 20
+        break
+      }
+    }
+
+    var footer = document.getElementsByTagName('footer')[0]
+    footer.style.marginTop = visibleHeight + 'px'
   }
 
   return {
@@ -121,5 +140,10 @@ var ui = (function () {
     addResolvedRow: addResolvedRow,
     addARecordInfo: addARecordInfo,
     addUnresolvedARecord: addUnresolvedARecord,
+    placeFooter: function () {
+      setTimeout(function () {
+        placeFooter()
+      }, 1) // DOM positioning.
+    }
   }
 })()

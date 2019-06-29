@@ -8,6 +8,9 @@
               search.run('{{ domain }}')
             }
           }
+          window.onresize = function () {
+            ui.placeFooter()
+          }
         </script>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='report.min.css') }}">
 {% endblock %}
@@ -47,7 +50,7 @@
                         of those domains.
                         <br />
                     </span>
-                    <span id="resolved_count" class="result_highlight counter">None</span>
+                    <span id="resolved_count" class="result_highlight counter">No</span>
                     domains
                     <span class="wip_text">have</span>
                     resolved to an IP address.
@@ -72,7 +75,7 @@
             <div class="report-tabs">
                 <div class="tab">
                     <input type="radio" name="tabs-report" id="tab-1" class="tab-switch" autocomplete="off" checked />
-                    <label for="tab-1" class="tab-label">Resolved</label>
+                    <label for="tab-1" class="tab-label" onclick="ui.placeFooter()">Resolved</label>
                     <div class="tab-content">
                         <table class="report u-full-width" id="main_report">
                             <thead>
@@ -87,9 +90,9 @@
                         </table>
                     </div>
                 </div>
-                <div>
+                <div class="tab">
                     <input type="radio" name="tabs-report" id="tab-2" class="tab-switch" autocomplete="off" />
-                    <label for="tab-2" class="tab-label">Available</label>
+                    <label for="tab-2" class="tab-label" onclick="ui.placeFooter()">Available</label>
                     <div class="tab-content">
                         Woo
                     </div>

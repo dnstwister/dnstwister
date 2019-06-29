@@ -76,27 +76,36 @@
     margin-left: 1rem;
 }
 
-
-
-
-
 .report-tabs {
-    color: green;
-    position: relative;
+    clear: both;
 }
 
 .tab {
     float: left;
-    width: 100%;
 }
 
 .tab-label {
     display: block;
     cursor: pointer;
+    margin: 1rem 5rem 1rem 0;
+    opacity: 0.5;
+    color: #1eaedb;
+    font-size: 130%;
+    border-bottom: 4px solid transparent;
+}
+
+.tab-label:hover {
+    opacity: 0.75;
+    border-bottom: 1px solid #1eaedb;
+    transition: border-bottom 0.15s;
+    transition: opacity 0.15s;
 }
 
 .tab-content {
     display: none;
+    position: absolute;
+    left: 0;
+    width: 100%;
 }
 
 .tab-switch {
@@ -104,7 +113,8 @@
 }
 
 .tab-switch:checked + .tab-label {
-    display: block;
+    opacity: 1;
+    border-bottom: 4px solid #1eaedb;
 }
 
 .tab-switch:checked + label + .tab-content {
