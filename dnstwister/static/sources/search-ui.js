@@ -112,7 +112,30 @@ var ui = (function () {
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(toolsCellElem)
-    rowElem.className = 'domain-row resolved'
+    rowElem.className = 'domain-row errored'
+
+    return rowElem
+  }
+
+  var unresolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+    var rowElem = document.createElement('tr')
+    var domainCellElem = document.createElement('td')
+    var toolsCellElem = document.createElement('td')
+
+    var domainText = domain
+    if (domain !== idnaEncodedDomain) {
+      domainText += ' (' + idnaEncodedDomain + ')'
+    }
+    domainCellElem.appendChild(document.createTextNode(domainText))
+    toolsCellElem.className = 'tools'
+
+    toolsCellElem.appendChild(
+      anchorElem('buy', '/analyse/' + encodedDomain)
+    )
+
+    rowElem.appendChild(domainCellElem)
+    rowElem.appendChild(toolsCellElem)
+    rowElem.className = 'domain-row unresolved'
 
     return rowElem
   }
@@ -134,17 +157,17 @@ var ui = (function () {
     ui.placeFooter()
   }
 
+  var addUnresolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
+    console.log('unresolved', domain, reportElem)
+    var rowElem = unresolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain)
+    reportElem.appendChild(rowElem)
+    ui.placeFooter()
+  }
+
   var addARecordInfo = function (domain, ipText) {
     var row = resolvedRowMap[domain]
     var td = row.childNodes[1]
     td.appendChild(document.createTextNode(ipText))
-    ui.placeFooter()
-  }
-
-  var addUnresolvedARecord = function (domain) {
-    var row = resolvedRowMap[domain]
-    var td = row.childNodes[1]
-    td.insertAdjacentHTML('afterbegin', '&#10006;')
     ui.placeFooter()
   }
 
@@ -169,9 +192,9 @@ var ui = (function () {
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
     addResolvedRow: addResolvedRow,
+    addUnresolvedRow: addUnresolvedRow,
     addErroredRow: addErroredRow,
     addARecordInfo: addARecordInfo,
-    addUnresolvedARecord: addUnresolvedARecord,
     placeFooter: function () {
       setTimeout(function () {
         placeFooter()

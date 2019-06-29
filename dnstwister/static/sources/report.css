@@ -84,6 +84,11 @@
     display: table;
 }
 
+.report-tabs tr.errored,
+.report-tabs tr.unresolved {
+    display: table-row;
+}
+
 .tab {
     float: left;
 }

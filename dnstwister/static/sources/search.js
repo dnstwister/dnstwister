@@ -87,6 +87,8 @@ var search = (function () {
           resolvedCount += 1
           ui.addResolvedRow(resolvedReportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
           ui.addARecordInfo(nextDomain, ip)
+        } else {
+          ui.addUnresolvedRow(unresolvedReportElem, nextDomain, idnaEncodedDomain)
         }
 
         ui.updateProgress(identifiedCount, checkedCount, resolvedCount, allIdentified)
