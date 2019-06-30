@@ -181,3 +181,11 @@
 footer {
     clear: both;
 }
+
+.tools a {
+    margin-right: 1rem;
+}
+
+.tools a.affiliate {
+    font-weight: bold;
+}

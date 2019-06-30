@@ -66,7 +66,7 @@ var ui = (function () {
     }
   }
 
-  var resolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+  var resolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain, affiliateLink) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
@@ -84,6 +84,13 @@ var ui = (function () {
     toolsCellElem.appendChild(
       anchorElem('analyse', '/analyse/' + encodedDomain)
     )
+
+    if (affiliateLink !== null) {
+      var purchaseLink = anchorElem('buy', affiliateLink)
+      purchaseLink.className = 'affiliate'
+      purchaseLink.target = '_blank'
+      toolsCellElem.appendChild(purchaseLink)
+    }
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(ipCellElem)
@@ -111,7 +118,7 @@ var ui = (function () {
     return rowElem
   }
 
-  var unresolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+  var unresolvedReportRowElem = function (domain, idnaEncodedDomain, affiliateLink) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
@@ -125,9 +132,11 @@ var ui = (function () {
     }
 
     toolsCellElem.className = 'tools'
-    toolsCellElem.appendChild(
-      anchorElem('buy', '/analyse/' + encodedDomain)
-    )
+    if (affiliateLink !== null) {
+      toolsCellElem.appendChild(
+        anchorElem('buy', affiliateLink)
+      )
+    }
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(toolsCellElem)
@@ -143,14 +152,18 @@ var ui = (function () {
     countElem.innerText = count + 1
   }
 
-  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
+  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain, affiliateLink) {
     if (resolvedRowMap[domain] !== undefined) {
       return
     }
 
-    var rowElem = resolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain)
+    var rowElem = resolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain, affiliateLink)
     resolvedRowMap[domain] = rowElem
-    reportElem.appendChild(rowElem)
+    if (affiliateLink !== null) {
+      reportElem.insertBefore(rowElem, reportElem.childNodes[0] || null)
+    } else {
+      reportElem.appendChild(rowElem)
+    }
     incrementCount(reportElem)
     ui.placeFooter()
   }
@@ -162,9 +175,13 @@ var ui = (function () {
     ui.placeFooter()
   }
 
-  var addUnresolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
-    var rowElem = unresolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain)
-    reportElem.appendChild(rowElem)
+  var addUnresolvedRow = function (reportElem, domain, idnaEncodedDomain, affiliateLink) {
+    var rowElem = unresolvedReportRowElem(domain, idnaEncodedDomain, affiliateLink)
+    if (affiliateLink !== null) {
+      reportElem.insertBefore(rowElem, reportElem.childNodes[0] || null)
+    } else {
+      reportElem.appendChild(rowElem)
+    }
     incrementCount(reportElem)
     ui.placeFooter()
   }

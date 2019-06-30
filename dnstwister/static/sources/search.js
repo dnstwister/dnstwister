@@ -12,9 +12,9 @@ var search = (function () {
     return hex
   }
 
-  var resolveA = function (idnaEncodedDomain, callback) {
+  var getData = function (idnaEncodedDomain, callback) {
     var request = new XMLHttpRequest()
-    var url = 'https://dnstwister.report/api/a?pd=' + idnaEncodedDomain
+    var url = 'https://dnstwister.report/api/webui?pd=' + idnaEncodedDomain
     request.open('GET', url)
     request.send()
     request.onreadystatechange = function (e) {
@@ -22,11 +22,7 @@ var search = (function () {
         if (request.status === 200) {
           var responseText = request.responseText
           var response = JSON.parse(responseText)
-          if (response.error === false) {
-            callback(response.ip)
-          } else {
-            callback(null)
-          }
+          callback(response)
         } else {
           callback(null)
         }
@@ -81,16 +77,25 @@ var search = (function () {
 
       checkedCount += 1
 
-      resolveA(idnaEncodedDomain, function (ip) {
-        if (ip === null) {
+      getData(idnaEncodedDomain, function (data) {
+        if (data === null || data.a.error === true) {
           erroredA.push([nextDomain, idnaEncodedDomain])
           ui.addErroredRow(erroredReportElem, nextDomain, idnaEncodedDomain)
-        } else if (ip !== false) {
-          resolvedCount += 1
-          ui.addResolvedRow(resolvedReportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain)
-          ui.addARecordInfo(nextDomain, ip)
         } else {
-          ui.addUnresolvedRow(unresolvedReportElem, nextDomain, idnaEncodedDomain)
+          var affiliateLink = null
+          if (data.affiliates.available === true) {
+            if (data.affiliates.vendor === '1') {
+              affiliateLink = 'https://uniregistry.com/market/domain/' + idnaEncodedDomain + '?src=xxxxxxxx'
+            }
+          }
+
+          if (data.a.ip !== false) {
+            resolvedCount += 1
+            ui.addResolvedRow(resolvedReportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain, affiliateLink)
+            ui.addARecordInfo(nextDomain, data.a.ip)
+          } else {
+            ui.addUnresolvedRow(unresolvedReportElem, nextDomain, idnaEncodedDomain, affiliateLink)
+          }
         }
 
         ui.updateProgress(identifiedCount, checkedCount, resolvedCount, allIdentified)
