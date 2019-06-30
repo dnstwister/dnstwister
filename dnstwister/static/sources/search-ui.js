@@ -86,8 +86,8 @@ var ui = (function () {
     )
 
     if (affiliateLink !== null) {
-      var purchaseLink = anchorElem('buy', affiliateLink)
-      purchaseLink.className = 'affiliate'
+      var purchaseLink = anchorElem('for sale', affiliateLink)
+      purchaseLink.className = 'affiliate button'
       purchaseLink.target = '_blank'
       toolsCellElem.appendChild(purchaseLink)
     }
@@ -132,10 +132,12 @@ var ui = (function () {
     }
 
     toolsCellElem.className = 'tools'
+
     if (affiliateLink !== null) {
-      toolsCellElem.appendChild(
-        anchorElem('buy', affiliateLink)
-      )
+      var purchaseLink = anchorElem('for sale', affiliateLink)
+      purchaseLink.className = 'affiliate button'
+      purchaseLink.target = '_blank'
+      toolsCellElem.appendChild(purchaseLink)
     }
 
     rowElem.appendChild(domainCellElem)

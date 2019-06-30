@@ -182,10 +182,36 @@ footer {
     clear: both;
 }
 
+.tools {
+    width: 30%;
+    white-space: nowrap;
+}
+
 .tools a {
     margin-right: 1rem;
 }
 
 .tools a.affiliate {
     font-weight: bold;
+    padding: 0 26px 0 10px;
+    margin-bottom: 0;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    border-color: rgba(255, 165, 0, 0.43);
+    background-color: rgba(255, 165, 0, 0.08);
+    color: #ff7d00;
+}
+
+.tools a.affiliate:after {
+    content : url(/static/link-external.svg);
+    position: absolute;
+    padding-left: 5px;
+    padding-top: 0.4rem;
+    opacity: 0.5;
+}
+
+.tools a.affiliate:hover {
+    border-color: orange;
+    background-color: rgba(255, 165, 0, 0.43);
+    color: #ff7d00;
 }
