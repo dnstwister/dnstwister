@@ -69,7 +69,7 @@
             <div class="report-tabs">
                 <div class="tab">
                     <input type="radio" name="tabs-report" id="tab-1" class="tab-switch" autocomplete="off" checked />
-                    <label for="tab-1" class="tab-label" onclick="ui.placeFooter()">Resolved</label>
+                    <label for="tab-1" class="tab-label" onclick="ui.placeFooter()">Resolved (<span class="tab_count">0</span>)</label>
                     <div class="tab-content">
                         <table class="report u-full-width" id="main_report">
                             <thead>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="tab">
                     <input type="radio" name="tabs-report" id="tab-2" class="tab-switch" autocomplete="off" />
-                    <label for="tab-2" class="tab-label" onclick="ui.placeFooter()">Available</label>
+                    <label for="tab-2" class="tab-label" onclick="ui.placeFooter()">Available (<span class="tab_count">0</span>)</label>
                     <div class="tab-content">
                         <table class="report u-full-width" id="unresolved_report">
                             <thead>
@@ -101,7 +101,7 @@
                 </div>
                 <div class="tab" id="errors_tab">
                     <input type="radio" name="tabs-report" id="tab-3" class="tab-switch" autocomplete="off" />
-                    <label for="tab-3" class="tab-label" onclick="ui.placeFooter()">Errors</label>
+                    <label for="tab-3" class="tab-label" onclick="ui.placeFooter()">Errors (<span class="tab_count">0</span>)</label>
                     <div class="tab-content">
                         <table class="report u-full-width" id="errored_report">
                             <thead>
