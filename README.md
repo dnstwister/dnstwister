@@ -26,9 +26,7 @@ __dnstwister__ is hosted at [https://dnstwister.report](https://dnstwister.repor
 ## dnstwist module
 
 This project currently uses a modified version of dnstwist, in
-[dnstwister/dnstwist](dnstwister/dnstwist). It also makes use of a pure
-JavaScript implementation of the dnstwist functionality to offload some of the
-processing to the user's browser.
+[dnstwister/dnstwist](dnstwister/dnstwist).
 
 I have kept the original dnstwist README and LICENCE but I have applied an
 "Unlicense" to __dnstwister__.
@@ -55,8 +53,8 @@ PostgreSQL & REDIS databases and CloudFlare Workers. Some of the code that
 supports this functionality is not available in this repository as it forms
 the core of the [dnstwister.report](https://dnstwister.report) service.
 
-The basic ability to generate a report on a domain via the web interface will
-always remain available in this repository.
+The basic ability to generate a web-based report on a domain via the web
+interface will always remain available in this repository.
 
 ## Developing dnstwister
 
@@ -70,8 +68,10 @@ pipenv install --dev
 Running:
 
 ```sh
-pipenv run python test_server.py
+pipenv run python local_server.py
 ```
+
+And browse via http://localhost:5000
 
 ## Running dnstwister using Docker
 
