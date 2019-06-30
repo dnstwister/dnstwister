@@ -12,16 +12,18 @@ A Heroku-hosted version of the very excellent
 
 ## dnstwist vs. dnstwister
 
-In the author's words, dnstwist helps you
-["...find similar-looking domains that adversaries can use to attack you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
+In [the author's](https://github.com/elceef) words, dnstwist helps you
+["...find similar-looking domains that adversaries can use to attack
+you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
 
 This project, __dnstwister__, gives you access to the power of dnstwist via a
-convenient web interface and offers email alerts, csv/json reports and a fully
-featured RESTful API.
+convenient web interface and offers csv/json reports and a fully featured
+RESTful API.
 
 And it's 100% free.
 
-__dnstwister__ is hosted at [https://dnstwister.report](https://dnstwister.report).
+__dnstwister__ is hosted at
+[https://dnstwister.report](https://dnstwister.report).
 
 ## dnstwist module
 
