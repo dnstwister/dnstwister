@@ -37,6 +37,12 @@ maps = {
         'jquery-1.11.3.min.js',
         'report.js',
     ),
+    'search.min.css': (
+        'normalize.css',
+        'skeleton.css',
+        'common.css',
+        'search.css',
+    ),
     'search.min.js': (
         'velocity.min.js',
         'punycode.js',
