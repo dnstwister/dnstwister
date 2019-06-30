@@ -45,6 +45,19 @@ dnstwist in my project.
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
  * [@coolboi567](https://github.com/coolboi567) (docker configuration)
 
+## A note on running dnstwister yourself
+
+Some of the more advanced functionality of
+[dnstwister.report](https://dnstwister.report) (email subscriptions,
+asynchronous web UI, "noisy" domain filtering etc) is built off infrastructure
+beyond the core Python Flask stack behind __dnstwister__ - for instance
+PostgreSQL & REDIS databases and CloudFlare Workers. Some of the code that
+supports this functionality is not available in this repository as it forms
+the core of the [dnstwister.report](https://dnstwister.report) service.
+
+The basic ability to generate a report on a domain via the web interface will
+always remain available in this repository.
+
 ## Developing dnstwister
 
 Once-off setup:
