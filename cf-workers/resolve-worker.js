@@ -1,15 +1,15 @@
-/* globals fetch, addEventListener, Headers, Response */
+/* globals KV_A_RECORDS, fetch, addEventListener, Headers, Response */
 // Routes:
 //  * https://dnstwister.report/api/a*
 //  * https://dnstwister.report/api/mx*
 //
-// Map A_RECORDS as KV_A_RECORDS
+// Map caching namespace as KV_A_RECORDS
 //
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event))
 })
 
-const cacheTime = 60 * 60 * 24  // 24 hours.
+const cacheTime = 60 * 60 * 24 // 24 hours.
 const urlStart = 'https://cloudflare-dns.com/dns-query?ct=application/dns-json&name='
 
 const jsonHeaders = new Headers([
@@ -26,7 +26,7 @@ async function handleRequest (event) {
 
   const mode = parsedUrl.pathname.split('/').slice(-1)[0]
   if (mode === 'a') {
-    return await aRecord(event, domain)
+    return aRecord(event, domain)
   } else if (mode === 'mx') {
     return mxRecord(domain)
   }
@@ -35,14 +35,12 @@ async function handleRequest (event) {
 }
 
 async function aRecord (event, domain) {
-  let stored = null
   const cachedRecord = await cachedA(domain)
   if (cachedRecord !== null) {
     const updated = new Date(cachedRecord.updated)
     const age = (new Date() - updated) / 1000
-    console.log(age)
     if (age < cacheTime) {
-      response = {
+      const response = {
         ip: cachedRecord.ip,
         error: false,
         when: cachedRecord.updated
@@ -88,13 +86,13 @@ async function aRecord (event, domain) {
     })
 }
 
-async function cachedA(domain) {
-  const key = 'a-'+domain
-  return await KV_A_RECORDS.get(key, 'json')
+async function cachedA (domain) {
+  const key = 'a-' + domain
+  return KV_A_RECORDS.get(key, 'json')
 }
 
-function cacheA(event, domain, ip) {
-  const key = 'a-'+domain
+function cacheA (event, domain, ip) {
+  const key = 'a-' + domain
   const value = JSON.stringify({
     ip: ip,
     updated: new Date()
