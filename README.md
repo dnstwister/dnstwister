@@ -55,8 +55,9 @@ PostgreSQL & REDIS databases and CloudFlare Workers. Some of the code that
 supports this functionality is not available in this repository as it forms
 the core of the [dnstwister.report](https://dnstwister.report) service.
 
-The basic ability to generate a web-based report on a domain via the web
-interface will always remain available in this repository.
+The fundamental functionality supporting the generation of a web-based report
+on a domain via the web interface will always remain available in this
+repository.
 
 ## Developing dnstwister
 
