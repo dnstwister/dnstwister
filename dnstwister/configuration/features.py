@@ -1,4 +1,8 @@
-"""Run-time feature flags."""
+"""Run-time feature flags.
+
+WARNING: these features require infrastructure beyond what is in this
+repository.
+"""
 import os
 
 

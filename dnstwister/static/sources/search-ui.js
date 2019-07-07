@@ -1,7 +1,6 @@
 /* global Velocity */
 var ui = (function () {
-  var reportShown = false
-  var rowMap = {}
+  var resolvedRowMap = {}
 
   var anchorElem = function (innerHtml, href, className) {
     var elem = document.createElement('a')
@@ -15,7 +14,6 @@ var ui = (function () {
     var identifiedCountElem = document.getElementById('identified_count')
     var checkedCountElem = document.getElementById('checked_count')
     var resolvedCountElem = document.getElementById('resolved_count')
-    var reportTableElem = document.getElementById('main_report')
 
     if (identifiedCount > 0) {
       identifiedCountElem.innerHTML = identifiedCount
@@ -31,10 +29,6 @@ var ui = (function () {
 
     if (resolvedCount > 0) {
       resolvedCountElem.innerHTML = resolvedCount
-      if (reportShown === false) {
-        reportShown = true
-        reportTableElem.style.display = 'table'
-      }
     }
   }
 
@@ -61,28 +55,42 @@ var ui = (function () {
     Velocity(progressElem, 'slideUp', { duration: 500, delay: 1500 })
     Velocity(document.getElementsByClassName('search_result'), { 'font-size': '130%' }, { duration: 500, delay: 1500 })
 
-    if (errorCount > 0) {
-      document.getElementById('errored_count').innerText = errorCount
-      Velocity(document.getElementById('error_summary'), 'fadeIn', { duration: 500, delay: 1500 })
+    if (errorCount === 0) {
+      if (document.getElementById('errored_report').clientHeight > 0) { // Visible.
+        setTimeout(function () {
+          document.getElementById('tab-1').click()
+          ui.placeFooter()
+        }, 1500)
+      }
+      Velocity(document.getElementById('errors_tab'), 'fadeOut', { duration: 500, delay: 1500 })
     }
   }
 
-  var reportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+  var resolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain, affiliateLink) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
-    var domainText = domain
+    domainCellElem.appendChild(document.createTextNode(domain))
     if (domain !== idnaEncodedDomain) {
-      domainText += ' (' + idnaEncodedDomain + ')'
+      var encodedSpan = document.createElement('span')
+      encodedSpan.className = 'ed'
+      encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
+      domainCellElem.appendChild(encodedSpan)
     }
-    domainCellElem.appendChild(document.createTextNode(domainText))
-    toolsCellElem.className = 'tools'
 
+    toolsCellElem.className = 'tools'
     toolsCellElem.appendChild(
       anchorElem('analyse', '/analyse/' + encodedDomain)
     )
+
+    if (affiliateLink !== null) {
+      var purchaseLink = anchorElem('for sale', affiliateLink)
+      purchaseLink.className = 'affiliate button'
+      purchaseLink.target = '_blank'
+      toolsCellElem.appendChild(purchaseLink)
+    }
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(ipCellElem)
@@ -92,26 +100,115 @@ var ui = (function () {
     return rowElem
   }
 
-  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
-    if (rowMap[domain] !== undefined) {
+  var erroredReportRowElem = function (domain, idnaEncodedDomain, encodedDomain) {
+    var rowElem = document.createElement('tr')
+    var domainCellElem = document.createElement('td')
+
+    domainCellElem.appendChild(document.createTextNode(domain))
+    if (domain !== idnaEncodedDomain) {
+      var encodedSpan = document.createElement('span')
+      encodedSpan.className = 'ed'
+      encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
+      domainCellElem.appendChild(encodedSpan)
+    }
+
+    rowElem.appendChild(domainCellElem)
+    rowElem.className = 'domain-row errored'
+
+    return rowElem
+  }
+
+  var unresolvedReportRowElem = function (domain, idnaEncodedDomain, affiliateLink) {
+    var rowElem = document.createElement('tr')
+    var domainCellElem = document.createElement('td')
+    var toolsCellElem = document.createElement('td')
+
+    domainCellElem.appendChild(document.createTextNode(domain))
+    if (domain !== idnaEncodedDomain) {
+      var encodedSpan = document.createElement('span')
+      encodedSpan.className = 'ed'
+      encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
+      domainCellElem.appendChild(encodedSpan)
+    }
+
+    toolsCellElem.className = 'tools'
+
+    if (affiliateLink !== null) {
+      var purchaseLink = anchorElem('for sale', affiliateLink)
+      purchaseLink.className = 'affiliate button'
+      purchaseLink.target = '_blank'
+      toolsCellElem.appendChild(purchaseLink)
+    }
+
+    rowElem.appendChild(domainCellElem)
+    rowElem.appendChild(toolsCellElem)
+    rowElem.className = 'domain-row unresolved'
+
+    return rowElem
+  }
+
+  var incrementCount = function (reportElem) {
+    var tabElem = reportElem.parentNode.parentNode.parentNode
+    var countElem = tabElem.getElementsByClassName('tab_count')[0]
+    var count = parseInt(countElem.innerText)
+    countElem.innerText = count + 1
+  }
+
+  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain, affiliateLink) {
+    if (resolvedRowMap[domain] !== undefined) {
       return
     }
 
-    var rowElem = reportRowElem(domain, idnaEncodedDomain, encodedDomain)
-    rowMap[domain] = rowElem
+    var rowElem = resolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain, affiliateLink)
+    resolvedRowMap[domain] = rowElem
+    if (affiliateLink !== null) {
+      reportElem.insertBefore(rowElem, reportElem.childNodes[0] || null)
+    } else {
+      reportElem.appendChild(rowElem)
+    }
+    incrementCount(reportElem)
+    ui.placeFooter()
+  }
+
+  var addErroredRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain) {
+    var rowElem = erroredReportRowElem(domain, idnaEncodedDomain, encodedDomain)
     reportElem.appendChild(rowElem)
+    incrementCount(reportElem)
+    ui.placeFooter()
+  }
+
+  var addUnresolvedRow = function (reportElem, domain, idnaEncodedDomain, affiliateLink) {
+    var rowElem = unresolvedReportRowElem(domain, idnaEncodedDomain, affiliateLink)
+    if (affiliateLink !== null) {
+      reportElem.insertBefore(rowElem, reportElem.childNodes[0] || null)
+    } else {
+      reportElem.appendChild(rowElem)
+    }
+    incrementCount(reportElem)
+    ui.placeFooter()
   }
 
   var addARecordInfo = function (domain, ipText) {
-    var row = rowMap[domain]
+    var row = resolvedRowMap[domain]
     var td = row.childNodes[1]
     td.appendChild(document.createTextNode(ipText))
+    ui.placeFooter()
   }
 
-  var addUnresolvedARecord = function (domain) {
-    var row = rowMap[domain]
-    var td = row.childNodes[1]
-    td.insertAdjacentHTML('afterbegin', '&#10006;')
+  var placeFooter = function () {
+    var contents = document.getElementsByClassName('tab-content')
+
+    var visibleHeight = 0
+    for (var i = 0; i < contents.length; i++) {
+      var tabContents = contents[i]
+      if (tabContents.clientHeight > 0) { // AKA it's visible.
+        visibleHeight = tabContents.offsetHeight + tabContents.parentNode.offsetHeight + 20
+        break
+      }
+    }
+
+    var footer = document.getElementsByTagName('footer')[0]
+    footer.style.marginTop = visibleHeight + 'px'
   }
 
   return {
@@ -119,7 +216,13 @@ var ui = (function () {
     startProgressDots: startProgressDots,
     markProgressAsDone: markProgressAsDone,
     addResolvedRow: addResolvedRow,
+    addUnresolvedRow: addUnresolvedRow,
+    addErroredRow: addErroredRow,
     addARecordInfo: addARecordInfo,
-    addUnresolvedARecord: addUnresolvedARecord,
+    placeFooter: function () {
+      setTimeout(function () {
+        placeFooter()
+      }, 1) // DOM positioning.
+    }
   }
 })()

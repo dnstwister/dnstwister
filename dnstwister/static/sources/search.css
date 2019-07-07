@@ -55,11 +55,6 @@
     color: red;
 }
 
-#error_summary {
-    font-size: 60%;
-    display: none;
-}
-
 .re-search {
     margin-bottom: 0;
     clear: both;
@@ -111,18 +106,24 @@
     transition: opacity 0.15s;
 }
 
+@media screen and (max-width: 700px) {
+    .tab-label {
+        margin-right: 1em;
+    }
+}
+
 @media screen and (max-width: 600px) {
     h1 {
         font-size: 4rem;
     }
+
+    .tab-label {
+        font-size: 100%;
+        margin-right: 1em;
+    }
 }
 
 @media screen and (max-width: 500px) {
-    .tab-label {
-        font-size: 110%;
-        margin-right: 1em;
-    }
-
     h1 {
         font-size: 3rem;
     }
@@ -133,21 +134,6 @@
 
     .subscribe_wrapper {
         width: 150%;
-    }
-}
-
-@media screen and (max-width: 550px) {
-    .six.columns {
-        width: 48%;
-    }
-
-    th, td {
-        padding: 0.2rem;
-    }
-
-    .ed {
-        display: block;
-        font-size: 75%;
     }
 }
 
@@ -185,4 +171,67 @@
 
 footer {
     clear: both;
+}
+
+.tools {
+    width: 30%;
+    white-space: nowrap;
+}
+
+.tools a {
+    margin-right: 1rem;
+}
+
+.tools a.affiliate {
+    font-weight: bold;
+    padding: 0 26px 0 10px;
+    margin-bottom: 0;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    border-color: rgba(255, 165, 0, 0.43);
+    background-color: rgba(255, 165, 0, 0.08);
+    color: #ff7d00;
+}
+
+.tools a.affiliate:after {
+    content : url(/static/link-external.svg);
+    position: absolute;
+    padding-left: 5px;
+    padding-top: 0.4rem;
+    opacity: 0.5;
+}
+
+.tools a.affiliate:hover {
+    border-color: orange;
+    background-color: rgba(255, 165, 0, 0.43);
+    color: #ff7d00;
+}
+
+@media screen and (max-width: 550px) {
+    .six.columns {
+        width: 48%;
+    }
+
+    th, td {
+        padding: 0.2rem;
+    }
+
+    .ed {
+        display: block;
+        font-size: 75%;
+    }
+
+    .tools {
+        white-space: normal;
+        text-align: center;
+    }
+
+    .tools a.affiliate {
+        padding: 5px 20px 5px 5px;
+        line-height: 1.5rem;
+    }
+
+    .tools a.affiliate:after {
+        padding-top: 0;
+    }
 }
