@@ -235,3 +235,19 @@ footer {
         padding-top: 0;
     }
 }
+
+#unresolved_report .mx {
+    color: silver;
+}
+
+#unresolved_report .mx.found {
+    color: red;
+}
+
+#main_report .mx {
+    color: silver;
+}
+
+#main_report .mx.found {
+    color: black;
+}

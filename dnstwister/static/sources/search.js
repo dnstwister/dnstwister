@@ -91,10 +91,10 @@ var search = (function () {
 
           if (data.a.ip !== false) {
             resolvedCount += 1
-            ui.addResolvedRow(resolvedReportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain, affiliateLink)
+            ui.addResolvedRow(resolvedReportElem, nextDomain, idnaEncodedDomain, hexEncodedDomain, data.mx, affiliateLink)
             ui.addARecordInfo(nextDomain, data.a.ip)
           } else {
-            ui.addUnresolvedRow(unresolvedReportElem, nextDomain, idnaEncodedDomain, affiliateLink)
+            ui.addUnresolvedRow(unresolvedReportElem, nextDomain, idnaEncodedDomain, data.mx, affiliateLink)
           }
         }
 

@@ -66,10 +66,11 @@ var ui = (function () {
     }
   }
 
-  var resolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain, affiliateLink) {
+  var resolvedReportRowElem = function (domain, idnaEncodedDomain, encodedDomain, mxFound, affiliateLink) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
     var ipCellElem = document.createElement('td')
+    var mxCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
     domainCellElem.appendChild(document.createTextNode(domain))
@@ -78,6 +79,15 @@ var ui = (function () {
       encodedSpan.className = 'ed'
       encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
       domainCellElem.appendChild(encodedSpan)
+    }
+
+    mxCellElem.className = 'mx'
+    if (mxFound === true) {
+      mxCellElem.className += ' found'
+      mxCellElem.innerHTML = '&#x2714;'
+      mxCellElem.className += ' found'
+    } else {
+      mxCellElem.innerHTML = '&#x2716;'
     }
 
     toolsCellElem.className = 'tools'
@@ -94,6 +104,7 @@ var ui = (function () {
 
     rowElem.appendChild(domainCellElem)
     rowElem.appendChild(ipCellElem)
+    rowElem.appendChild(mxCellElem)
     rowElem.appendChild(toolsCellElem)
     rowElem.className = 'domain-row resolved'
 
@@ -118,9 +129,10 @@ var ui = (function () {
     return rowElem
   }
 
-  var unresolvedReportRowElem = function (domain, idnaEncodedDomain, affiliateLink) {
+  var unresolvedReportRowElem = function (domain, idnaEncodedDomain, mxFound, affiliateLink) {
     var rowElem = document.createElement('tr')
     var domainCellElem = document.createElement('td')
+    var mxCellElem = document.createElement('td')
     var toolsCellElem = document.createElement('td')
 
     domainCellElem.appendChild(document.createTextNode(domain))
@@ -129,6 +141,15 @@ var ui = (function () {
       encodedSpan.className = 'ed'
       encodedSpan.appendChild(document.createTextNode(' (' + idnaEncodedDomain + ')'))
       domainCellElem.appendChild(encodedSpan)
+    }
+
+    mxCellElem.className = 'mx'
+    if (mxFound === true) {
+      mxCellElem.className += ' found'
+      mxCellElem.innerHTML = '&#x2714;'
+      mxCellElem.title = 'Registering an MX record without an A record is often a sign of phishing.'
+    } else {
+      mxCellElem.innerHTML = '&#x2716;'
     }
 
     toolsCellElem.className = 'tools'
@@ -141,6 +162,7 @@ var ui = (function () {
     }
 
     rowElem.appendChild(domainCellElem)
+    rowElem.appendChild(mxCellElem)
     rowElem.appendChild(toolsCellElem)
     rowElem.className = 'domain-row unresolved'
 
@@ -154,12 +176,12 @@ var ui = (function () {
     countElem.innerText = count + 1
   }
 
-  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain, affiliateLink) {
+  var addResolvedRow = function (reportElem, domain, idnaEncodedDomain, encodedDomain, mxFound, affiliateLink) {
     if (resolvedRowMap[domain] !== undefined) {
       return
     }
 
-    var rowElem = resolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain, affiliateLink)
+    var rowElem = resolvedReportRowElem(domain, idnaEncodedDomain, encodedDomain, mxFound, affiliateLink)
     resolvedRowMap[domain] = rowElem
     if (affiliateLink !== null) {
       reportElem.insertBefore(rowElem, reportElem.childNodes[0] || null)
@@ -177,9 +199,9 @@ var ui = (function () {
     ui.placeFooter()
   }
 
-  var addUnresolvedRow = function (reportElem, domain, idnaEncodedDomain, affiliateLink) {
-    var rowElem = unresolvedReportRowElem(domain, idnaEncodedDomain, affiliateLink)
-    if (affiliateLink !== null) {
+  var addUnresolvedRow = function (reportElem, domain, idnaEncodedDomain, mxFound, affiliateLink) {
+    var rowElem = unresolvedReportRowElem(domain, idnaEncodedDomain, mxFound, affiliateLink)
+    if (affiliateLink !== null || mxFound === true) {
       reportElem.insertBefore(rowElem, reportElem.childNodes[0] || null)
     } else {
       reportElem.appendChild(rowElem)
