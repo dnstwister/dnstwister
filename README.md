@@ -43,7 +43,7 @@ dnstwist in my project.
 
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
- * [@coolboi567](https://github.com/coolboi567) (docker configuration)
+ * [@prashant-shahi](https://github.com/prashant-shahi) (docker configuration)
 
 ## A note on running dnstwister yourself
 
