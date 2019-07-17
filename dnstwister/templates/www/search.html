@@ -17,6 +17,11 @@
             <div class="row">
                 <div class="six columns">
                     <input type="text" autocapitalize="none" name="domains" value="{{ domain }}" size="49" class="u-full-width" />
+                    <div>
+                        <a alt="email alert subscribe link" title="Subscribe for email alerts" href="/email/subscribe/{{ domain | domain_encoder }}">
+                            Subscribe for email alerts
+                        </a>
+                    </div>
                 </div>
                 <div class="six columns buttons">
                     <input type="submit" value="&#128270;" class="button-primary" alt="search" />
