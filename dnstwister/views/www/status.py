@@ -1,4 +1,8 @@
-"""Index page."""
+"""Status page.
+
+This page requires an external data source returning JSON data to function
+correctly, something that is not part of the GitHub repository.
+"""
 import os
 
 import flask
