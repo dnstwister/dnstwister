@@ -12,23 +12,23 @@ A Heroku-hosted version of the very excellent
 
 ## dnstwist vs. dnstwister
 
-In the author's words, dnstwist helps you
-["...find similar-looking domains that adversaries can use to attack you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
+In [the author's](https://github.com/elceef) words, dnstwist helps you
+["...find similar-looking domains that adversaries can use to attack
+you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
 
 This project, __dnstwister__, gives you access to the power of dnstwist via a
-convenient web interface and offers email alerts, csv/json reports and a fully
-featured RESTful API.
+convenient web interface and offers csv/json reports and a fully featured
+RESTful API.
 
 And it's 100% free.
 
-__dnstwister__ is hosted at [https://dnstwister.report](https://dnstwister.report).
+__dnstwister__ is hosted at
+[https://dnstwister.report](https://dnstwister.report).
 
 ## dnstwist module
 
 This project currently uses a modified version of dnstwist, in
-[dnstwister/dnstwist](dnstwister/dnstwist). It also makes use of a pure
-JavaScript implementation of the dnstwist functionality to offload some of the
-processing to the user's browser.
+[dnstwister/dnstwist](dnstwister/dnstwist).
 
 I have kept the original dnstwist README and LICENCE but I have applied an
 "Unlicense" to __dnstwister__.
@@ -43,7 +43,21 @@ dnstwist in my project.
 
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
- * [@coolboi567](https://github.com/coolboi567) (docker configuration)
+ * [@prashant-shahi](https://github.com/prashant-shahi) (docker configuration)
+
+## A note on running dnstwister yourself
+
+Some of the more advanced functionality of
+[dnstwister.report](https://dnstwister.report) (email subscriptions,
+asynchronous web UI, "noisy" domain filtering etc) is built off infrastructure
+beyond the core Python Flask stack behind __dnstwister__ - for instance
+PostgreSQL & REDIS databases and CloudFlare Workers. Some of the code that
+supports this functionality is not available in this repository as it forms
+the core of the [dnstwister.report](https://dnstwister.report) service.
+
+The fundamental functionality supporting the generation of a web-based report
+on a domain via the web interface will always remain available in this
+repository.
 
 ## Developing dnstwister
 
@@ -57,8 +71,10 @@ pipenv install --dev
 Running:
 
 ```sh
-pipenv run python test_server.py
+pipenv run python local_server.py
 ```
+
+And browse via http://localhost:5000
 
 ## Running dnstwister using Docker
 

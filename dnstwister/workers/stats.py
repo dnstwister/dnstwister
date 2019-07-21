@@ -1,4 +1,9 @@
-"""Records stats about the system."""
+"""Records stats about the system.
+
+This worker is fired from a Heroku schedule and requires an external data
+source returning data to function correctly, something that is not part of the
+GitHub repository.
+"""
 import os
 import time
 

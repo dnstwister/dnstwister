@@ -31,7 +31,7 @@ def process_sub(sub_id, detail):
     """Process a subscription."""
     domain = detail['domain']
     email_address = detail['email_address']
-    
+
     hide_noisy = False
     try:
         hide_noisy = bool(detail['hide_noisy'])
