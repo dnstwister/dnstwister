@@ -190,6 +190,7 @@ def search_async():
         'www/search.html',
         domain=domain_parameter,
         exports={'json': 'json', 'csv': 'csv'},
+        allow_email_subs=features.enable_emails(),
     )
 
 

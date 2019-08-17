@@ -12,8 +12,10 @@ import patches
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
-def test_bad_domains_fail(webapp):
+def test_bad_domains_fail(webapp, monkeypatch):
     """Test the email views check domain validity."""
+    monkeypatch.setenv('feature.emails', 'true')
+
     with pytest.raises(webtest.app.AppError) as err:
         webapp.get('/email/subscribe/3234jskdnfsdf7y34')
     assert '400 BAD REQUEST' in err.value.message
@@ -23,8 +25,10 @@ def test_bad_domains_fail(webapp):
     assert '400 BAD REQUEST' in err.value.message
 
 
-def test_bad_error_codes(webapp):
+def test_bad_error_codes(webapp, monkeypatch):
     """Test the email error codes being weird doesn't break the page."""
+    monkeypatch.setenv('feature.emails', 'true')
+
     normal_html = webapp.get('/email/subscribe/7777772e6578616d706c652e636f6d').html
 
     assert webapp.get(
@@ -73,7 +77,9 @@ def test_isubscriptions_during_subscription():
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
-def test_email_address_required():
+def test_email_address_required(monkeypatch):
+    monkeypatch.setenv('feature.emails', 'true')
+
     app = flask_webtest.TestApp(dnstwister.app)
 
     domain = 'a.com'
@@ -95,7 +101,9 @@ def test_email_address_required():
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
-def test_email_address_validation_remembers_hide_noisy_flag():
+def test_email_address_validation_remembers_hide_noisy_flag(monkeypatch):
+    monkeypatch.setenv('feature.emails', 'true')
+
     app = flask_webtest.TestApp(dnstwister.app)
 
     domain = 'a.com'
@@ -116,7 +124,10 @@ def test_email_address_validation_remembers_hide_noisy_flag():
 
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
-def test_isubscriptions_link():
+def test_isubscriptions_link(monkeypatch):
+    monkeypatch.setenv('feature.emails', 'true')
+    monkeypatch.setenv('feature.async_search', 'true')
+
     app = flask_webtest.TestApp(dnstwister.app)
     emailer = dnstwister.views.www.email.emailer
     repository = dnstwister.repository
@@ -127,7 +138,7 @@ def test_isubscriptions_link():
     hexdomain = dnstwister.tools.encode_domain(domain)
     subscribe_path = '/email/subscribe/{}'.format(hexdomain)
 
-    search_page = app.get('/search/{}'.format(hexdomain))
+    search_page = app.get('/search?ed={}'.format(hexdomain))
 
     assert subscribe_path in search_page.body
 
@@ -185,10 +196,12 @@ def test_unsubscribe():
     assert len(list(repository.isubscriptions())) == 0
 
 
-
 @mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
 @mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
-def test_isubscriptions_link_unicode():
+def test_isubscriptions_link_unicode(monkeypatch):
+    monkeypatch.setenv('feature.emails', 'true')
+    monkeypatch.setenv('feature.async_search', 'true')
+
     app = flask_webtest.TestApp(dnstwister.app)
     emailer = dnstwister.views.www.email.emailer
     repository = dnstwister.repository
@@ -199,7 +212,7 @@ def test_isubscriptions_link_unicode():
     hexdomain = dnstwister.tools.encode_domain(domain)
     subscribe_path = '/email/subscribe/{}'.format(hexdomain)
 
-    search_page = app.get('/search/{}'.format(hexdomain))
+    search_page = app.get('/search?ed={}'.format(hexdomain))
 
     assert subscribe_path in search_page.body
 
@@ -261,3 +274,40 @@ def test_unsubscribe_unicode():
     app.get('/email/unsubscribe/{}'.format(sub_id))
 
     assert len(list(repository.isubscriptions())) == 0
+
+
+def test_no_subscribe_links_without_async_search_enabled(monkeypatch):
+    monkeypatch.setenv('feature.emails', 'true')
+    app = flask_webtest.TestApp(dnstwister.app)
+
+    domain = 'a.com'
+    hexdomain = dnstwister.tools.encode_domain(domain)
+
+    search_page = app.get('/search/{}'.format(hexdomain))
+
+    assert '/email/subscribe/' not in search_page.body
+
+
+def test_no_subscribe_links_without_emails_enabled(monkeypatch):
+    monkeypatch.setenv('feature.async_search', 'true')
+    app = flask_webtest.TestApp(dnstwister.app)
+
+    domain = 'a.com'
+    hexdomain = dnstwister.tools.encode_domain(domain)
+
+    search_page = app.get('/search?ed={}'.format(hexdomain))
+
+    assert '/email/subscribe/' not in search_page.body
+
+
+@mock.patch('dnstwister.views.www.email.emailer', patches.NoEmailer())
+@mock.patch('dnstwister.repository.db', patches.SimpleKVDatabase())
+def test_subscribe_urls_fail_unless_emails_feature_enabled(webapp, monkeypatch):
+    """Test the email views check domain validity."""
+    with pytest.raises(webtest.app.AppError) as err:
+        webapp.get('/email/subscribe/3234jskdnfsdf7y34')
+    assert '404 NOT FOUND' in err.value.message
+
+    with pytest.raises(webtest.app.AppError) as err:
+        webapp.post('/email/pending_verify/3234jskdnfsdf7y34')
+    assert '404 NOT FOUND' in err.value.message
