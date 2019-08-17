@@ -6,6 +6,7 @@ import flask
 from dnstwister import app, emailer, repository, stats_store
 import dnstwister.tools as tools
 import dnstwister.tools.email as email_tools
+from dnstwister.configuration import features
 
 
 ERRORS = (
@@ -13,10 +14,18 @@ ERRORS = (
 )
 
 
+def raise_not_found_if_not_flagged_on():
+    """Return a 404 if not feature-flagged on."""
+    if not features.enable_emails():
+        flask.abort(404)
+
+
 @app.route('/email/subscribe/<hexdomain>')
 @app.route('/email/subscribe/<hexdomain>/<error>')
 def email_subscribe_get_email(hexdomain, error=None):
     """Handle subscriptions."""
+    raise_not_found_if_not_flagged_on()
+
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')
@@ -45,6 +54,8 @@ def email_subscribe_get_email(hexdomain, error=None):
 @app.route('/email/pending_verify/<hexdomain>', methods=['POST'])
 def email_subscribe_pending_confirm(hexdomain):
     """Send a confirmation email for a user."""
+    raise_not_found_if_not_flagged_on()
+
     domain = tools.parse_domain(hexdomain)
     if domain is None:
         flask.abort(400, 'Malformed domain or domain not represented in hexadecimal format.')

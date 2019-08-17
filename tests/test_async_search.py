@@ -11,6 +11,13 @@ def test_feature_flag_not_true_uses_old_search(webapp):
     assert response.headers['location'] == 'http://localhost/search/612e636f6d'
 
 
+def test_feature_flag_not_true_directs_to_old_search_on_bookmarks(webapp):
+    """By default the old search is used even with bookmarks."""
+    response = webapp.get('/search?ed=612e636f6d')
+
+    assert response.headers['location'] == 'http://localhost/search/612e636f6d'
+
+
 def test_feature_flag_set_to_true_uses_new_search(webapp, monkeypatch):
     """A value of 'true' enables the new search."""
     monkeypatch.setenv('feature.async_search', 'true')
