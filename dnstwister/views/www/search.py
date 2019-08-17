@@ -183,6 +183,9 @@ def search_async():
     if domain_parameter is None:
         return handle_invalid_domain(encoded_domain_parameter)
 
+    if not features.enable_async_search():
+        return flask.redirect('/search/{}'.format(encoded_domain_parameter))
+
     return flask.render_template(
         'www/search.html',
         domain=domain_parameter,
