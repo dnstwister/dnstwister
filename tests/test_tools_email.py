@@ -85,6 +85,10 @@ def test_email_renderer():
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
+        <p>
+            This is an unmonitored email address but you're welcome to get in touch
+            via <a href="mailto:hello@dnstwister.report">hello@dnstwister.report</a>.
+        </p>
     """).strip()
 
 
@@ -167,6 +171,10 @@ def test_email_renderer_domain_sorting():
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
         </p>
+        <p>
+            This is an unmonitored email address but you're welcome to get in touch
+            via <a href="mailto:hello@dnstwister.report">hello@dnstwister.report</a>.
+        </p>
     """).strip()
 
 
@@ -244,5 +252,9 @@ def test_hiding_noisy_text_renderer():
         </table>
         <p>
             <a href="https://dnstwister.report/...">Unsubscribe</a>
+        </p>
+        <p>
+            This is an unmonitored email address but you're welcome to get in touch
+            via <a href="mailto:hello@dnstwister.report">hello@dnstwister.report</a>.
         </p>
     """).strip()
