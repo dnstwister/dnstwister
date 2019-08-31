@@ -28,7 +28,7 @@ def json_render(domain):
     """
     reports = dict([tools.analyse(domain)])
     
-    json_filename = "dnstwister_report_%s.json" % tools.encode_domain(domain)
+    json_filename = "dnstwister_report_%s.json" % domain.encode('idna')
     
     def generate():
         """Streaming download generator."""
@@ -90,7 +90,7 @@ def csv_render(domain):
     headers = ('Domain', 'Type', 'Tweak', 'IP', 'Error')
     reports = dict([tools.analyse(domain)])
     
-    csv_filename = "dnstwister_report_%s.csv" % tools.encode_domain(domain)
+    csv_filename = "dnstwister_report_%s.csv" % domain.encode('idna')
 
     def generate():
         """Streaming download generator."""
