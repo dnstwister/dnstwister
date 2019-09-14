@@ -44,6 +44,7 @@ dnstwist in my project.
  * [@elceef](https://github.com/elceef) (dnstwist itself)
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
  * [@prashant-shahi](https://github.com/prashant-shahi) (docker configuration)
+ * [@wesinator](https://github.com/wesinator) (file export improvements)
 
 ## A note on running dnstwister yourself
 
