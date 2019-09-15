@@ -1,3 +1,33 @@
+# Current state of dnstwister/please read before suggesting changes
+
+__dnstwister__ was created four years ago, on the Google App Engine PaaS which
+(from memory) only supported Python 2.x at the time.
+
+Since then __dnstwister__ has moved to Heroku and the world has thoroughly
+moved to Python 3. On [https://www.python.org/doc/sunset-python-2/](January 1
+2020) Python 2 will no longer be supported by the Python Software Foundation.
+
+__dnstwister__ has generally kept up with the releases of Python 2.x but it is
+well and truly time to move the codebase to Python 3.
+
+As such, until January 2020 I will __not__ be performing any feature
+development in __dnstwister__, the only changes made will be security patches
+and fixes to functionality-critical bugs. This will give me the stable
+platform needed to cut over the codebase and ensure it can be rigorously
+tested before going live very early in 2020.
+
+Upon that release going live __dnstwister__ will no longer by able to be ran
+in Python 2 but I will leave a link to the last Python 2 commit on this README
+for a reasonable period of time.
+
+I will also take the opportunity at that point to more clearly differentiate
+__dnstwister__ the Flask web application you can download here and the
+[https://dnstwister.report](https://dnstwister.report) service (that uses this
+codebase as its core) but also relies on other FaaS and PaaS offerings
+including CloudFlare Workers. This split will allow this codebase and
+[https://dnstwister.report](https://dnstwister.report) independently evolve to
+suit the needs of each user base, whilst still sharing relevant improvements.
+
 # dnstwister
 
 A Heroku-hosted version of the very excellent
