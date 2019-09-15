@@ -20,7 +20,7 @@ app.logger.setLevel(logging.INFO)
 import api
 app.register_blueprint(api.app, url_prefix='/api')
 
-# Import modules using dnstwister.app/cache/db/emailer here.
+# Import modules using dnstwister.app/cache here.
 import tools
 import tools.template
 import views.www.analyse
