@@ -28,6 +28,8 @@ def json_render(domain):
     """
     reports = dict([tools.analyse(domain)])
 
+    json_filename = 'dnstwister_report_{}.json'.format(domain.encode('idna'))
+
     def generate():
         """Streaming download generator."""
         indent_size = 4
@@ -77,7 +79,7 @@ def json_render(domain):
     return flask.Response(
         generate(),
         headers={
-            'Content-Disposition': 'attachment; filename=dnstwister_report.json'
+            'Content-Disposition': 'attachment; filename=' + json_filename
         },
         content_type='application/json'
     )
@@ -87,6 +89,8 @@ def csv_render(domain):
     """Render and return the csv-formatted report."""
     headers = ('Domain', 'Type', 'Tweak', 'IP', 'Error')
     reports = dict([tools.analyse(domain)])
+
+    csv_filename = 'dnstwister_report_{}.csv'.format(domain.encode('idna'))
 
     def generate():
         """Streaming download generator."""
@@ -108,7 +112,7 @@ def csv_render(domain):
     return flask.Response(
         generate(),
         headers={
-            'Content-Disposition': 'attachment; filename=dnstwister_report.csv'
+            'Content-Disposition': 'attachment; filename=' + csv_filename
         },
         mimetype='text/csv',
     )

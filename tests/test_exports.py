@@ -17,6 +17,8 @@ def test_csv_export(webapp, monkeypatch):
 
     response = webapp.get('/search/{}/csv'.format(hexdomain))
 
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_a.com.csv'
+
     assert response.body.strip() == textwrap.dedent("""
         Domain,Type,Tweak,IP,Error
         a.com,Original*,a.com,999.999.999.999,False
@@ -79,6 +81,8 @@ def test_json_export(webapp, monkeypatch):
 
     response = webapp.get('/search/{}/json'.format(path))
 
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_a.com.json'
+
     assert response.json == {
         u'a.com': {
             u'fuzzy_domains': [
@@ -118,6 +122,8 @@ def test_json_export_one_domain(webapp, monkeypatch):
     path = ','.join(map(binascii.hexlify, domains))
 
     response = webapp.get('/search/{}/json'.format(path))
+
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_a.com.json'
 
     assert response.json == {
         u'a.com': {
@@ -159,6 +165,8 @@ def test_json_export_no_fuzzy(webapp, monkeypatch):
 
     response = webapp.get('/search/{}/json'.format(path))
 
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_a.com.json'
+
     assert response.json == {
         u'a.com': {
             u'fuzzy_domains': [
@@ -176,7 +184,6 @@ def test_json_export_no_fuzzy(webapp, monkeypatch):
     }
 
 
-
 def test_json_export_formatting(webapp, monkeypatch):
     """Test JSON export looks nice :)"""
     monkeypatch.setattr(
@@ -190,6 +197,8 @@ def test_json_export_formatting(webapp, monkeypatch):
     path = binascii.hexlify(domain)
 
     response = webapp.get('/search/{}/json'.format(path))
+
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_a.com.json'
 
     assert response.body.strip() == textwrap.dedent("""
         {
@@ -238,6 +247,18 @@ def test_links_on_report(webapp):
     assert '/search/{}/json'.format(hexdomain) in page_html
 
 
+def test_links_on_search(webapp, monkeypatch):
+    """Make sure the export links are working on the newer page."""
+    monkeypatch.setenv('feature.async_search', 'true')
+
+    domain = 'a.com'
+    hexdomain = binascii.hexlify(domain)
+    page_html = webapp.get('/search?ed={}'.format(hexdomain)).body
+
+    assert '/search/{}/csv'.format(hexdomain) in page_html
+    assert '/search/{}/json'.format(hexdomain) in page_html
+
+
 def test_json_export_unicode_domain(webapp, monkeypatch):
     """Test JSON export when no reports"""
     monkeypatch.setattr(
@@ -251,6 +272,8 @@ def test_json_export_unicode_domain(webapp, monkeypatch):
     hexdomain = dnstwister.tools.encode_domain(domain)
 
     response = webapp.get('/search/{}/json'.format(hexdomain))
+
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_xn--a-sfa.com.json'
 
     assert response.json == {
         u'xn--a-sfa.com': {
@@ -288,6 +311,8 @@ def test_unicode_csv_export(webapp, monkeypatch):
     hexdomain = dnstwister.tools.encode_domain(domain)
 
     response = webapp.get('/search/{}/csv'.format(hexdomain))
+
+    assert response.headers['Content-Disposition'] == 'attachment; filename=dnstwister_report_xn--a-sfa.com.csv'
 
     assert response.body.strip() == textwrap.dedent("""
         Domain,Type,Tweak,IP,Error
