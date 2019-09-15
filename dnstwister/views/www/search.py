@@ -142,10 +142,7 @@ def search_post():
         )
         return flask.redirect('/error/0')
 
-    if features.enable_async_search():
-        return flask.redirect('/search?ed={}'.format(search_parameter))
-    else:
-        return flask.redirect('/search/{}'.format(search_parameter))
+    return flask.redirect('/search/{}'.format(search_parameter))
 
 
 def handle_invalid_domain(search_term_as_hex):

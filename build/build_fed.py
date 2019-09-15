@@ -21,12 +21,6 @@ maps = {
         'common.css',
         'analyse.css',
     ),
-    'email.min.css': (
-        'normalize.css',
-        'skeleton.css',
-        'common.css',
-        'email.css',
-    ),
     'report.min.css': (
         'normalize.css',
         'skeleton.css',
@@ -37,29 +31,9 @@ maps = {
         'jquery-1.11.3.min.js',
         'report.js',
     ),
-    'search.min.css': (
-        'normalize.css',
-        'skeleton.css',
-        'common.css',
-        'search.css',
-    ),
-    'search.min.js': (
-        'velocity.min.js',
-        'punycode.js',
-        'tld.min.js',
-        'dnstwist.js',
-        'search-ui.js',
-        'search.js',
-    ),
     'analyse.min.js': (
         'jquery-1.11.3.min.js',
         'analyse.js',
-    ),
-    'status.min.css': (
-        'normalize.css',
-        'skeleton.css',
-        'common.css',
-        'status.css',
     ),
 }
 
