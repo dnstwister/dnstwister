@@ -27,9 +27,9 @@ def json_render(domain):
     The hand-assembly is due to the streaming of the response.
     """
     reports = dict([tools.analyse(domain)])
-    
-    json_filename = "dnstwister_report_%s.json" % domain.encode('idna')
-    
+
+    json_filename = 'dnstwister_report_{}.json'.format(domain.encode('idna'))
+
     def generate():
         """Streaming download generator."""
         indent_size = 4
@@ -89,8 +89,8 @@ def csv_render(domain):
     """Render and return the csv-formatted report."""
     headers = ('Domain', 'Type', 'Tweak', 'IP', 'Error')
     reports = dict([tools.analyse(domain)])
-    
-    csv_filename = "dnstwister_report_%s.csv" % domain.encode('idna')
+
+    csv_filename = 'dnstwister_report_{}.csv'.format(domain.encode('idna'))
 
     def generate():
         """Streaming download generator."""
