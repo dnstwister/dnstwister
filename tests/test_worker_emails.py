@@ -362,24 +362,25 @@ def test_email_last_sent_has_delta_updated_datetime(capsys, monkeypatch):
     """Test that email_last_sent has a delta datetime included.
     """
     # Patches
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+
+    # Enable noisy domains functionality
+    monkeypatch.setenv('feature.noisy_domains', 'true')
+
+    # Ensure the fake redis will work.
     monkeypatch.setenv('REDIS_URL', '')
+
+    # Return a result
     monkeypatch.setattr(
-        'repository.db',
-        patches.SimpleKVDatabase()
-    )
-    monkeypatch.setattr(
-        'tools.dnstwist.DomainFuzzer',
-        patches.SimpleFuzzer
-    )
-    monkeypatch.setattr(
-        'tools.resolve',
+        'dnstwister.tools.resolve',
         lambda domain: ('999.999.999.999', False)
     )
+
     emailer = patches.NoEmailer()
-    monkeypatch.setattr(
-        'workers.email.emailer',
-        emailer
-    )
+    monkeypatch.setattr('workers.email.emailer', emailer)
 
     repository = dnstwister.repository
 
@@ -416,24 +417,25 @@ def test_email_last_sent_is_backwards_compatible(capsys, monkeypatch):
     workers.
     """
     # Patches
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+
+    # Enable noisy domains functionality
+    monkeypatch.setenv('feature.noisy_domains', 'true')
+
+    # Ensure the fake redis will work.
     monkeypatch.setenv('REDIS_URL', '')
+
+    # Return a result
     monkeypatch.setattr(
-        'repository.db',
-        patches.SimpleKVDatabase()
-    )
-    monkeypatch.setattr(
-        'tools.dnstwist.DomainFuzzer',
-        patches.SimpleFuzzer
-    )
-    monkeypatch.setattr(
-        'tools.resolve',
+        'dnstwister.tools.resolve',
         lambda domain: ('999.999.999.999', False)
     )
+
     emailer = patches.NoEmailer()
-    monkeypatch.setattr(
-        'workers.email.emailer',
-        emailer
-    )
+    monkeypatch.setattr('workers.email.emailer', emailer)
 
     repository = dnstwister.repository
 
@@ -481,24 +483,25 @@ def test_email_worker_handles_updated_delta_without_date(capsys, monkeypatch):
     """Test of an edge case where one but not both keys is updated.
     """
     # Patches
+    monkeypatch.setattr('dnstwister.repository.db', patches.SimpleKVDatabase())
+    monkeypatch.setattr(
+        'dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer
+    )
+
+    # Enable noisy domains functionality
+    monkeypatch.setenv('feature.noisy_domains', 'true')
+
+    # Ensure the fake redis will work.
     monkeypatch.setenv('REDIS_URL', '')
+
+    # Return a result
     monkeypatch.setattr(
-        'repository.db',
-        patches.SimpleKVDatabase()
-    )
-    monkeypatch.setattr(
-        'tools.dnstwist.DomainFuzzer',
-        patches.SimpleFuzzer
-    )
-    monkeypatch.setattr(
-        'tools.resolve',
+        'dnstwister.tools.resolve',
         lambda domain: ('999.999.999.999', False)
     )
+
     emailer = patches.NoEmailer()
-    monkeypatch.setattr(
-        'workers.email.emailer',
-        emailer
-    )
+    monkeypatch.setattr('workers.email.emailer', emailer)
 
     repository = dnstwister.repository
 
