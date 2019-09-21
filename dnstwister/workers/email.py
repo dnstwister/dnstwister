@@ -63,14 +63,20 @@ def process_sub(sub_id, detail):
     # Grab the delta report update time.
     delta_updated = repository.delta_report_updated(domain)
 
+    # The delta report date has to not be None if we have a delta report, but
+    # just in case there was a connection issue during the delta updated key
+    # write we wait.
+    if delta_updated is None:
+        print('No delta updated date: {}'.format(sub_log))
+        return
+
     # If the delta report was updated > 23 hours ago, we're too close to the
     # next delta report. This means we should hold off so we don't send the
     # same delta report twice.
-    if delta_updated is not None:
-        age_delta_updated = datetime.datetime.now() - delta_updated
-        if age_delta_updated > datetime.timedelta(hours=23):
-            print '>23h: {}'.format(sub_log)
-            return
+    age_delta_updated = datetime.datetime.now() - delta_updated
+    if age_delta_updated > datetime.timedelta(hours=23):
+        print '>23h: {}'.format(sub_log)
+        return
 
     # Filter out noisy domains if that's the user's preference.
     if hide_noisy and feature_flags.enable_noisy_domains():
@@ -113,7 +119,7 @@ def process_sub(sub_id, detail):
 
     # Mark as emailed to ensure we don't flood if there's an error after the
     # actual email has been sent.
-    repository.update_last_email_sub_sent_date(sub_id)
+    repository.update_last_email_sub_sent_date(sub_id, delta_updated)
 
     emailer.send(
         email_address,

@@ -137,20 +137,29 @@ def subscribe_email(sub_id, email_address, domain, hide_noisy):
     })
 
 
-def update_last_email_sub_sent_date(sub_id, when=None):
+def update_last_email_sub_sent_date(sub_id, delta_updated, when=None):
     """Note that an email has been sent for a subscription."""
     if when is None:
         when = datetime.datetime.now()
-    db.set(
-        'email_sub_last_sent', sub_id,
-        db.to_db_datetime(when)
-    )
+    db.set('email_sub_last_sent', sub_id, {
+        'when': db.to_db_datetime(when),
+        'delta_date': db.to_db_datetime(delta_updated)
+    })
 
 
 def email_last_send_for_sub(sub_id):
     """Return when an email was last sent for a subscription, or None."""
     last_sent = db.get('email_sub_last_sent', sub_id)
-    if last_sent is not None:
+
+    if last_sent is None:
+        return
+
+    try:
+        when = last_sent['when']
+        return db.from_db_datetime(when)
+    except TypeError:
+        # Old style without the link to the delta updated time.
+        # TODO: Remove once all cut over.
         return db.from_db_datetime(last_sent)
 
 
