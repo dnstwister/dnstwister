@@ -110,7 +110,7 @@ class PGDatabase(object):
                 self._rollback()
                 cur.execute("""
                     UPDATE data
-                    SET (value) = (%s)
+                    SET value = %s
                     WHERE key = (%s);
                 """, (psycopg2.extras.Json(value), pkey))
             self._commit()
