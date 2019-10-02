@@ -81,9 +81,10 @@ Issues for either this codebase or
 [dnstwister.report](https://dnstwister.report) will still be raisable from
 this repository.
 
-If you want to use the older Python 2 version, please see release 2.14
-a88102ff67759afb03032935e797c250a14eaa23. Please understand that no patches or
-support will be provided for that version.
+If you want to use the older Python 2 version, please see
+[release 2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14).
+Please understand that no patches or support will be provided for that
+version going forward.
 
 ## Developing dnstwister
 
