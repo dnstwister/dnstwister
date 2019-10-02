@@ -88,6 +88,8 @@ version going forward.
 
 ## Developing dnstwister
 
+You need Python 3.7.4.
+
 Once-off setup:
 
 ```sh
@@ -154,5 +156,4 @@ pipenv run py.test
 ## Say hello
 
 I'd love to hear your feedback so [email me](mailto:hello@dnstwister.report),
-fire off a [tweet](https://twitter.com/dnstwister) in my general direction or
-you can just [say thanks](https://saythanks.io/to/thisismyrobot)!... :)
+fire off a [tweet](https://twitter.com/dnstwister) in my general direction! :)
