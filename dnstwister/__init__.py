@@ -29,4 +29,3 @@ import views.www.search
 
 # Filters
 app.jinja_env.filters['domain_renderer'] = tools.template.domain_renderer
-app.jinja_env.filters['domain_encoder'] = tools.template.domain_encoder
