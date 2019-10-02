@@ -1,32 +1,11 @@
 # Current state of dnstwister/please read before suggesting changes
 
-__dnstwister__ was created four years ago, on the Google App Engine PaaS which
-(from memory) only supported Python 2.x at the time.
-
-Since then __dnstwister__ has moved to Heroku and the world has thoroughly
-moved to Python 3. On [January 1 2020](https://www.python.org/doc/sunset-python-2/)
-Python 2 will no longer be supported by the Python Software Foundation.
-
-__dnstwister__ has generally kept up with the releases of Python 2.x but it is
-well and truly time to move the codebase to Python 3.
-
-As such, until January 2020 I will __not__ be performing any feature
-development in __dnstwister__, the only changes made will be security patches
-and fixes to functionality-critical bugs. This will give me the stable
-platform needed to cut over the codebase and ensure it can be rigorously
-tested before going live very early in 2020.
-
-Upon that release going live __dnstwister__ will no longer by able to be ran
-in Python 2 but I will leave a link to the last Python 2 commit on this README
-for a reasonable period of time.
-
-I will also take the opportunity at that point to more clearly differentiate
-__dnstwister__ the Flask web application you can download here and the
-[dnstwister.report](https://dnstwister.report) service (that uses this
-codebase as its core) but also relies on other FaaS and PaaS offerings
-including CloudFlare Workers. This split will allow this codebase and
-[dnstwister.report](https://dnstwister.report) independently evolve to suit
-the needs of their user bases, whilst still sharing relevant improvements.
+As of October 2019 __dnstwister__ is going through a number of breaking
+changes to [support the cut-over to Python
+3](https://github.com/thisismyrobot/dnstwister#where-is-the-python-2-version-with-the-emailing-etc)
+before 2020. If you're looking for a stable Python 2 version of __dnstwister__
+then [2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14) is
+the one you want.
 
 # dnstwister
 
@@ -76,21 +55,49 @@ dnstwist in my project.
  * [@prashant-shahi](https://github.com/prashant-shahi) (docker configuration)
  * [@wesinator](https://github.com/wesinator) (file export improvements)
 
-## A note on running dnstwister yourself
 
-Some of the more advanced functionality of
-[dnstwister.report](https://dnstwister.report) (email subscriptions,
-asynchronous web UI, "noisy" domain filtering etc) is built off infrastructure
-beyond the core Python Flask stack behind __dnstwister__ - for instance
-PostgreSQL & REDIS databases and CloudFlare Workers. Some of the code that
-supports this functionality is not available in this repository as it forms
-the core of the [dnstwister.report](https://dnstwister.report) service.
+## Where is the Python 2 version with the emailing etc?
 
-The fundamental functionality supporting the generation of a web-based report
-on a domain via the web interface will always remain available in this
-repository.
+__dnstwister__ was created in late 2015, on the Google App Engine PaaS which
+(from memory) only supported Python 2.x at the time.
+
+Since then __dnstwister__ has moved to Heroku and the world has thoroughly
+moved to Python 3. As of
+[January 1 2020](https://www.python.org/doc/sunset-python-2/) Python 2 is no
+longer supported by the Python Software Foundation.
+
+__dnstwister__ generally kept up with the releases of Python 2.x but it well
+and truly time to move the codebase to Python 3.
+
+I've also taken the opportunity at this point to more clearly differentiate
+__dnstwister__ the Flask web application you can download here and the
+[dnstwister.report](https://dnstwister.report) service (that uses this
+codebase as its core) but also relies on other FaaS and PaaS offerings
+including CloudFlare Workers.
+
+This split will allow this codebase and
+[dnstwister.report](https://dnstwister.report) to independently evolve to suit
+the needs of their user bases, whilst still sharing relevant improvements.
+Specifically, you will still be able to start up a version of dnstwister on
+your PC or in Heroku that will support the core functionality of searching for
+domains similar to the one you provide and attempting to resolve an IP address
+for each one. You will also be able to do whois requests and some other
+analysis functionality. What is no longer available is the code (but not the
+infrastructure) to set up email subscriptions and the new client-side dnstwist
+implementation etc.
+
+Issues for either this codebase or
+[dnstwister.report](https://dnstwister.report) will still be raisable from
+this repository.
+
+If you want to use the older Python 2 version, please see
+[release 2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14).
+Please understand that no patches or support will be provided for that
+version going forward.
 
 ## Developing dnstwister
+
+You need Python 3.7.4.
 
 Once-off setup:
 
@@ -158,5 +165,4 @@ pipenv run py.test
 ## Say hello
 
 I'd love to hear your feedback so [email me](mailto:hello@dnstwister.report),
-fire off a [tweet](https://twitter.com/dnstwister) in my general direction or
-you can just [say thanks](https://saythanks.io/to/thisismyrobot)!... :)
+fire off a [tweet](https://twitter.com/dnstwister) in my general direction! :)

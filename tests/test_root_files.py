@@ -1,15 +1,7 @@
 """Test root-served files work from the static directory."""
-def test_robots_txt(webapp):
-    """Test the robots.txt is loaded."""
-    with open('dnstwister/static/robots.txt', 'rb') as robotsf:
-        expected_file = robotsf.read()
+def test_favicon(webapp):
+    """Test the favicon is loaded."""
+    with open('dnstwister/static/favicon.ico', 'rb') as faviconf:
+        expected_file = faviconf.read()
 
-    assert webapp.get('/robots.txt').body == expected_file
-
-
-def test_security_txt(webapp):
-    """Test the security.txt is loaded."""
-    with open('dnstwister/static/security.txt', 'rb') as securityf:
-        expected_file = securityf.read()
-
-    assert webapp.get('/security.txt').body == expected_file
+    assert webapp.get('/favicon.ico').body == expected_file

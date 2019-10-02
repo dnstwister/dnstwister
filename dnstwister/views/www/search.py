@@ -4,7 +4,6 @@ import json
 import flask
 
 from dnstwister import app
-from dnstwister.configuration import features
 import dnstwister.tools as tools
 
 
@@ -143,10 +142,7 @@ def search_post():
         )
         return flask.redirect('/error/0')
 
-    if features.enable_async_search():
-        return flask.redirect('/search?ed={}'.format(search_parameter))
-    else:
-        return flask.redirect('/search/{}'.format(search_parameter))
+    return flask.redirect('/search/{}'.format(search_parameter))
 
 
 def handle_invalid_domain(search_term_as_hex):
@@ -178,26 +174,6 @@ def handle_invalid_domain(search_term_as_hex):
     return flask.redirect('/error/0')
 
 
-@app.route('/search')
-def search_async():
-    """New endpoint supporting async search."""
-    encoded_domain_parameter = flask.request.args.get('ed')
-
-    domain_parameter = tools.parse_domain(encoded_domain_parameter)
-    if domain_parameter is None:
-        return handle_invalid_domain(encoded_domain_parameter)
-
-    if not features.enable_async_search():
-        return flask.redirect('/search/{}'.format(encoded_domain_parameter))
-
-    return flask.render_template(
-        'www/search.html',
-        domain=domain_parameter,
-        exports={'json': 'json', 'csv': 'csv'},
-        allow_email_subs=features.enable_emails(),
-    )
-
-
 @app.route('/search/<search_domain>')
 @app.route('/search/<search_domain>/<fmt>')
 def search(search_domain, fmt=None):
@@ -208,10 +184,7 @@ def search(search_domain, fmt=None):
         return handle_invalid_domain(search_domain)
 
     if fmt is None:
-        if features.enable_async_search():
-            return flask.redirect('/search?ed={}'.format(search_domain))
-        else:
-            return html_render(domain)
+        return html_render(domain)
     elif fmt == 'json':
         return json_render(domain)
     elif fmt == 'csv':
