@@ -69,12 +69,13 @@ including CloudFlare Workers.
 This split will allow this codebase and
 [dnstwister.report](https://dnstwister.report) to independently evolve to suit
 the needs of their user bases, whilst still sharing relevant improvements.
-Specifically, you will be able to start up a version of dnstwister on your PC
-and it will support the core functionality of searching for domains similar to
-the one you provide and attempting to resolve an IP address for each one. You
-will also be able to do whois requests and some other analysis functionality.
-What is no longer available is the code (but not the infrastructure) to set up
-email subscriptions and the new client-side dnstwist implementation etc.
+Specifically, you will still be able to start up a version of dnstwister on
+your PC or in Heroku that will support the core functionality of searching for
+domains similar to the one you provide and attempting to resolve an IP address
+for each one. You will also be able to do whois requests and some other
+analysis functionality. What is no longer available is the code (but not the
+infrastructure) to set up email subscriptions and the new client-side dnstwist
+implementation etc.
 
 Issues for either this codebase or
 [dnstwister.report](https://dnstwister.report) will still be raisable from
