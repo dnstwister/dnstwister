@@ -1,3 +1,12 @@
+# Current state of dnstwister/please read before suggesting changes
+
+As of October 2019 __dnstwister__ is going through a number of breaking
+changes to [support the cut-over to Python
+3](https://github.com/thisismyrobot/dnstwister#current-state-of-dnstwisterplease-read-before-suggesting-changes)
+before 2020. If you're looking for a stable Python 2 version of __dnstwister__
+then [2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14) is
+the one you want.
+
 # dnstwister
 
 A Heroku-hosted version of the very excellent
