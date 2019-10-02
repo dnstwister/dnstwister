@@ -247,18 +247,6 @@ def test_links_on_report(webapp):
     assert '/search/{}/json'.format(hexdomain) in page_html
 
 
-def test_links_on_search(webapp, monkeypatch):
-    """Make sure the export links are working on the newer page."""
-    monkeypatch.setenv('feature.async_search', 'true')
-
-    domain = 'a.com'
-    hexdomain = binascii.hexlify(domain)
-    page_html = webapp.get('/search?ed={}'.format(hexdomain)).body
-
-    assert '/search/{}/csv'.format(hexdomain) in page_html
-    assert '/search/{}/json'.format(hexdomain) in page_html
-
-
 def test_json_export_unicode_domain(webapp, monkeypatch):
     """Test JSON export when no reports"""
     monkeypatch.setattr(
