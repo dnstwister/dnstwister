@@ -66,3 +66,16 @@ def test_failed_resolve(webapp):
     assert response.status_code == 200
     assert response.json['ip'] is False
     assert response.json['error'] is False
+
+
+def test_with_invalid_input(webapp):
+    """Test with an invalid input."""
+    domain = "foobar"
+
+    hexdomain = binascii.hexlify(domain)
+
+    response = webapp.get('/api/ip/{}'.format(hexdomain),
+                          expect_errors=True).json
+
+    error = response['error']
+    assert error == 'Malformed domain or domain not represented in hexadecimal format.'

@@ -60,10 +60,8 @@ def whois(hexdomain):
     """Returns whois information."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
+        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
+
     payload = standard_api_values(domain, skip='whois')
     try:
         idna_domain = domain.encode('idna')
@@ -84,10 +82,8 @@ def parked_score(hexdomain):
     """Calculates "parked" scores from 0-1."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
+        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
+
     payload = standard_api_values(domain, skip='parked_score')
     score, score_text, redirects, dressed, dest = parked.get_score(domain)
     payload['score'] = score
@@ -103,10 +99,8 @@ def safebrowsing_check(hexdomain):
     """Returns number of hits in Google Safe Browsing."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
+        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
+
     payload = standard_api_values(domain, skip='safebrowsing')
     payload['issue_detected'] = safebrowsing.get_report(domain) != 0
     return flask.jsonify(payload)
@@ -117,10 +111,7 @@ def resolve_ip(hexdomain):
     """Resolves Domains to IPs."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
+        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
 
     ip_addr, error = tools.resolve(domain)
 
@@ -135,7 +126,7 @@ def domain_to_hex(domain):
     """Helps you convert domains to hex."""
     hexdomain = tools.encode_domain(domain)
     if tools.parse_domain(hexdomain) is None:
-        flask.abort(400, 'Malformed domain.')
+        return flask.jsonify(error='Malformed domain.'), 400
 
     payload = standard_api_values(domain, skip='domain_to_hex')
     payload['domain_as_hexadecimal'] = hexdomain
@@ -147,10 +138,7 @@ def fuzz(hexdomain):
     """Calculates the dnstwist "fuzzy domains" for a domain."""
     domain = tools.parse_domain(hexdomain)
     if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
+        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
 
     fuzz_result = tools.fuzzy_domains(domain)
     fuzz_payload = []
