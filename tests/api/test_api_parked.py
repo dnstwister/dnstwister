@@ -114,3 +114,15 @@ def test_dressed_check():
     assert parked_api.dressed('www.example.com', 'example.com.au')
 
     assert not parked_api.dressed('www.example.com', 'www.examples.com')
+
+
+def test_parked_with_invalid_input(webapp):
+    """Test with an invalid input."""
+    domain = 'foobar'
+    hexdomain = binascii.hexlify(domain)
+
+    response = webapp.get(
+        '/api/parked/{}'.format(hexdomain), expect_errors=True).json
+
+    error = response['error']
+    assert error == 'Malformed domain or domain not represented in hexadecimal format.'
