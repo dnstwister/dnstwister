@@ -54,7 +54,7 @@ dnstwist in my project.
  * [@peterwallhead](http://github.com/peterwallhead) (mobile UI assistance)
  * [@prashant-shahi](https://github.com/prashant-shahi) (docker configuration)
  * [@wesinator](https://github.com/wesinator) (file export improvements)
-
+ * [@ninoseki](https://github.com/ninoseki) (api improvements)
 
 ## Where is the Python 2 version with the emailing etc?
 
