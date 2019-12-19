@@ -7,6 +7,8 @@ before 2020. If you're looking for a stable Python 2 version of __dnstwister__
 then [2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14) is
 the one you want.
 
+### NOTE: This means that this README and/or the code might not work at this point in time. This notice will be removed once the codebase has stabilised again. As mentioned above, the current stable version of __dnstwister__ is [2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14). Thank you for your patience as I complete this cut-over.
+
 # dnstwister
 
 A Heroku-hosted version of the very excellent
