@@ -6,7 +6,6 @@ install:
     - pipenv install --dev
 script: pipenv run py.test --cov=dnstwister --cov-config .coveragerc
 after_success:
-    - pipenv install python-coveralls==3.7.1
     - pipenv run coveralls
 dist: trusty
 sudo: false
