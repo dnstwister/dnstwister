@@ -4,8 +4,6 @@ python:
 install:
     - pip install pipenv
     - pipenv install --dev
-script: pipenv run py.test --cov=dnstwister --cov-config .coveragerc
-after_success:
-    - pipenv run coveralls
+script: pipenv run py.test
 dist: trusty
 sudo: false
