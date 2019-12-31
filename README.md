@@ -63,10 +63,10 @@ licence](https://github.com/elceef/dnstwist/blob/master/docs/LICENSE) the
 dnstwist module embedded in this repository will __always__ match that used in
 [dnstwister.report](https://dnstwister.report).
 
-The current version of dnstwist used in this repository and in
+__The current version of dnstwist used in this repository and in
 [dnstwister.report](https://dnstwister.report) is [available
 here](/tree/master/dnstwister/dnstwist), including the original Apache
-LICENCE.
+LICENCE.__
 
 ## Contributors
 
