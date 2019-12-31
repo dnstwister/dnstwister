@@ -1,2 +1,6 @@
-IMPORTANT: Before requesting a change please check out https://github.com/thisismyrobot/dnstwister#current-state-of-dnstwisterplease-read-before-suggesting-changes
+# IMPORTANT
 
+Please be clear as to whether this issue related to this open-source
+repository or the web service at https://dnstwister.report?
+
+For more information: https://github.com/thisismyrobot/dnstwister/README.md#what-about-dnstwisterreport
