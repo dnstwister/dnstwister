@@ -1,9 +1,0 @@
-strictness: high
-uses:
-  - flask
-ignore-paths:
-  - dnstwister/dnstwist
-  - provision
-  - tests
-  - conftest.py
-  - run_local_server.py
