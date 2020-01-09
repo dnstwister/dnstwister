@@ -19,7 +19,7 @@ interested to know if someone registered the 'dnstw1ster.report' domain and
 started sending malicious password-reset emails to users.
 
 **dnstwister** makes it trivial to `answer that exact question 
-<https://dnstwister.report/search/646e73747769737465722e7265706f7274>`_.
+<https://dnstwister.report/search?ed=646e73747769737465722e7265706f7274>`_.
 
 Email alerts |email_icon|
 -------------------------
