@@ -65,7 +65,7 @@ dnstwist module embedded in this repository will __always__ match that used in
 
 __The current version of dnstwist used in this repository and in
 [dnstwister.report](https://dnstwister.report) is [available
-here](/tree/master/dnstwister/dnstwist), including the original Apache
+here](https://github.com/thisismyrobot/dnstwister/tree/master/dnstwister/dnstwist), including the original Apache
 LICENCE.__
 
 ## Contributors
