@@ -2,10 +2,6 @@
 from dnstwister.core.domain import Domain
 
 
-import pytest
-pytestmark = pytest.mark.slow
-
-
 def test_whois_query(webapp):
     """Test the whois lookup."""
     domain = 'dnstwister.report'

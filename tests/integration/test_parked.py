@@ -2,10 +2,6 @@
 from dnstwister.core.domain import Domain
 
 
-import pytest
-pytestmark = pytest.mark.slow
-
-
 def test_parked_query(webapp):
     """Test the parked API against our own domain."""
     domain = 'dnstwister.report'

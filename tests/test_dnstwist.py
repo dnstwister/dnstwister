@@ -27,7 +27,6 @@ def test_all_homoglyphs_are_different_from_keys():
                 raise Exception(f'In glyphs for {k}, index {i} ({c} / {c.lower()}) is a duplicate of the key.')
 
 
-@pytest.mark.slow
 def test_all_twisted_domains_are_valid_idna2008():
     """Some of the homoglyphs were not actually valid idna."""
     for char in string.ascii_lowercase:
@@ -42,7 +41,6 @@ def test_all_twisted_domains_are_valid_idna2008():
                 raise Exception(f'The domain {candidate} / {candidate.encode()} is not IDNA2008 compatible')
 
 
-@pytest.mark.slow
 def test_longer_domain_is_completely_valid():
     domain = Domain('xn--sterreich-z7a.icom.museum')
     fuzzer = dnstwister.dnstwist.DomainFuzzer(domain.to_unicode())

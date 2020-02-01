@@ -2,10 +2,6 @@
 from dnstwister.core.domain import Domain
 
 
-import pytest
-pytestmark = pytest.mark.slow
-
-
 def test_safebrowsing_query(webapp):
     """Test our domain is safe."""
     domain = 'dnstwister.report'
