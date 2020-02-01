@@ -1,6 +1,4 @@
 *.pyc
 .cache/
-brand/*.psd
-_build*
 .coverage
 /htmlcov/*
