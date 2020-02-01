@@ -99,9 +99,6 @@ git clone https://github.com/thisismyrobot/dnstwister
 # Changing directory
 cd dnstwister
 
-# Checkout to the stable branch i.e. heroku-deploy
-git checkout heroku-deploy
-
 # Building dnstwister image using Dockerfile
 docker build -t dnstwister .
 
@@ -114,8 +111,7 @@ Now, go to `http://localhost:5000` using any browser to use dnstwister.
 ### Fetching pre-built image
 
 Alternatively, you can pull the pre-built image from DockerHub, and run
-locally. This way, you wouldn't have to wait for the build time. The image
-present in docker hub is from the stable branch **heroku-deploy**.
+locally. This way, you wouldn't have to wait for the build time.
 
 ```sh
 docker pull dnstwister/dnstwister:2.9.3
