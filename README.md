@@ -55,6 +55,9 @@ __The current version of dnstwist used in this repository and in
 here](https://github.com/thisismyrobot/dnstwister/tree/master/dnstwister/dnstwist),
 including the original Apache LICENCE.__
 
+Pull requests against this repository may or may not be merged into this
+repository and/or the private repository, as appropriate.
+
 ## Contributors
 
  * [@elceef](https://github.com/elceef) (dnstwist itself)
