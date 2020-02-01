@@ -1,5 +1,5 @@
 """The analysis API endpoint."""
-import urlparse
+import urllib.parse
 import whois as whois_mod
 
 import flask
@@ -8,6 +8,7 @@ from flask import current_app
 from dnstwister.api.checks import parked
 from dnstwister.api.checks import safebrowsing
 from dnstwister import tools
+from dnstwister.core.domain import Domain
 
 
 app = flask.Blueprint('api', __name__)
@@ -33,21 +34,21 @@ def api_definition():
 def standard_api_values(domain, skip=''):
     """Return the set of key-value pairs for the api inter-relationships."""
     payload = {}
-    hexdomain = tools.encode_domain(domain)
+    hexdomain = domain.to_hex()
     for endpoint in ENDPOINTS:
         if endpoint == skip:
             continue
         key = '{}_url'.format(endpoint)
         view_path = '.{}'.format(endpoint)
         path = flask.url_for(view_path, hexdomain=hexdomain)
-        url = urlparse.urljoin(flask.request.url_root, path)
+        url = urllib.parse.urljoin(flask.request.url_root, path)
         payload[key] = url
 
     if skip != 'url':
         payload['url'] = flask.request.base_url
 
     if skip != 'domain':
-        payload['domain'] = domain.encode('idna')
+        payload['domain'] = domain.to_ascii()
 
     if skip != 'domain_as_hexadecimal':
         payload['domain_as_hexadecimal'] = hexdomain
@@ -58,13 +59,15 @@ def standard_api_values(domain, skip=''):
 @app.route('/whois/<hexdomain>')
 def whois(hexdomain):
     """Returns whois information."""
-    domain = tools.parse_domain(hexdomain)
+    domain = tools.try_parse_domain_from_hex(hexdomain)
     if domain is None:
-        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
-
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
     payload = standard_api_values(domain, skip='whois')
     try:
-        idna_domain = domain.encode('idna')
+        idna_domain = domain.to_ascii()
         payload['whois_text'] = whois_mod.whois(idna_domain).text.strip()
         if payload['whois_text'] == '':
             raise Exception('No whois data retrieved')
@@ -80,16 +83,18 @@ def whois(hexdomain):
 @app.route('/parked/<hexdomain>')
 def parked_score(hexdomain):
     """Calculates "parked" scores from 0-1."""
-    domain = tools.parse_domain(hexdomain)
+    domain = tools.try_parse_domain_from_hex(hexdomain)
     if domain is None:
-        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
-
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
     payload = standard_api_values(domain, skip='parked_score')
     score, score_text, redirects, dressed, dest = parked.get_score(domain)
     payload['score'] = score
     payload['score_text'] = score_text
     payload['redirects'] = redirects
-    payload['redirects_to'] = dest
+    payload['redirects_to'] = None if dest is None else dest.to_ascii()
     payload['dressed'] = dressed
     return flask.jsonify(payload)
 
@@ -97,10 +102,12 @@ def parked_score(hexdomain):
 @app.route('/safebrowsing/<hexdomain>')
 def safebrowsing_check(hexdomain):
     """Returns number of hits in Google Safe Browsing."""
-    domain = tools.parse_domain(hexdomain)
+    domain = tools.try_parse_domain_from_hex(hexdomain)
     if domain is None:
-        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
-
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
     payload = standard_api_values(domain, skip='safebrowsing')
     payload['issue_detected'] = safebrowsing.get_report(domain) != 0
     return flask.jsonify(payload)
@@ -109,9 +116,12 @@ def safebrowsing_check(hexdomain):
 @app.route('/ip/<hexdomain>')
 def resolve_ip(hexdomain):
     """Resolves Domains to IPs."""
-    domain = tools.parse_domain(hexdomain)
+    domain = tools.try_parse_domain_from_hex(hexdomain)
     if domain is None:
-        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
 
     ip_addr, error = tools.resolve(domain)
 
@@ -121,13 +131,14 @@ def resolve_ip(hexdomain):
     return flask.jsonify(payload)
 
 
-@app.route('/to_hex/<domain>')
-def domain_to_hex(domain):
+@app.route('/to_hex/<domain_param>')
+def domain_to_hex(domain_param):
     """Helps you convert domains to hex."""
-    hexdomain = tools.encode_domain(domain)
-    if tools.parse_domain(hexdomain) is None:
-        return flask.jsonify(error='Malformed domain.'), 400
+    domain = Domain.try_parse(domain_param)
+    if domain is None:
+        flask.abort(400, 'Malformed domain.')
 
+    hexdomain = domain.to_hex()
     payload = standard_api_values(domain, skip='domain_to_hex')
     payload['domain_as_hexadecimal'] = hexdomain
     return flask.jsonify(payload)
@@ -136,14 +147,17 @@ def domain_to_hex(domain):
 @app.route('/fuzz/<hexdomain>')
 def fuzz(hexdomain):
     """Calculates the dnstwist "fuzzy domains" for a domain."""
-    domain = tools.parse_domain(hexdomain)
+    domain = tools.try_parse_domain_from_hex(hexdomain)
     if domain is None:
-        return flask.jsonify(error='Malformed domain or domain not represented in hexadecimal format.'), 400
+        flask.abort(
+            400,
+            'Malformed domain or domain not represented in hexadecimal format.'
+        )
 
     fuzz_result = tools.fuzzy_domains(domain)
     fuzz_payload = []
     for result in fuzz_result:
-        result_payload = standard_api_values(result['domain-name'], skip='url')
+        result_payload = standard_api_values(Domain(result['domain-name']), skip='url')
         result_payload['fuzzer'] = result['fuzzer']
         fuzz_payload.append(result_payload)
 

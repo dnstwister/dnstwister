@@ -16,7 +16,7 @@ def get_report(domain):
 
     Returns 1 if there's an issue with the domain, 0 if not.
     """
-    idna_domain = domain.encode('idna')
+    idna_domain = domain.to_ascii()
     data = {
         'site': idna_domain
     }

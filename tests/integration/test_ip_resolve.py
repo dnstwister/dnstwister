@@ -1,14 +1,14 @@
 """Test resolving IPs."""
-import binascii
 import socket
 
 from dnstwister import tools
+from dnstwister.core.domain import Domain
 
 
 def test_resolve(webapp):
     """Test we can resolve IP addresses."""
     domain = 'dnstwister.report'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
     response = webapp.get('/api/ip/{}'.format(hexdomain))
 
     assert response.status_code == 200
@@ -33,8 +33,8 @@ def test_resolve(webapp):
 def test_unicode_resolve(webapp):
     """Check we can resolve a unicode domain.
     """
-    domain = 'xn--sterreich-z7a.icom.museum'.decode('idna')
-    hexdomain = tools.encode_domain(domain)
+    domain = 'xn--sterreich-z7a.icom.museum'
+    hexdomain = Domain(domain).to_hex()
     response = webapp.get('/api/ip/{}'.format(hexdomain))
 
     assert response.status_code == 200
@@ -61,21 +61,8 @@ def test_failed_resolve(webapp):
     unregistered.
     """
     domain = 'imprettysurethatthisdomaindoesnotexist.com'
-    response = webapp.get('/api/ip/{}'.format(binascii.hexlify(domain)))
+    response = webapp.get('/api/ip/{}'.format(Domain(domain).to_hex()))
 
     assert response.status_code == 200
     assert response.json['ip'] is False
     assert response.json['error'] is False
-
-
-def test_with_invalid_input(webapp):
-    """Test with an invalid input."""
-    domain = "foobar"
-
-    hexdomain = binascii.hexlify(domain)
-
-    response = webapp.get('/api/ip/{}'.format(hexdomain),
-                          expect_errors=True).json
-
-    error = response['error']
-    assert error == 'Malformed domain or domain not represented in hexadecimal format.'

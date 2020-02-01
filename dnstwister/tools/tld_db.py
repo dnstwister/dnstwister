@@ -23,11 +23,11 @@ def valid_tld(line):
     if line.startswith('//') or line.startswith('*') or line == '':
         return False
     try:
-        line.decode('ascii')
+        line.encode('utf-8')
     except UnicodeDecodeError:
         return False
     return True
 
 
 with open(DB_PATH, 'rb') as tldf:
-    TLDS.update(filter(valid_tld, tldf.read().split('\n')))
+    TLDS.update(filter(valid_tld, tldf.read().decode('utf-8').split('\n')))

@@ -32,13 +32,13 @@ CONTENT_MAX = 1024 * 100
 
 def _domain_redirects(domain, path=''):
     """Returns whether a domain (and optional path) redirects to another."""
-    idna_domain = domain.encode('idna')
+    idna_domain = domain.to_ascii()
     req = requests.get(
         'http://{}/{}'.format(idna_domain, path),
         **shared.REQ_KWARGS
     )
     landed_domain = shared.get_domain(req.url)
-    return landed_domain != idna_domain, landed_domain, req.content[:CONTENT_MAX]
+    return landed_domain != idna_domain, landed_domain, req.text[:CONTENT_MAX]
 
 
 def get_text(score):
@@ -63,13 +63,14 @@ def second_level(domain):
     Determine tld by finding the longest tld that is the end of the passed in
     domain.
     """
+    domain_str = domain.to_unicode()
     candidate = ''
     for tld in tld_db.TLDS:
-        if domain.endswith('.' + tld) and len(tld) > len(candidate):
+        if domain_str.endswith('.' + tld) and len(tld) > len(candidate):
             candidate = tld
 
     if candidate != '':
-        return domain.rsplit('.' + candidate, 1)[0].split('.')[-1]
+        return domain_str.rsplit('.' + candidate, 1)[0].split('.')[-1]
     return ''
 
 

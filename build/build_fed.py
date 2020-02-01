@@ -39,13 +39,13 @@ maps = {
 
 
 def build(root):
-    print 'building...'
+    print('building...')
     for (dest, srcs) in maps.items():
         dest_data = []
         for src_file in srcs:
             src_path = os.path.join(root, 'sources/{}'.format(src_file))
             with open(src_path, 'rb') as srcf:
-                dest_data.append(srcf.read())
+                dest_data.append(srcf.read().decode('utf-8'))
 
         dest_data = '\n'.join(dest_data)
 
@@ -53,7 +53,7 @@ def build(root):
             dest_data = csscompressor.compress(dest_data)
 
         with open(os.path.join(root, dest), 'wb') as destf:
-            destf.write(dest_data)
+            destf.write(dest_data.encode('utf-8'))
 
 
 def monitor(root):

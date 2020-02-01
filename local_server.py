@@ -4,7 +4,6 @@ import waitress
 import werkzeug.serving
 
 import build.build_fed as build_fed
-import dnstwister
 
 
 @werkzeug.serving.run_with_reloader
@@ -16,12 +15,14 @@ def serve():
         build_fed.monitor('dnstwister/static/')
     threading.Thread(target=builder_thread).start()
 
+    import dnstwister
+
     # Allow for template changes without manual restart.
     # At least until https://github.com/pallets/flask/pull/1910 is merged...
     dnstwister.app.jinja_env.auto_reload = True
 
     waitress.serve(
         dnstwister.app,
-        host='0.0.0.0',
+        host='127.0.0.1',
         port=5000,
     )

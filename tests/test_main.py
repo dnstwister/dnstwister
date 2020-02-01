@@ -7,14 +7,13 @@ import unittest
 
 import dnstwister
 import patches
+from dnstwister.core.domain import Domain
 
 
 class TestMain(unittest.TestCase):
     """ Tests of the main module.
     """
     def setUp(self):
-        """ Set up the mock memcache.
-        """
         # Create a webtest Test App for use
         self.app = flask_webtest.TestApp(dnstwister.app)
 
@@ -25,13 +24,6 @@ class TestMain(unittest.TestCase):
 
         self.assertEqual(res.status_int, 200)
         self.assertTrue(
-            'Domain name permutation engine' in res.body,
+            'Domain name permutation engine' in res.text,
             'Page loaded HTML AOK'
         )
-
-    @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
-    def test_exports(self):
-        """We have export links."""
-        res = self.app.get('/search/{}'.format(binascii.hexlify('a.com')))
-
-        assert 'json' in res.body

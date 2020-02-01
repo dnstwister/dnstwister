@@ -1,6 +1,7 @@
 import datetime
 
 import dnstwister.tools
+from dnstwister.core.domain import Domain
 
 
 def test_large_domain_is_reasonable_in_performance():
@@ -13,10 +14,10 @@ def test_large_domain_is_reasonable_in_performance():
 
     start = datetime.datetime.now()
 
-    dnstwister.tools.fuzzy_domains(domain)
+    dnstwister.tools.fuzzy_domains(Domain(domain))
 
     duration = (datetime.datetime.now() - start).total_seconds()
 
-    assert duration < 0.5, 'duration too long: {} secs'.format(duration)
+    assert duration < 10, 'duration too long: {} secs'.format(duration)
 
-    print 'Long domain name fuzzed in: {} seconds'.format(duration)
+    print('Long domain name fuzzed in: {} seconds'.format(duration))

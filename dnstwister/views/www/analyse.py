@@ -3,12 +3,13 @@ import flask
 
 from dnstwister import app
 import dnstwister.tools as tools
+from dnstwister.core.domain import Domain
 
 
 @app.route('/analyse/<hexdomain>')
 def analyse(hexdomain):
     """Do a domain analysis."""
-    domain = tools.parse_domain(hexdomain)
+    domain = tools.try_parse_domain_from_hex(hexdomain)
     if domain is None:
         flask.abort(
             400,

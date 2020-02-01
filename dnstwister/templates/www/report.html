@@ -9,11 +9,9 @@
 {% endblock %}
 {% block body %}
         <section class="domains">
-            {% for (domain, domain_encoded) in atoms.items() %}
-                <div class="domain_nav">
-                    <h5>{{ domain | domain_renderer }}</h5>
-                </div>
-            {% endfor %}
+            <div class="domain_nav">
+                <h5>{{ domain | domain_renderer }}</h5>
+            </div>
             <div style="clear: both"></div>
         </section>
         <section class="sub_nav">
@@ -31,7 +29,7 @@
             <section class="exports">
                 export:
                 {% for (title, format) in exports.items() %}
-                    <a href="/search/{{ domain_encoded }}/{{ format }}">{{ title }}</a>
+                    <a href="/search/{{ domain | domain_encoder }}/{{ format }}">{{ title }}</a>
                 {% endfor %}
             </section>
         </section>
@@ -46,18 +44,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for (domain, data) in reports.items() %}
-                        {% for entry in data.fuzzy_domains %}
-                            <tr class="domain-row">
-                                <td>{{ entry['domain-name'] | domain_renderer }}</td>
-                                <td>{{ entry.fuzzer }}</td>
-                                <td class="resolvable" data-hex="{{ entry.hex }}" data-ip="{{ entry.ip }}">...</td>
-                                <td class="tools">
-                                    <a href="/analyse/{{ entry.hex }}">analyse</a>
-                                    <a class="deep-search" href="/search/{{ entry.hex }}">&#128270;</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                    {% for entry in report.fuzzy_domains %}
+                        <tr class="domain-row">
+                            <td>{{ entry['domain-name'] | domain_renderer }}</td>
+                            <td>{{ entry.fuzzer }}</td>
+                            <td class="resolvable" data-hex="{{ entry.hex }}" data-ip="{{ entry.ip }}">...</td>
+                            <td class="tools">
+                                <a href="/analyse/{{ entry.hex }}">analyse</a>
+                                <a class="deep-search" href="/search/{{ entry.hex }}">&#128270;</a>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>

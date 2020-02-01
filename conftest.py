@@ -22,9 +22,6 @@ def webapp():
     testapp = flask_webtest.TestApp(dnstwister.app)
     testapp.app.debug = True
 
-    # Clear the cache
-    dnstwister.cache.clear()
-
     return testapp
 
 

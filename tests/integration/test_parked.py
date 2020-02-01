@@ -1,11 +1,11 @@
 """Parked check integration test."""
-import binascii
+from dnstwister.core.domain import Domain
 
 
 def test_parked_query(webapp):
     """Test the parked API against our own domain."""
     domain = 'dnstwister.report'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
     request = webapp.get('/api/parked/{}'.format(hexdomain))
 
     assert request.status_code == 200
@@ -27,7 +27,7 @@ def test_parked_query(webapp):
 def test_parked_query_on_broken_domain(webapp):
     """Test the parked API against a domain that doesn't exist."""
     domain = 'there-is-little-chance-this-domain-exists-i-hope.com'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
     request = webapp.get('/api/parked/{}'.format(hexdomain))
 
     assert request.status_code == 200
