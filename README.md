@@ -17,7 +17,7 @@ This project, __dnstwister__, gives you access to the power of dnstwist via a
 convenient Heroku-deployable Python flask-based web interface and offers
 csv/json reports and a fully featured RESTful API.
 
-This project currently uses a modified version of dnstwist, in
+This project uses a modified version of dnstwist, in
 [dnstwister/dnstwist](dnstwister/dnstwist).
 
 I have kept the original dnstwist README and LICENCE but I have applied an
@@ -31,11 +31,10 @@ dnstwist in my project.
 
 ## [dnstwister.report](https://dnstwister.report)
 
-[dnstwister.report](https://dnstwister.report) grew out of this repository,
-but as of October 2019 the core code that runs
+The SaaS offering [dnstwister.report](https://dnstwister.report) grew out of
+this repository, but as of October 2019 the core code that runs
 [dnstwister.report](https://dnstwister.report) was forked from this
-__dnstwister__ repository into a private repository. This was done
-to:
+__dnstwister__ repository into a private repository. This was done to:
 
  * Clearly separate the code required to run a web-scale SaaS offering from
 that required to host your own __dnstwister__ instance - for instance email
