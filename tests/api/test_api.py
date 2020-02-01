@@ -43,7 +43,6 @@ def test_api_domain_validation(webapp):
         assert '400 BAD REQUEST' in str(err)
 
 
-@pytest.mark.slow
 def test_unicode_basics(webapp):
     """Test that Unicode domains work on all endpoints."""
     unicode_domain = Domain('xn--sterreich-z7a.icom.museum')

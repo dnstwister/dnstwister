@@ -6,9 +6,18 @@ import json
 import flask
 
 from dnstwister import app
-from dnstwister.configuration import features
 import dnstwister.tools as tools
 from dnstwister.core.domain import Domain
+
+
+def html_render(domain):
+    """Render and return the html report."""
+    return flask.render_template(
+        'www/report.html',
+        domain=domain,
+        report=tools.analyse(domain)[1],
+        exports={'json': 'json', 'csv': 'csv'}
+    )
 
 
 def json_render(domain):
@@ -107,10 +116,11 @@ def search_post():
         return flask.redirect('/error/2')
 
     searched_domain = Domain.try_parse(post_data.strip())
+
     if searched_domain is None:
         return handle_invalid_domain(binascii.hexlify(post_data.encode()).decode('ascii'))
 
-    return flask.redirect('/search?ed={}'.format(searched_domain.to_hex()))
+    return flask.redirect('/search/{}'.format(searched_domain.to_hex()))
 
 
 def handle_invalid_domain(search_term_as_hex):
@@ -141,23 +151,7 @@ def handle_invalid_domain(search_term_as_hex):
     return flask.redirect('/error/0')
 
 
-@app.route('/search')
-def search_async():
-    """New endpoint supporting async search."""
-    hex_encoded_domain_parameter = flask.request.args.get('ed')
-
-    domain = tools.try_parse_domain_from_hex(hex_encoded_domain_parameter)
-    if domain is None:
-        return handle_invalid_domain(hex_encoded_domain_parameter)
-
-    return flask.render_template(
-        'www/search.html',
-        domain=domain,
-        exports={'json': 'json', 'csv': 'csv'},
-        allow_email_subs=features.enable_emails(),
-    )
-
-
+@app.route('/search/<search_domain>')
 @app.route('/search/<search_domain>/<fmt>')
 def search(search_domain, fmt=None):
     """Handle redirect from form submit."""
@@ -166,7 +160,9 @@ def search(search_domain, fmt=None):
     if domain is None:
         return handle_invalid_domain(search_domain)
 
-    if fmt == 'json':
+    if fmt is None:
+        return html_render(domain)
+    elif fmt == 'json':
         return json_render(domain)
     elif fmt == 'csv':
         return csv_render(domain)

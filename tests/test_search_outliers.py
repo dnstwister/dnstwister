@@ -55,7 +55,7 @@ def test_suggestion_rendered(webapp):
 
 def test_get_errors(webapp):
     """Test funny URLs for a GET search."""
-    response = webapp.get('/search?ed=__<<>', expect_errors=True)
+    response = webapp.get('/search/__<<>', expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/0'
@@ -95,7 +95,7 @@ def test_whitespace_trimmed(webapp):
 
     response = webapp.post('/search', {'domains': domain}).follow()
     assert response.status_code == 200
-    assert response.request.url == 'http://localhost/search?ed={}'.format(Domain('icloudstats.net').to_hex())
+    assert response.request.url == 'http://localhost/search/{}'.format(Domain('icloudstats.net').to_hex())
 
 
 def test_fix_comma_typo(webapp):
@@ -143,7 +143,7 @@ def test_post_unicode(webapp):
     response = webapp.post('/search', {'domains': unicode_domain}).follow()
 
     assert response.status_code == 200
-    assert response.request.url == 'http://localhost/search?ed={}'.format(expected_hex)
+    assert response.request.url == 'http://localhost/search/{}'.format(expected_hex)
     assert unicode_domain in response.text
 
     assert 'höt.com (xn--ht-fka.com)' in response.text

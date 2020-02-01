@@ -240,21 +240,9 @@ def test_failed_export(webapp):
 
 def test_links_on_report(webapp):
     """Make sure the export links are working."""
-    domain = 'a.com'
-    hexdomain = Domain(domain).to_hex()
-    page_html = webapp.get('/search?ed={}'.format(hexdomain)).text
-
-    assert '/search/{}/csv'.format(hexdomain) in page_html
-    assert '/search/{}/json'.format(hexdomain) in page_html
-
-
-def test_links_on_search(webapp, monkeypatch):
-    """Make sure the export links are working on the newer page."""
-    monkeypatch.setenv('feature.async_search', 'true')
-
-    domain = 'a.com'
-    hexdomain = Domain(domain).to_hex()
-    page_html = webapp.get('/search?ed={}'.format(hexdomain)).text
+    domain = Domain('a.com')
+    hexdomain = domain.to_hex()
+    page_html = webapp.get('/search/{}'.format(hexdomain)).text
 
     assert '/search/{}/csv'.format(hexdomain) in page_html
     assert '/search/{}/json'.format(hexdomain) in page_html

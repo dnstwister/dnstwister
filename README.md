@@ -1,25 +1,13 @@
-# Current state of dnstwister/please read before suggesting changes
-
-As of October 2019 __dnstwister__ is going through a number of breaking
-changes to support the cut-over to Python 3 before 2020. If you're looking for
-a stable Python 2 version of __dnstwister__ then
-[2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14) is the
-one you want.
-
-### NOTE: This means that this README and/or the code in this master branch might not work at this point in time. This notice will be removed once the codebase has stabilised again. As mentioned above, the current stable version of __dnstwister__ is [2.14](https://github.com/thisismyrobot/dnstwister/releases/tag/2.14). Thank you for your patience as I complete this cut-over.
-
 # dnstwister
 
-A Heroku-hosted version of the very excellent
+A Python 3 Heroku-hostable web-application wrapping the excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
-|production|development|
-|:--------:|:---------:|
-|[![Production Branch Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=heroku-deploy)](https://travis-ci.org/thisismyrobot/dnstwister)|[![Development Branch Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)|
+[![Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/thisismyrobot/dnstwister/tree/heroku-deploy)
 
-## dnstwist vs. dnstwister
+## dnstwist
 
 In [the author's](https://github.com/elceef) words, dnstwist helps you
 ["...find similar-looking domains that adversaries can use to attack
@@ -28,8 +16,6 @@ you..."](https://github.com/elceef/dnstwist/blob/master/docs/README.md)
 This project, __dnstwister__, gives you access to the power of dnstwist via a
 convenient Heroku-deployable Python flask-based web interface and offers
 csv/json reports and a fully featured RESTful API.
-
-## dnstwist module
 
 This project currently uses a modified version of dnstwist, in
 [dnstwister/dnstwist](dnstwister/dnstwist).
@@ -43,11 +29,12 @@ Apache licence),
 [this is an acceptable](http://opensource.stackexchange.com/a/963/3236) use of
 dnstwist in my project.
 
-## What about [dnstwister.report](https://dnstwister.report)?
+## [dnstwister.report](https://dnstwister.report)
 
-As of October 2019 the core code that runs
+[dnstwister.report](https://dnstwister.report) grew out of this repository,
+but as of October 2019 the core code that runs
 [dnstwister.report](https://dnstwister.report) was forked from this
-__dnstwister__ open-source repository into a private repository. This was done
+__dnstwister__ repository into a private repository. This was done
 to:
 
  * Clearly separate the code required to run a web-scale SaaS offering from
@@ -65,8 +52,8 @@ dnstwist module embedded in this repository will __always__ match that used in
 
 __The current version of dnstwist used in this repository and in
 [dnstwister.report](https://dnstwister.report) is [available
-here](https://github.com/thisismyrobot/dnstwister/tree/master/dnstwister/dnstwist), including the original Apache
-LICENCE.__
+here](https://github.com/thisismyrobot/dnstwister/tree/master/dnstwister/dnstwist),
+including the original Apache LICENCE.__
 
 ## Contributors
 
@@ -76,9 +63,9 @@ LICENCE.__
  * [@wesinator](https://github.com/wesinator) (file export improvements)
  * [@ninoseki](https://github.com/ninoseki) (api improvements)
 
-## Developing dnstwister
+## Developing and running dnstwister
 
-You need Python 3.7.4.
+You need Python 3.7.6.
 
 Once-off setup:
 

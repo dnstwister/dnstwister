@@ -8,8 +8,8 @@ def test_404_error(webapp):
 
 
 def test_400_error(webapp):
-    page = webapp.get('/atom/notahexdomain', expect_errors=True)
+    page = webapp.get('/search/6161612e636f6d/ggg', expect_errors=True)
 
     assert page.status_code == 400
-    assert 'Malformed domain or domain not represented in hexadecimal format.' in page.text
+    assert 'Unknown export format' in page.text
     assert 'index.min.css' in page.text

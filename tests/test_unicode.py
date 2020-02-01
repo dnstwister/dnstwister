@@ -19,7 +19,7 @@ def test_idna_submit(webapp):
 
     response = webapp.post('/search', {'domains': idna_domain})
 
-    assert response.headers['location'] == 'http://localhost/search?ed=786e2d2d706c6e742d316e612e636f6d'
+    assert response.headers['location'] == 'http://localhost/search/786e2d2d706c6e742d316e612e636f6d'
 
 
 def test_raw_unicode_submit(webapp):
@@ -32,4 +32,4 @@ def test_raw_unicode_submit(webapp):
         content_type='application/x-www-form-urlencoded; charset=utf-8',
     )
 
-    assert response.headers['location'] == 'http://localhost/search?ed=786e2d2d706c6e742d316e612e636f6d'
+    assert response.headers['location'] == 'http://localhost/search/786e2d2d706c6e742d316e612e636f6d'

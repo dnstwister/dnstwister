@@ -18,10 +18,8 @@
 # limitations under the License.
 
 #
-# dnstwist version: https://github.com/elceef/dnstwist/blob/182902f42c749cc4b58af06f8c312c92af1a73dc/dnstwist.py
-# modified by Robert Wallhead (robert@thisismyrobot.com) for use in
-# https://dnstwister.report - all functionality except fuzzing removed and
-# various changes made to support usage in Heroku.
+# dnstwist modified by Robert Wallhead (robert@thisismyrobot.com) for use in
+# https://dnstwister.report and this repository.
 #
 
 __author__ = 'Marcin Ulikowski'

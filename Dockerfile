@@ -1,4 +1,4 @@
-FROM python:2.7.16-alpine
+FROM python:3.7.6-alpine
 
 ARG BRANCH=heroku-deploy
 
@@ -9,10 +9,9 @@ WORKDIR /opt/dnstwister
 COPY . /opt/dnstwister
 
 RUN apk update && apk add --virtual .build-deps gcc musl-dev && \
-    apk add postgresql-dev && \
-    pip install pipenv && pipenv install && pipenv install --dev && \
+    pip install pipenv && pipenv install --dev && \
     apk del .build-deps
 
 ENTRYPOINT ["pipenv", "run"]
 
-CMD ["python", "test_server.py"]
+CMD ["python", "local_server.py"]
