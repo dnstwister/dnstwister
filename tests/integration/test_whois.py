@@ -1,11 +1,15 @@
 """Whois integration test."""
-import binascii
+from dnstwister.core.domain import Domain
+
+
+import pytest
+pytestmark = pytest.mark.slow
 
 
 def test_whois_query(webapp):
     """Test the whois lookup."""
     domain = 'dnstwister.report'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
     request = webapp.get('/api/whois/{}'.format(hexdomain))
 
     assert request.status_code == 200
@@ -25,16 +29,3 @@ def test_whois_query(webapp):
     }
 
     assert 'Domain Name: dnstwister.report' in whois_text
-
-
-def test_with_invalid_input(webapp):
-    """Test with an invalid input."""
-    domain = "foobar"
-
-    hexdomain = binascii.hexlify(domain)
-
-    response = webapp.get('/api/whois/{}'.format(hexdomain),
-                          expect_errors=True).json
-
-    error = response['error']
-    assert error == 'Malformed domain or domain not represented in hexadecimal format.'

@@ -1,7 +1,6 @@
 """The API's parked checker endpoint."""
-import binascii
-
 import dnstwister.api.checks.parked as parked_api
+from dnstwister.core.domain import Domain
 
 
 def test_not_parked(f_httpretty, webapp):
@@ -16,7 +15,7 @@ def test_not_parked(f_httpretty, webapp):
     )
 
     domain = 'www.example.com'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
 
     response = webapp.get('/api/parked/{}'.format(hexdomain)).json
 
@@ -53,7 +52,7 @@ def test_parked(f_httpretty, webapp):
     )
 
     domain = 'www.example.com'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
 
     response = webapp.get('/api/parked/{}'.format(hexdomain)).json
 
@@ -87,7 +86,7 @@ def test_dressed_redirect(f_httpretty, webapp):
     )
 
     domain = 'example.com'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
 
     response = webapp.get('/api/parked/{}'.format(hexdomain)).json
 
@@ -96,33 +95,16 @@ def test_dressed_redirect(f_httpretty, webapp):
 
 def test_second_level_extraction():
     """Test we can extract second-level domains from tlds."""
-    assert parked_api.second_level('www.example.com') == 'example'
-    assert parked_api.second_level('example.com') == 'example'
-    assert parked_api.second_level('www2.example.co.uk') == 'example'
-    assert parked_api.second_level('') == ''
-    assert parked_api.second_level('com') == ''
-
-    assert parked_api.second_level('sodifoisdfe') == ''
-    assert parked_api.second_level('sodifoisdf.e') == ''
+    assert parked_api.second_level(Domain('www.example.com')) == 'example'
+    assert parked_api.second_level(Domain('example.com')) == 'example'
+    assert parked_api.second_level(Domain('www2.example.co.uk')) == 'example'
 
 
 def test_dressed_check():
     """Tests the detail of the "dressed" detection."""
-    assert parked_api.dressed('example.com', 'www.example.com')
-    assert parked_api.dressed('example.com', 'ww2.example.com')
-    assert parked_api.dressed('www.example.com', 'example.com')
-    assert parked_api.dressed('www.example.com', 'example.com.au')
+    assert parked_api.dressed(Domain('example.com'), Domain('www.example.com'))
+    assert parked_api.dressed(Domain('example.com'), Domain('ww2.example.com'))
+    assert parked_api.dressed(Domain('www.example.com'), Domain('example.com'))
+    assert parked_api.dressed(Domain('www.example.com'), Domain('example.com.au'))
 
-    assert not parked_api.dressed('www.example.com', 'www.examples.com')
-
-
-def test_parked_with_invalid_input(webapp):
-    """Test with an invalid input."""
-    domain = 'foobar'
-    hexdomain = binascii.hexlify(domain)
-
-    response = webapp.get(
-        '/api/parked/{}'.format(hexdomain), expect_errors=True).json
-
-    error = response['error']
-    assert error == 'Malformed domain or domain not represented in hexadecimal format.'
+    assert not parked_api.dressed(Domain('www.example.com'), Domain('www.examples.com'))

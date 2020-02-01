@@ -1,0 +1,11 @@
+{% extends "www/layout.html" %}
+{% set hide_logo = True %}
+{% block title %}Page not found{% endblock %}
+{% block head %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.min.css') }}">
+{% endblock %}
+{% block header %}
+            <h1>Page not found</h1>
+            <p>Unfortunately the page you are looking for could not be found.</p>
+            <p><a href="/">Return to dnstwister?</a></p>
+{% endblock %}

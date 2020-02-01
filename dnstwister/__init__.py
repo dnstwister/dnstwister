@@ -17,15 +17,22 @@ cache = flask_caching.Cache(app, config={'CACHE_TYPE': 'simple'})
 app.logger.setLevel(logging.INFO)
 
 # Blueprints
-import api
+import dnstwister.api
 app.register_blueprint(api.app, url_prefix='/api')
 
-# Import modules using dnstwister.app/cache here.
-import tools
-import tools.template
-import views.www.analyse
-import views.www.index
-import views.www.search
+# Import modules using dnstwister.app/cache/db/emailer here.
+import dnstwister.repository
+import dnstwister.tools
+import dnstwister.tools.template
+import dnstwister.views.syndication.atom
+import dnstwister.views.www.analyse
+import dnstwister.views.www.email
+import dnstwister.views.www.subscriptions
+import dnstwister.views.www.help
+import dnstwister.views.www.index
+import dnstwister.views.www.search
+import dnstwister.views.www.status
 
 # Filters
 app.jinja_env.filters['domain_renderer'] = tools.template.domain_renderer
+app.jinja_env.filters['domain_encoder'] = tools.template.domain_encoder

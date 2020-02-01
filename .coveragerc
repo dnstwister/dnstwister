@@ -3,3 +3,7 @@ omit =
     *.html
     dnstwister/storage/pg_database.py
     dnstwister/mail/sendgridservice.py
+    local_server.py
+    build/*
+    tests/*
+    conftest.py

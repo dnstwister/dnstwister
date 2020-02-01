@@ -7,6 +7,7 @@ import unittest
 
 import dnstwister
 import patches
+from dnstwister.core.domain import Domain
 
 
 class TestMain(unittest.TestCase):
@@ -25,13 +26,14 @@ class TestMain(unittest.TestCase):
 
         self.assertEqual(res.status_int, 200)
         self.assertTrue(
-            'Domain name permutation engine' in res.body,
+            'Domain name permutation engine' in res.text,
             'Page loaded HTML AOK'
         )
 
     @mock.patch('dnstwister.tools.dnstwist.DomainFuzzer', patches.SimpleFuzzer)
     def test_exports(self):
         """We have export links."""
-        res = self.app.get('/search/{}'.format(binascii.hexlify('a.com')))
+        res = self.app.get('/search?ed={}'.format(Domain('a.com').to_hex()))
 
-        assert 'json' in res.body
+        assert 'csv' in res.text
+        assert 'json' in res.text

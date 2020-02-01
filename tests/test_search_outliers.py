@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import binascii
 
+from dnstwister.core.domain import Domain
+
 
 def test_no_domains_key(webapp):
     """Test a POST without 'domains' being set fails."""
@@ -24,12 +26,12 @@ def test_suggestion(webapp):
 
     Where a domain could be reasonably suggested, it is.
     """
-    response = webapp.post('/search', {'domains': 'example'}).follow(expect_errors=True)
+    response = webapp.post('/search', {'domains': 'example'}, expect_errors=True)
 
     assert response.status_code == 302
 
     domain = 'example.com'
-    enc_domain = binascii.hexlify(domain)
+    enc_domain = Domain(domain).to_hex()
     expected_redirect = 'http://localhost/error/0?suggestion=' + enc_domain
     assert response.headers['location'] == expected_redirect
 
@@ -37,23 +39,23 @@ def test_suggestion(webapp):
 def test_no_valid_domains_only(webapp):
     """Test invalid domains not in suggestions."""
     query = 'abc ?@<>.'
-    response = webapp.post('/search', {'domains': query}).follow(expect_errors=True)
+    response = webapp.post('/search', {'domains': query}, expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'].endswith('=6162632e636f6d')
-    assert binascii.unhexlify('6162632e636f6d') == 'abc.com'
+    assert binascii.unhexlify('6162632e636f6d').decode() == 'abc.com'
 
 
 def test_suggestion_rendered(webapp):
     """Test suggestion rendered on index."""
-    response = webapp.post('/search', {'domains': 'example'}).follow(expect_errors=True).follow()
+    response = webapp.post('/search', {'domains': 'example'}, expect_errors=True).follow()
 
-    assert 'example.com' in response.body
+    assert 'example.com' in response.text
 
 
 def test_get_errors(webapp):
     """Test funny URLs for a GET search."""
-    response = webapp.get('/search/__<<>', expect_errors=True)
+    response = webapp.get('/search?ed=__<<>', expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/0'
@@ -62,7 +64,7 @@ def test_get_errors(webapp):
 def test_no_suggestion_many_words(webapp):
     """Test many search terms are dropped in suggestions."""
     query = 'j s d f i j s'
-    response = webapp.post('/search', {'domains': query}).follow(expect_errors=True)
+    response = webapp.post('/search', {'domains': query}, expect_errors=True)
 
     assert response.status_code == 302
     assert response.headers['location'] == 'http://localhost/error/0'
@@ -87,15 +89,24 @@ def test_suggestion_bad_data(webapp):
     assert response.status_code == 200
 
 
+def test_whitespace_trimmed(webapp):
+    """Tabs and spaces are cleaned up first."""
+    domain = "  icloudstats.net\t\r  \n"
+
+    response = webapp.post('/search', {'domains': domain}).follow()
+    assert response.status_code == 200
+    assert response.request.url == 'http://localhost/search?ed={}'.format(Domain('icloudstats.net').to_hex())
+
+
 def test_fix_comma_typo(webapp):
     """Test accidentally entering in a comma instead of period is corrected.
     """
     malformed_domain = 'example,com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow(expect_errors=True).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}, expect_errors=True).follow()
 
-    assert expected_suggestion in response.body
+    assert expected_suggestion in response.text
 
 
 def test_fix_slash_typo(webapp):
@@ -104,9 +115,9 @@ def test_fix_slash_typo(webapp):
     malformed_domain = 'example/com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow(expect_errors=True).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}, expect_errors=True).follow()
 
-    assert expected_suggestion in response.body
+    assert expected_suggestion in response.text
 
 
 def test_fix_space_typo(webapp):
@@ -115,26 +126,24 @@ def test_fix_space_typo(webapp):
     malformed_domain = 'example com'
     expected_suggestion = 'example.com'
 
-    response = webapp.post('/search', {'domains': malformed_domain}).follow(expect_errors=True).follow()
+    response = webapp.post('/search', {'domains': malformed_domain}, expect_errors=True).follow()
 
-    assert expected_suggestion in response.body
+    assert expected_suggestion in response.text
 
 
 def test_post_unicode(webapp):
     """Test of end-to-end unicode."""
     unicode_domain = 'höt.com'
 
-    assert unicode_domain == 'h\xc3\xb6t.com'
-
     expected_punycode = 'xn--ht-fka.com'
-    expected_hex = binascii.hexlify(expected_punycode)
+    expected_hex = Domain(expected_punycode).to_hex()
 
     assert expected_hex == '786e2d2d68742d666b612e636f6d'
 
     response = webapp.post('/search', {'domains': unicode_domain}).follow()
 
     assert response.status_code == 200
-    assert response.request.url == 'http://localhost/search/{}'.format(expected_hex)
-    assert unicode_domain in response.body
+    assert response.request.url == 'http://localhost/search?ed={}'.format(expected_hex)
+    assert unicode_domain in response.text
 
-    assert 'höt.com (xn--ht-fka.com)' in response.body
+    assert 'höt.com (xn--ht-fka.com)' in response.text

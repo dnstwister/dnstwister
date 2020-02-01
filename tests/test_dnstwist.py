@@ -1,16 +1,64 @@
 """Test of the basics of dnstwist."""
-import dnstwister.dnstwist.dnstwist as dnstwist
+import string
+
+import idna
+import pytest
+
+import dnstwister.core.domain
+import dnstwister.dnstwist
+import dnstwister.tools
+from dnstwister.core.domain import Domain
+
+
+def test_all_homoglyphs_are_unique():
+    for k, chars in dnstwister.dnstwist.DomainFuzzer('a.com').glyphs.items():
+        seen = set()
+        for i, c in enumerate(chars):
+            lower_c = c.lower()
+            if lower_c in seen:
+                raise Exception(f'In glyphs for {k}, index {i} ({c} / {c.encode()} / {lower_c}) is a duplicate of a prev char.')
+            seen.add(lower_c)
+
+
+def test_all_homoglyphs_are_different_from_keys():
+    for k, chars in dnstwister.dnstwist.DomainFuzzer('a.com').glyphs.items():
+        for i, c in enumerate(chars):
+            if k.lower() == c.lower():
+                raise Exception(f'In glyphs for {k}, index {i} ({c} / {c.lower()}) is a duplicate of the key.')
+
+
+@pytest.mark.slow
+def test_all_twisted_domains_are_valid_idna2008():
+    """Some of the homoglyphs were not actually valid idna."""
+    for char in string.ascii_lowercase:
+        domain = f'{char}{char}.com'
+        fuzzer = dnstwister.dnstwist.DomainFuzzer(domain)
+        fuzzer.fuzz()
+        for result in fuzzer.domains:
+            candidate = result['domain-name']
+            try:
+                Domain(candidate)
+            except dnstwister.core.domain.InvalidDomainException:
+                raise Exception(f'The domain {candidate} / {candidate.encode()} is not IDNA2008 compatible')
+
+
+@pytest.mark.slow
+def test_longer_domain_is_completely_valid():
+    domain = Domain('xn--sterreich-z7a.icom.museum')
+    fuzzer = dnstwister.dnstwist.DomainFuzzer(domain.to_unicode())
+    fuzzer.fuzz()
+    [Domain(d['domain-name']) for d in fuzzer.domains]
 
 
 def test_small_domain_stats():
     """Test of the size of the results for a simple domain."""
-    fuzzer = dnstwist.fuzz_domain('abc.com')
+    fuzzer = dnstwister.dnstwist.DomainFuzzer('abc.com')
     fuzzer.fuzz()
 
     assert breakdown(fuzzer.domains) == {
         'Addition': 26,
         'Bitsquatting': 13,
-        'Homoglyph': 28,
+        'Homoglyph': 26,
         'Hyphenation': 2,
         'Insertion': 11,
         'Omission': 3,
@@ -26,13 +74,13 @@ def test_small_domain_stats():
 
 def test_medium_domain_stats():
     """Test of the size of the results for a medium-length domain."""
-    fuzzer = dnstwist.fuzz_domain('example.com')
+    fuzzer = dnstwister.dnstwist.DomainFuzzer('example.com')
     fuzzer.fuzz()
 
     assert breakdown(fuzzer.domains) == {
         'Addition': 26,
         'Bitsquatting': 33,
-        'Homoglyph': 61,
+        'Homoglyph': 57,
         'Hyphenation': 6,
         'Insertion': 53,
         'Omission': 7,
@@ -48,13 +96,13 @@ def test_medium_domain_stats():
 
 def test_medium_domain_with_subdomain_stats():
     """Test of the size of the results for a medium-length domain."""
-    fuzzer = dnstwist.fuzz_domain('www.example.com')
+    fuzzer = dnstwister.dnstwist.DomainFuzzer('www.example.com')
     fuzzer.fuzz()
 
     assert breakdown(fuzzer.domains) == {
         'Addition': 26,
         'Bitsquatting': 49,
-        'Homoglyph': 99,
+        'Homoglyph': 125,
         'Hyphenation': 8,
         'Insertion': 84,
         'Omission': 10,
@@ -63,30 +111,6 @@ def test_medium_domain_with_subdomain_stats():
         'Replacement': 49,
         'Subdomain': 8,
         'Transposition': 8,
-        'Various': 1,
-        'Vowel swap': 6
-    }
-
-
-def test_crawler_massive_domain():
-    """Test of the size of the results for a crawler monster domain."""
-    fuzzer = dnstwist.fuzz_domain(
-        'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.zzzzzzzzzzzzzzzzzzzzzzzzzppieo.com'
-    )
-    fuzzer.fuzz()
-
-    assert breakdown(fuzzer.domains) == {
-        'Addition': 26,
-        'Bitsquatting': 288,
-        'Homoglyph': 252,
-        'Hyphenation': 29,
-        'Insertion': 383,
-        'Omission': 7,
-        'Original*': 1,
-        'Repetition': 4,
-        'Replacement': 1077,
-        'Subdomain': 91,
-        'Transposition': 5,
         'Various': 1,
         'Vowel swap': 6
     }
@@ -102,9 +126,9 @@ def breakdown(result):
 
 def test_unicode_fuzzing():
     """Test can fuzz and generate unicode."""
-    unicode_domain = 'xn--domain.com'.decode('idna')
+    unicode_domain = Domain('xn--domain.com').to_unicode()
 
-    fuzzer = dnstwist.fuzz_domain(unicode_domain)
+    fuzzer = dnstwister.dnstwist.DomainFuzzer(unicode_domain)
     fuzzer.fuzz()
 
     assert sorted([d['domain-name'] for d in fuzzer.domains]) == [
@@ -161,7 +185,7 @@ def test_unicode_fuzzing():
 
 def test_top_level_domains_db_is_loaded():
     """The TLD database should be loaded."""
-    assert dnstwist.DB_TLD
+    assert dnstwister.dnstwist.DB_TLD
 
 
 def test_basic_fuzz():
@@ -169,10 +193,10 @@ def test_basic_fuzz():
 
     This'll be high-maintenance, but will help track changes over time.
     """
-    fuzzer = dnstwist.fuzz_domain('www.example.com')
+    fuzzer = dnstwister.dnstwist.DomainFuzzer('www.example.com')
     fuzzer.fuzz()
 
-    assert sorted(fuzzer.domains) == [
+    assert sorted(fuzzer.domains, key=lambda d: d['domain-name']) == [
         {'domain-name': '2ww.example.com', 'fuzzer': 'Replacement'},
         {'domain-name': '3ww.example.com', 'fuzzer': 'Replacement'},
         {'domain-name': '7ww.example.com', 'fuzzer': 'Bitsquatting'},
@@ -361,19 +385,19 @@ def test_basic_fuzz():
         {'domain-name': 'www.examplwe.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.examplz.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'www.examplze.com', 'fuzzer': 'Insertion'},
-        {'domain-name': u'www.exampl\xe9.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\xea.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\xeb.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u0113.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u0115.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u0117.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u0119.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u011b.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u03f5.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u0435.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u0454.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u04bd.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exampl\u1eb9.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.examplè.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.examplé.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.examplê.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.examplë.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u0113.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u0115.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u0117.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u0119.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u011b.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u0229.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u0247.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u1e1b.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exampl\u1eb9.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.exampme.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.exampmle.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.exampne.com', 'fuzzer': 'Bitsquatting'},
@@ -381,17 +405,16 @@ def test_basic_fuzz():
         {'domain-name': 'www.exampole.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.examppe.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'www.exampple.com', 'fuzzer': 'Insertion'},
-        {'domain-name': u'www.examp\u0142e.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.examp\u026be.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.examp\u0142e.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.examp\u026be.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.examqle.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.examrle.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.examtle.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.examxle.com', 'fuzzer': 'Bitsquatting'},
-        {'domain-name': u'www.exam\xdele.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exam\u01bfle.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exam\u03c1le.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exam\u03f7le.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exam\u0440le.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exam\u01a5le.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exam\u01bfle.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exam\u1e55le.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exam\u1e57le.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.exanmple.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.exannple.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.exanple.com', 'fuzzer': 'Homoglyph'},
@@ -407,10 +430,11 @@ def test_basic_fuzz():
         {'domain-name': 'www.exawmple.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.exaymple.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.exazmple.com', 'fuzzer': 'Insertion'},
-        {'domain-name': u'www.exa\u0271ple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exa\u043cple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exa\u1d0dple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.exa\u1e43ple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exa\u0271ple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exa\u1d0dple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exa\u1e3fple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exa\u1e41ple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exa\u1e43ple.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.excample.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.excmple.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.exdample.com', 'fuzzer': 'Insertion'},
@@ -431,26 +455,22 @@ def test_basic_fuzz():
         {'domain-name': 'www.exymple.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'www.exzample.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.exzmple.com', 'fuzzer': 'Replacement'},
-        {'domain-name': u'www.ex\xe0mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\xe1mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\xe2mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\xe3mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\xe4mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\xe5mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u0103mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u01cemple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u0227mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u0251mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u0307ample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u0430mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u04d3mple.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.ex\u1ea1mple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exàmple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exámple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exâmple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exãmple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exämple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.exåmple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ex\u0103mple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ex\u0105mple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ex\u01cemple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ex\u0227mple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ex\u0251mple.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ex\u1ea1mple.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.eyample.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.eyxample.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.ezample.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.ezxample.com', 'fuzzer': 'Insertion'},
-        {'domain-name': u'www.e\u0445ample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.e\u04b3ample.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www.gxample.com', 'fuzzer': 'Bitsquatting'},
         {'domain-name': 'www.ixample.com', 'fuzzer': 'Vowel swap'},
         {'domain-name': 'www.mxample.com', 'fuzzer': 'Bitsquatting'},
@@ -466,32 +486,32 @@ def test_basic_fuzz():
         {'domain-name': 'www.xeample.com', 'fuzzer': 'Transposition'},
         {'domain-name': 'www.zexample.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www.zxample.com', 'fuzzer': 'Replacement'},
-        {'domain-name': u'www.\xe9xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\xe9xampl\xe9.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\xeaxample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\xeaxampl\xea.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\xebxample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\xebxampl\xeb.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0113xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0113xampl\u0113.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0115xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0115xampl\u0115.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0117xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0117xampl\u0117.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0119xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0119xampl\u0119.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u011bxample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u011bxampl\u011b.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u03f5xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u03f5xampl\u03f5.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0435xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0435xampl\u0435.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0454xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u0454xampl\u0454.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u04bdxample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u04bdxampl\u04bd.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u1eb9xample.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'www.\u1eb9xampl\u1eb9.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.èxample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.èxamplè.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.éxample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.éxamplé.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.êxample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.êxamplê.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ëxample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.ëxamplë.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0113xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0113xampl\u0113.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0115xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0115xampl\u0115.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0117xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0117xampl\u0117.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0119xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0119xampl\u0119.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u011bxample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u011bxampl\u011b.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0229xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0229xampl\u0229.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0247xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u0247xampl\u0247.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u1e1bxample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u1e1bxampl\u1e1b.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u1eb9xample.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'www.\u1eb9xampl\u1eb9.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'www2.example.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'www3.example.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'wwwa.example.com', 'fuzzer': 'Insertion'},
@@ -505,25 +525,150 @@ def test_basic_fuzz():
         {'domain-name': 'wwwx.example.com', 'fuzzer': 'Insertion'},
         {'domain-name': 'wwx.example.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'wwxw.example.com', 'fuzzer': 'Insertion'},
-        {'domain-name': u'ww\u0461.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'ww\u051d.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'ww\u0561.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u0175.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u1e81.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u1e83.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u1e85.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u1e87.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u1e89.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u1e98.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'ww\u2c73.example.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'wxw.example.com', 'fuzzer': 'Replacement'},
         {'domain-name': 'wxww.example.com', 'fuzzer': 'Insertion'},
-        {'domain-name': u'w\u0461w.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'w\u0461\u0461.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'w\u051dw.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'w\u051d\u051d.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'w\u0561w.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'w\u0561\u0561.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u0175w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u0175\u0175.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e81w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e81\u1e81.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e83w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e83\u1e83.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e85w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e85\u1e85.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e87w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e87\u1e87.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e89w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e89\u1e89.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e98w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u1e98\u1e98.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u2c73w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': 'w\u2c73\u2c73.example.com', 'fuzzer': 'Homoglyph'},
         {'domain-name': 'xww.example.com', 'fuzzer': 'Replacement'},
-        {'domain-name': u'\u0461ww.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u0461\u0461w.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u0461\u0461\u0461.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u051dww.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u051d\u051dw.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u051d\u051d\u051d.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u0561ww.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u0561\u0561w.example.com', 'fuzzer': 'Homoglyph'},
-        {'domain-name': u'\u0561\u0561\u0561.example.com', 'fuzzer': 'Homoglyph'}
-]
+        {'domain-name': '\u0175ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u0175\u0175w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u0175\u0175\u0175.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e81ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e81\u1e81w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e81\u1e81\u1e81.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e83ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e83\u1e83w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e83\u1e83\u1e83.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e85ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e85\u1e85w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e85\u1e85\u1e85.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e87ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e87\u1e87w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e87\u1e87\u1e87.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e89ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e89\u1e89w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e89\u1e89\u1e89.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e98ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e98\u1e98w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u1e98\u1e98\u1e98.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u2c73ww.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u2c73\u2c73w.example.com', 'fuzzer': 'Homoglyph'},
+        {'domain-name': '\u2c73\u2c73\u2c73.example.com', 'fuzzer': 'Homoglyph'}
+    ]
+
+def test_strange_unicode_k():
+    """A range of "k" characters used to collapse into a single normal k.
+    Fixes to the fuzzer have removed this issues but we check still.
+    """
+    domain = Domain('ak.at')
+    fuzzer = dnstwister.dnstwist.DomainFuzzer(domain.to_unicode())
+    fuzzer.fuzz()
+
+    results = [Domain(d['domain-name']).to_ascii() for d in fuzzer.domains]
+    assert len(results) == 78
+    assert len(set(results)) == 78
+    assert sorted(results) == [
+        '1k.at',
+        '2k.at',
+        'a-k.at',
+        'a.at',
+        'a.k.at',
+        'aak.at',
+        'ac.at',
+        'ai.at',
+        'aik.at',
+        'aj.at',
+        'ajk.at',
+        'ak-at.com',
+        'ak.at',
+        'aka.at',
+        'akat.at',
+        'akb.at',
+        'akc.at',
+        'akd.at',
+        'ake.at',
+        'akf.at',
+        'akg.at',
+        'akh.at',
+        'aki.at',
+        'akj.at',
+        'akk.at',
+        'akl.at',
+        'akm.at',
+        'akn.at',
+        'ako.at',
+        'akp.at',
+        'akq.at',
+        'akr.at',
+        'aks.at',
+        'akt.at',
+        'aku.at',
+        'akv.at',
+        'akw.at',
+        'akx.at',
+        'aky.at',
+        'akz.at',
+        'al.at',
+        'alc.at',
+        'alk.at',
+        'am.at',
+        'amk.at',
+        'ao.at',
+        'aok.at',
+        'ck.at',
+        'ek.at',
+        'ik.at',
+        'k.at',
+        'ka.at',
+        'ok.at',
+        'qk.at',
+        'sk.at',
+        'uk.at',
+        'wk.at',
+        'wwak.at',
+        'www-ak.at',
+        'wwwak.at',
+        'xn--a-pms.at',
+        'xn--a-rka.at',
+        'xn--a-rom.at',
+        'xn--a-vom.at',
+        'xn--k-0um.at',
+        'xn--k-1fa.at',
+        'xn--k-dta.at',
+        'xn--k-gya.at',
+        'xn--k-rfa.at',
+        'xn--k-rha.at',
+        'xn--k-tfa.at',
+        'xn--k-u0a.at',
+        'xn--k-vfa.at',
+        'xn--k-vha.at',
+        'xn--k-xfa.at',
+        'xn--k-zfa.at',
+        'yk.at',
+        'zk.at',
+    ]
+
+    filtered_results = dnstwister.tools.analyse(domain)
+    assert len(filtered_results[1]['fuzzy_domains']) == 78

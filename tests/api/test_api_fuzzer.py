@@ -1,12 +1,14 @@
 """The API's fuzzer endpoint."""
 import binascii
 
+from dnstwister.core.domain import Domain
+
 
 def test_fuzzer(webapp):
     """Test the fuzzer."""
     domain = 'www.example.com'
 
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
 
     response = webapp.get('/api/fuzz/{}'.format(hexdomain)).json
 
@@ -28,16 +30,3 @@ def test_fuzzer(webapp):
         u'resolve_ip_url': u'http://localhost/api/ip/7777772e6578616d706c652e636f6d',
         u'url': u'http://localhost/api/fuzz/7777772e6578616d706c652e636f6d'
     }
-
-
-def test_fuzzer_with_invalid_input(webapp):
-    """Test the fuzzer with an invalid input."""
-    domain = "foobar"
-
-    hexdomain = binascii.hexlify(domain)
-
-    response = webapp.get('/api/fuzz/{}'.format(hexdomain),
-                          expect_errors=True).json
-
-    error = response['error']
-    assert error == 'Malformed domain or domain not represented in hexadecimal format.'

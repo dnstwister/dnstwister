@@ -1,11 +1,15 @@
 """Google Safebrowsing integration test."""
-import binascii
+from dnstwister.core.domain import Domain
+
+
+import pytest
+pytestmark = pytest.mark.slow
 
 
 def test_safebrowsing_query(webapp):
     """Test our domain is safe."""
     domain = 'dnstwister.report'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
     response = webapp.get('/api/safebrowsing/{}'.format(hexdomain))
 
     assert response.status_code == 200
@@ -24,21 +28,8 @@ def test_safebrowsing_query(webapp):
 def test_safebrowsing_with_bad_domain(webapp):
     """Test against the google test domain (malware.testing.google.test)."""
     domain = 'malware.testing.google.test'
-    hexdomain = binascii.hexlify(domain)
+    hexdomain = Domain(domain).to_hex()
     response = webapp.get('/api/safebrowsing/{}'.format(hexdomain))
 
     assert response.status_code == 200
     assert response.json['issue_detected'] is True
-
-
-def test_with_invalid_input(webapp):
-    """Test with an invalid input."""
-    domain = "foobar"
-
-    hexdomain = binascii.hexlify(domain)
-
-    response = webapp.get('/api/safebrowsing/{}'.format(hexdomain),
-                          expect_errors=True).json
-
-    error = response['error']
-    assert error == 'Malformed domain or domain not represented in hexadecimal format.'

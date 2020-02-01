@@ -1,10 +1,13 @@
 """Tools specific to template rendering."""
+import dnstwister.tools
+from dnstwister.core.domain import Domain
 
 
 def domain_renderer(domain):
     """Template helper to add IDNA values beside Unicode domains."""
-    idna_domain = domain.encode('idna')
-    if idna_domain == domain:
-        return domain
+    return str(Domain(domain))
 
-    return domain + ' ({})'.format(idna_domain)
+
+def domain_encoder(domain):
+    """Template helper to encode domains for URLs."""
+    return Domain(domain).to_hex()

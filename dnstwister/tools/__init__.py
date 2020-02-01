@@ -4,38 +4,33 @@ import os
 import re
 import random
 import socket
-import urlparse
+import urllib.parse
 
 import dns.resolver
 import flask
 
-from dnstwister import cache
 from dnstwister.tools import tld_db
 import dnstwister.dnstwist as dnstwist
+from dnstwister.core.domain import Domain
 
 
 RESOLVER = dns.resolver.Resolver()
-RESOLVER.lifetime = 0.1
-RESOLVER.timeout = 0.1
+RESOLVER.lifetime = 0.5
+RESOLVER.timeout = 0.5
 
 
-def encode_domain(domain):
-    """Given a domain with possible Unicode chars, encode it to hex."""
+def try_parse_domain_from_hex(hex_encoded_ascii_domain):
     try:
-        return binascii.hexlify(domain.encode('idna'))
-    except UnicodeError:
-        # Some strange invalid Unicode domains
-        return None
+        ascii_domain_text = bytes.fromhex(hex_encoded_ascii_domain).decode('ascii')
+    except (ValueError, TypeError):
+        return
 
-
-def decode_domain(encoded_domain):
-    """Return a domain from hex."""
-    return binascii.unhexlify(encoded_domain).decode('idna')
+    return Domain.try_parse(ascii_domain_text)
 
 
 def fuzzy_domains(domain):
     """Return the fuzzy domains."""
-    fuzzer = dnstwist.DomainFuzzer(domain)
+    fuzzer = dnstwist.DomainFuzzer(domain.to_unicode())
     fuzzer.fuzz()
     return list(fuzzer.domains)
 
@@ -45,41 +40,21 @@ def analyse(domain):
     data = {'fuzzy_domains': []}
     results = fuzzy_domains(domain)
 
-    if len(results) == 0:
-        return None
-
     # Add a hex-encoded version of the domain for the later IP resolution. We
     # do this because the same people who may use this app already have
     # blocking on things like www.exampl0e.com in URLs...
     for result in results:
-        result['hex'] = encode_domain(result['domain-name'])
+        result['hex'] = Domain(result['domain-name']).to_hex()
     data['fuzzy_domains'] = results
 
     return (domain, data)
 
 
-def parse_post_data(post_data):
-    """Parse post data to return a domain."""
+def clean_up_search_term(search_term):
+    """Remove HTTP(s) schemes and trailing slashes."""
+    search_term = re.sub('(^http(s)?://)|(/$)', '', search_term, re.IGNORECASE)
 
-    # Remove HTTP(s) schemes and trailing slashes.
-    domain = re.sub('(^http(s)?://)|(/$)', '', post_data, re.IGNORECASE)
-
-    # Parse through the normal process.
-    return parse_domain(domain.strip())
-
-
-def parse_domain(encoded_domain):
-    """Given a hex-encoded string, try to decode and validate it and if it is
-    a valid domain, return it.
-
-    Return None on un-decodable or invalid domain.
-    """
-    try:
-        decoded_domain = decode_domain(encoded_domain)
-        if dnstwist.is_valid_domain(decoded_domain):
-            return decoded_domain.lower()
-    except:
-        pass
+    return Domain.try_parse(search_term)
 
 
 def suggest_domain(search_domain):
@@ -91,13 +66,13 @@ def suggest_domain(search_domain):
     # in-between the second- and top-level domains.
     if len(search_terms) == 1:
         candidate = re.sub(r'[,/-]', '.', search_terms[0])
-        if dnstwist.is_valid_domain(candidate):
+        if Domain.try_parse(candidate) is not None:
             return candidate
 
     # Pick up space-separated domain levels.
     if len(search_terms) == 2 and search_terms[1] in tld_db.TLDS:
         candidate = '.'.join(search_terms)
-        if dnstwist.is_valid_domain(candidate):
+        if Domain.try_parse(candidate) is not None:
             return candidate
 
     # Attempt to make a domain from the terms.
@@ -135,9 +110,9 @@ def suggest_domain(search_domain):
     suggested_domains = list(set(suggested_domains))
 
     # Filter for those that are actually valid domains
-    valid_suggestions = filter(
-        dnstwist.is_valid_domain, suggested_domains
-    )
+    valid_suggestions = list(filter(
+        lambda d: Domain.try_parse(d) is not None, suggested_domains
+    ))
 
     if len(valid_suggestions) == 0:
         return
@@ -145,20 +120,14 @@ def suggest_domain(search_domain):
     return random.choice(valid_suggestions)
 
 
-@cache.memoize(3600)
 def resolve(domain):
     """Resolves a domain to an IP.
 
     Returns and (IP, False) on successful resolution, (False, False) on
     successful failure to resolve and (None, True) on error in attempting to
     resolve.
-
-    Cached to 1 hour.
     """
-    if not dnstwist.is_valid_domain(domain):
-        return False, True
-
-    idna_domain = domain.encode('idna')
+    idna_domain = domain.to_ascii()
 
     # Try for an 'A' record.
     try:
@@ -184,22 +153,22 @@ def resolve(domain):
     except:
         pass
 
-    # Error due to exception of 127.0.0.1 issue.
+    # Error due to exception or 127.0.0.1 issue.
     return False, True
 
 
 def random_id(n_bytes=32):
     """Generate a random id for an email subscription (for instance)."""
-    return binascii.hexlify(os.urandom(n_bytes))
+    return binascii.hexlify(os.urandom(n_bytes)).decode('ascii')
 
 
 def api_url(view, var_pretty_name):
     """Create nice API urls with place holders."""
-    view_path = '.{}'.format(view.func_name)
-    route_var = view.func_code.co_varnames[:view.func_code.co_argcount][0]
+    view_path = '.{}'.format(view.__name__)
+    route_var = view.__code__.co_varnames[:view.__code__.co_argcount][0]
     path = flask.url_for(view_path, **{route_var: ''})
     path += '{' + var_pretty_name + '}'
-    return urlparse.urljoin(
+    return urllib.parse.urljoin(
         flask.request.url_root,
         path
     )

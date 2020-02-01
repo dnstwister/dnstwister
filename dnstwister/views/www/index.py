@@ -36,7 +36,7 @@ def index(error_arg=None):
 
     if error_idx == 0:
         encoded_suggestion = flask.request.args.get('suggestion')
-        suggestion = tools.parse_domain(encoded_suggestion)
+        suggestion = tools.try_parse_domain_from_hex(encoded_suggestion)
 
     return flask.render_template(
         'www/index.html', error=error, suggestion=suggestion
