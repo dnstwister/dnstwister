@@ -27,7 +27,7 @@ dnspython = "==1.15.0"
 idna = "==2.7"
 python-whois = "==0.6.5"
 requests = "==2.20.1"
-waitress = "==1.4.2"
+waitress = "==1.4.3"
 flask = "*"
 
 [requires]
