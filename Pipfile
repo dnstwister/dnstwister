@@ -23,12 +23,12 @@ WebTest = "*"
 pytest-cov = "*"
 
 [packages]
-dnspython = "==1.15.0"
-idna = "==2.7"
-python-whois = "==0.6.5"
-requests = "==2.20.1"
-waitress = "==1.4.3"
+dnspython = "*"
+idna = "*"
+python-whois = "*"
+requests = "*"
+waitress = "*"
 flask = "*"
 
 [requires]
-python_version = "3.7.6"
+python_version = "3.9"

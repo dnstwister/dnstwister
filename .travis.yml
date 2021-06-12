@@ -1,9 +1,0 @@
-language: python
-python:
-  - "3.7.6"
-install:
-    - pip install pipenv
-    - pipenv install --dev
-script: pipenv run py.test
-dist: xenial
-sudo: false
