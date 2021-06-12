@@ -3,6 +3,8 @@
 A Python 3 Heroku-hostable web-application wrapping the excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
+[![Build dnstwister](https://github.com/thisismyrobot/dnstwister/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/thisismyrobot/dnstwister/actions/workflows/pythonapp.yml)
+
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/thisismyrobot/dnstwister/tree/heroku-deploy)
 
 ## dnstwist
