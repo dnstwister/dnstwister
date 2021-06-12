@@ -3,7 +3,7 @@
 A Python 3 Heroku-hostable web-application wrapping the excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
-[![Build Status](https://travis-ci.org/thisismyrobot/dnstwister.svg?branch=master)](https://travis-ci.org/thisismyrobot/dnstwister)
+[![Build dnstwister](https://github.com/thisismyrobot/dnstwister/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/thisismyrobot/dnstwister/actions/workflows/pythonapp.yml)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/thisismyrobot/dnstwister/tree/heroku-deploy)
 
@@ -67,7 +67,7 @@ repository and/or the private repository, as appropriate.
 
 ## Developing and running dnstwister
 
-You need Python 3.7.6.
+You need Python 3.9.
 
 Once-off setup:
 
