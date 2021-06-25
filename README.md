@@ -3,9 +3,9 @@
 A Python 3 Heroku-hostable web-application wrapping the excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
-[![Build dnstwister](https://github.com/thisismyrobot/dnstwister/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/thisismyrobot/dnstwister/actions/workflows/pythonapp.yml)
+[![Build dnstwister](https://github.com/dnstwister/dnstwister/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/dnstwister/dnstwister/actions/workflows/pythonapp.yml)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/thisismyrobot/dnstwister/tree/heroku-deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dnstwister/dnstwister/tree/heroku-deploy)
 
 ## dnstwist
 
@@ -51,7 +51,7 @@ dnstwist module embedded in this repository will __always__ match that used in
 
 __The current version of dnstwist used in this repository and in
 [dnstwister.report](https://dnstwister.report) is [available
-here](https://github.com/thisismyrobot/dnstwister/tree/master/dnstwister/dnstwist),
+here](https://github.com/dnstwister/dnstwister/tree/master/dnstwister/dnstwist),
 including the original Apache LICENCE.__
 
 Pull requests against this repository may or may not be merged into this
@@ -94,7 +94,7 @@ for **Docker CE**, and follow the installation steps.
 
 ```sh
 # Cloning latest source code
-git clone https://github.com/thisismyrobot/dnstwister
+git clone https://github.com/dnstwister/dnstwister
 
 # Changing directory
 cd dnstwister
