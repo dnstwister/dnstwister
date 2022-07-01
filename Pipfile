@@ -21,6 +21,7 @@ watchdog = "*"
 WebOb = "*"
 WebTest = "*"
 pytest-cov = "*"
+hupper = "*"
 
 [packages]
 dnspython = "*"
