@@ -79,7 +79,7 @@ pipenv install --dev
 Running:
 
 ```sh
-pipenv run python local_server.py
+pipenv run python local_server.py --reload
 ```
 
 And browse via http://localhost:5000

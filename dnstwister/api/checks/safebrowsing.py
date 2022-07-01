@@ -25,7 +25,7 @@ def get_report(domain):
 
     # Yep, this is gross, the response value is very strangely formatted.
     result_array = re.search(
-        r'(\["sb.ssr".*\])',
+        r'(\["sb.ssr".*?\])',
         result.text,
         flags=re.MULTILINE).groups()[0]
 

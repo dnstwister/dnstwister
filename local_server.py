@@ -1,14 +1,17 @@
 """Launch."""
+import sys
 import threading
+
+import hupper
 import waitress
-import werkzeug.serving
 
 import build.build_fed as build_fed
 
 
-@werkzeug.serving.run_with_reloader
-def serve():
+def serve(args=sys.argv[1:]):
     """Run waitress, but reload with file system changes."""
+    if '--reload' in args:
+        reloader = hupper.start_reloader('local_server.serve')
 
     def builder_thread():
         build_fed.build('dnstwister/static/')
@@ -26,3 +29,7 @@ def serve():
         host='127.0.0.1',
         port=5000,
     )
+
+
+if __name__ == '__main__':
+    serve()
