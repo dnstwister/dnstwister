@@ -86,7 +86,27 @@ class TestTools(unittest.TestCase):
         assert sorted(results) == [
             '1.com',
             '2.com',
+            'a.br',
+            'a.buzz',
+            'a.cf',
+            'a.cn',
+            'a.co',
             'a.com',
+            'a.de',
+            'a.fit',
+            'a.ga',
+            'a.gq',
+            'a.in',
+            'a.info',
+            'a.live',
+            'a.ml',
+            'a.net',
+            'a.org',
+            'a.ru',
+            'a.tk',
+            'a.top',
+            'a.uk',
+            'a.wang',
             'aa.com',
             'ab.com',
             'ac.com',
@@ -126,7 +146,7 @@ class TestTools(unittest.TestCase):
             'www-a.com',
             'wwwa.com',
             'y.com',
-            'z.com'
+            'z.com',
         ]
 
 
