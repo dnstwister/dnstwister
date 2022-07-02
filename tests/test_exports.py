@@ -53,6 +53,26 @@ def test_csv_export(webapp, monkeypatch):
         a.com,Bitsquatting,i.com,999.999.999.999,False
         a.com,Bitsquatting,q.com,999.999.999.999,False
         a.com,Original*,a.com,999.999.999.999,False
+        a.com,Other TLD,a.br,999.999.999.999,False
+        a.com,Other TLD,a.buzz,999.999.999.999,False
+        a.com,Other TLD,a.cf,999.999.999.999,False
+        a.com,Other TLD,a.cn,999.999.999.999,False
+        a.com,Other TLD,a.co,999.999.999.999,False
+        a.com,Other TLD,a.de,999.999.999.999,False
+        a.com,Other TLD,a.fit,999.999.999.999,False
+        a.com,Other TLD,a.ga,999.999.999.999,False
+        a.com,Other TLD,a.gq,999.999.999.999,False
+        a.com,Other TLD,a.in,999.999.999.999,False
+        a.com,Other TLD,a.info,999.999.999.999,False
+        a.com,Other TLD,a.live,999.999.999.999,False
+        a.com,Other TLD,a.ml,999.999.999.999,False
+        a.com,Other TLD,a.net,999.999.999.999,False
+        a.com,Other TLD,a.org,999.999.999.999,False
+        a.com,Other TLD,a.ru,999.999.999.999,False
+        a.com,Other TLD,a.tk,999.999.999.999,False
+        a.com,Other TLD,a.top,999.999.999.999,False
+        a.com,Other TLD,a.uk,999.999.999.999,False
+        a.com,Other TLD,a.wang,999.999.999.999,False
         a.com,Replacement,1.com,999.999.999.999,False
         a.com,Replacement,2.com,999.999.999.999,False
         a.com,Replacement,s.com,999.999.999.999,False
@@ -351,6 +371,26 @@ def test_unicode_csv_export(webapp, monkeypatch):
         xn--a-sfa.com,Omission,a.com,999.999.999.999,False
         xn--a-sfa.com,Omission,xn--0ca.com,999.999.999.999,False
         xn--a-sfa.com,Original*,xn--a-sfa.com,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.br,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.buzz,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.cf,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.cn,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.co,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.de,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.fit,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.ga,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.gq,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.in,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.info,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.live,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.ml,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.net,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.org,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.ru,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.tk,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.top,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.uk,999.999.999.999,False
+        xn--a-sfa.com,Other TLD,xn--a-sfa.wang,999.999.999.999,False
         xn--a-sfa.com,Repetition,xn--a-sfaa.com,999.999.999.999,False
         xn--a-sfa.com,Repetition,xn--aa-kia.com,999.999.999.999,False
         xn--a-sfa.com,Replacement,xn--1-sfa.com,999.999.999.999,False

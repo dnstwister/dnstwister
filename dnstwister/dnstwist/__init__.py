@@ -18,8 +18,8 @@
 # limitations under the License.
 
 #
-# dnstwist modified by Robert Wallhead (robert@thisismyrobot.com) for use in
-# https://dnstwister.report and this repository.
+# dnstwist modified by Robert Wallhead for use in https://dnstwister.report
+# and this repository.
 #
 
 __author__ = 'Marcin Ulikowski'
@@ -276,6 +276,18 @@ class DomainFuzzer(object):
 
         return result
 
+    def __other_tlds(self):
+        tlds = [
+            # Common TLDs
+            'com', 'cn', 'de', 'net', 'uk', 'org', 'co',
+
+            # Most abused (spamhaus/phishstats)
+            'live', 'buzz', 'gq', 'tk', 'fit', 'cf', 'ga',
+            'ml', 'wang', 'ru', 'top', 'info', 'in', 'br'
+        ]
+
+        return [f'{self.domain}.{tld}' for tld in tlds]
+
     def fuzz(self):
         """ Perform a domain fuzz.
         """
@@ -315,5 +327,8 @@ class DomainFuzzer(object):
             self.domains.append({ 'fuzzer': 'Various', 'domain-name': self.domain + self.tld + '.' + self.tld })
         if self.tld != 'com' and '.' not in self.tld:
             self.domains.append({ 'fuzzer': 'Various', 'domain-name': self.domain + '-' + self.tld + '.com' })
+
+        for domain_with_tld in self.__other_tlds():
+            self.domains.append({ 'fuzzer': 'Other TLD', 'domain-name': domain_with_tld })
 
         self.__filter_domains()
