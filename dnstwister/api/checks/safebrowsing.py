@@ -4,7 +4,7 @@ import re
 import requests
 
 
-API_URL = 'https://www.google.com/transparencyreport/api/v3/safebrowsing/status'
+API_URL = 'https://transparencyreport.google.com/transparencyreport/api/v3/safebrowsing/status'
 
 
 def get_report(domain):
