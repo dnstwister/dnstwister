@@ -6,7 +6,6 @@ import flask
 from flask import current_app
 
 from dnstwister.api.checks import parked
-from dnstwister.api.checks import safebrowsing
 from dnstwister import tools
 from dnstwister.core.domain import Domain
 
@@ -25,7 +24,6 @@ def api_definition():
         'domain_to_hexadecimal_url': tools.api_url(domain_to_hex, 'domain'),
         'domain_fuzzer_url': tools.api_url(fuzz, 'domain_as_hexadecimal'),
         'parked_check_url': tools.api_url(parked_score, 'domain_as_hexadecimal'),
-        'google_safe_browsing_url': tools.api_url(safebrowsing_check, 'domain_as_hexadecimal'),
         'ip_resolution_url': tools.api_url(resolve_ip, 'domain_as_hexadecimal'),
         'whois_url': tools.api_url(whois, 'domain_as_hexadecimal'),
     })
@@ -96,20 +94,6 @@ def parked_score(hexdomain):
     payload['redirects'] = redirects
     payload['redirects_to'] = None if dest is None else dest.to_ascii()
     payload['dressed'] = dressed
-    return flask.jsonify(payload)
-
-
-@app.route('/safebrowsing/<hexdomain>')
-def safebrowsing_check(hexdomain):
-    """Returns number of hits in Google Safe Browsing."""
-    domain = tools.try_parse_domain_from_hex(hexdomain)
-    if domain is None:
-        flask.abort(
-            400,
-            'Malformed domain or domain not represented in hexadecimal format.'
-        )
-    payload = standard_api_values(domain, skip='safebrowsing')
-    payload['issue_detected'] = safebrowsing.get_report(domain) != 0
     return flask.jsonify(payload)
 
 
