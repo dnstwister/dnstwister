@@ -16,7 +16,6 @@ def test_api_root(webapp):
         'domain_to_hexadecimal_url': 'http://localhost/api/to_hex/{domain}',
         'ip_resolution_url': 'http://localhost/api/ip/{domain_as_hexadecimal}',
         'parked_check_url': 'http://localhost/api/parked/{domain_as_hexadecimal}',
-        'google_safe_browsing_url': 'http://localhost/api/safebrowsing/{domain_as_hexadecimal}',
         'whois_url': 'http://localhost/api/whois/{domain_as_hexadecimal}',
         'url': 'http://localhost/api/',
     }
@@ -33,7 +32,7 @@ def test_api_root_redirect(webapp):
 def test_api_domain_validation(webapp):
     """Test that domains are validated on all API endpoints."""
     malformed_domain = 'example'
-    endpoints = ('fuzz', 'to_hex', 'ip', 'parked', 'safebrowsing', 'whois')
+    endpoints = ('fuzz', 'to_hex', 'ip', 'parked', 'whois')
     for endpoint in endpoints:
         with pytest.raises(webtest.app.AppError) as err:
             webapp.get('/api/{}/{}'.format(
@@ -46,7 +45,7 @@ def test_api_domain_validation(webapp):
 def test_unicode_basics(webapp):
     """Test that Unicode domains work on all endpoints."""
     unicode_domain = Domain('xn--sterreich-z7a.icom.museum')
-    endpoints = ('fuzz', 'ip', 'parked', 'safebrowsing', 'whois')
+    endpoints = ('fuzz', 'ip', 'parked', 'whois')
     for endpoint in endpoints:
         webapp.get('/api/{}/{}'.format(
             endpoint,
