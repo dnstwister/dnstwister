@@ -7,6 +7,8 @@ A Python 3 Heroku-hostable web-application wrapping the excellent
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dnstwister/dnstwister/tree/heroku-deploy)
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dnstwister_dnstwister&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dnstwister_dnstwister)
+
 ## dnstwist
 
 In [the author's](https://github.com/elceef) words, dnstwist helps you
