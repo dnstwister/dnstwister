@@ -4,10 +4,9 @@ A Python 3 Heroku-hostable web-application wrapping the excellent
 [dnstwist](https://github.com/elceef/dnstwist).
 
 [![Build dnstwister](https://github.com/dnstwister/dnstwister/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/dnstwister/dnstwister/actions/workflows/pythonapp.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dnstwister_dnstwister&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dnstwister_dnstwister)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dnstwister/dnstwister/tree/heroku-deploy)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dnstwister_dnstwister&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dnstwister_dnstwister)
 
 ## dnstwist
 
